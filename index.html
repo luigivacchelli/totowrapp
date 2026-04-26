@@ -361,6 +361,95 @@ ${S.players.map(p=>`<div class="row"><div class="row-name">${p.name}</div><div c
 </div>`;
 }
 
+// ── Player Views ──────────────────────────────────────────────────
+
+function renderPlayerWaiting() {
+  return `
+<div class="loading-screen">
+  <img src="${LOGO_DATA}" alt="TotoWrap" style="max-width:200px;margin-bottom:16px;">
+  <div class="loading-txt" style="text-align:center;line-height:2.2">
+    <span style="color:var(--accent);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase">Waiting for Setup...</span><br>
+    <span style="color:var(--dim);font-size:.7rem;">The admin is currently adding players.</span>
+  </div>
+</div>`;
+}
+
+function renderPlayerIdle() {
+  const last = S.days.length ? S.days[S.days.length-1] : null;
+  return `
+<div class="loading-screen" style="padding:20px;">
+  <img src="${LOGO_DATA}" alt="TotoWrap" style="max-width:200px;margin-bottom:16px;">
+  <div class="card" style="width:100%;max-width:400px;text-align:center;">
+    <div class="card-lbl">Standby</div>
+    <div class="mono" style="margin-top:8px;">Waiting for admin to start today's game.</div>
+  </div>
+  ${last ? `<p class="mono dim center mt16">Last wrap: <span class="accent">${last.wrapTime}</span> — ${last.winner} won</p>` : ''}
+</div>`;
+}
+
+function renderPlayerDay() {
+  const t = S.today;
+  const guessed = t.guesses.length, total = S.players.length, allIn = guessed === total;
+  
+  // Player Header
+  let html = `
+<div class="hdr">
+  <img src="${LOGO_DATA}" alt="TotoWrap" class="hdr-logo">
+  <div class="hdr-right">
+    <div class="hdr-day">Day ${S.days.length + (S.today ? 1 : 0)} <span class="sync-dot live" id="sync-dot"></span></div>
+    <div class="hdr-clock js-clock">--:--:--</div>
+  </div>
+</div>
+<div style="padding: 16px; max-width: 480px; margin: 0 auto;">`;
+
+  // 1. Day is Finished
+  if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
+    html += `
+    <div class="winner-banner">
+      <div class="winner-sub">🎬 Today's Winner</div>
+      <div class="winner-name">${t.winner}</div>
+      <div class="winner-pts">+${t.points} point${t.points>1?'s':''} · Wrap at <span class="accent">${t.wrapTime}</span></div>
+    </div>
+    <div class="card"><div class="card-lbl">Results</div>
+    ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${g.name===t.winner?'b-win':'b-out'}">${g.name===t.winner?`+${t.points}pt`:'—'}</div></div>`).join('')}
+    </div>`;
+  }
+  // 2. Waiting for Guesses
+  else if (!allIn) {
+    html += `
+    <div class="card"><div class="card-lbl">Collecting Guesses — ${guessed}/${total}</div>
+    ${S.players.map(p=>{
+      const g = t.guesses.find(x=>x.name===p.name);
+      if(g) return `<div class="row"><div class="row-name">${p.name}</div><div class="row-time">${g.time}</div><div class="badge b-ok">✓</div></div>`;
+      return `<div class="row"><div class="row-name">${p.name}</div><div class="mono dim">Thinking...</div></div>`;
+    }).join('')}
+    </div>`;
+  }
+  // 3. Live Game (All guesses in)
+  else {
+    const cur = nowSec(), out = eliminated(t.guesses, cur), sg = sortedGuesses(t.guesses), bnds = boundaries(t.guesses);
+    html += `
+    <div class="card"><div class="big-clock js-clock">--:--:--</div><div class="big-clock-lbl">Live Time</div></div>
+    <div class="card"><div class="card-lbl">Player Status</div>
+    ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${out.has(g.name)?'b-out':'b-alive'}" id="st-${g.name}">${out.has(g.name)?'OUT':'ALIVE'}</div></div>`).join('')}
+    </div>
+    <div class="card"><div class="card-lbl">Territory Boundaries</div>
+    ${sg.map((g,i)=>{const lo=i===0?'00:00:00':bnds[i-1].str,hi=i===sg.length-1?'23:59:59':bnds[i].str;return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;}).join('')}
+    </div>`;
+  }
+
+  // Always show Leaderboard at the bottom for players
+  const pl = [...S.players].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0));
+  html += `
+  <div class="card mt16"><div class="card-lbl">Leaderboard</div>
+  ${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
+  </div>
+</div>`;
+
+  return html;
+}
+    
 // ── Event binding ─────────────────────────────────────────────────
 function bindSetup() {
   document.getElementById('add-btn')?.addEventListener('click', addPlayer);
