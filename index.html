@@ -36,6 +36,8 @@ body { background-color: #3d6b45; background-image: url('imgs/bg.png'); backgrou
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
 .sec { padding: 16px; display: none; }
 .sec.on { display: block; }
+
+.preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
 .card-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
 .row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
@@ -49,11 +51,13 @@ body { background-color: #3d6b45; background-image: url('imgs/bg.png'); backgrou
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
+.b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'DM Mono', monospace; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-input[type=text], input[type=time] { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: .95rem; outline: none; transition: border-color .2s; appearance: none; }
-input:focus { border-color: var(--accent); }
-input::placeholder { color: var(--dim); }
+input[type=text], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: .9rem; outline: none; transition: border-color .2s; }
+textarea { resize: vertical; min-height: 140px; font-size: .85rem; line-height: 1.6; }
+input:focus, textarea:focus { border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--dim); }
 .flex-row { display: flex; gap: 8px; }
 .flex-row input { flex: 1; }
 .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .15s, opacity .15s; }
@@ -137,7 +141,7 @@ const STATE_REF = doc(db, "totowrap", "state");
 // ── State ────────────────────────────────────────────────────────
 let S = {
   setup: false,
-  players: [],
+  playerRoster: [],  // Fixed list of all players
   scores: {},
   days: [],
   today: null
@@ -167,18 +171,64 @@ function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=
 function pad(n) { return String(n).padStart(2,'0'); }
 function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
 function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+// ── Parse paste input ────────────────────────────────────────────
+function parsePaste(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  const guesses = [];
+  for (const line of lines) {
+    const match = line.match(/^(.+?)\s*-\s*(\d{2}:\d{2})$/);
+    if (match) {
+      guesses.push({ name: match[1].trim(), time: match[2] });
+    }
+  }
+  return guesses;
+}
+
+// Build full guess list with missing players
+function buildFullGuessList(parsed) {
+  const result = [];
+  const submitted = new Set(parsed.map(g => g.name));
+  
+  // Add parsed guesses
+  parsed.forEach(g => result.push(g));
+  
+  // Add missing players
+  S.playerRoster.forEach(p => {
+    if (!submitted.has(p.name)) {
+      result.push({ name: p.name, time: null });
+    }
+  });
+  
+  return result;
+}
+
 function midSec(a,b) { return Math.floor((a+b)/2); }
-function sortedGuesses(g) { return [...g].sort((a,b)=>toSec(a.time)-toSec(b.time)); }
+function sortedGuesses(guesses) {
+  const withTime = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+  const missing = guesses.filter(g => !g.time);
+  return [...withTime, ...missing];
+}
 function boundaries(guesses) {
   const s=sortedGuesses(guesses);
   return s.slice(0,-1).map((g,i)=>{ const t1=toSec(s[i].time),t2=toSec(s[i+1].time),mid=midSec(t1,t2); return {nameA:s[i].name,nameB:s[i+1].name,sec:mid,str:secToHMS(mid)}; });
 }
 function eliminated(guesses,curSec) { const s=sortedGuesses(guesses),b=boundaries(guesses),out=new Set(); b.forEach((bd,i)=>{ if(curSec>bd.sec) out.add(s[i].name); }); return out; }
-function calcWinner(guesses,wrapHHMM) {
-  const wrapSec=toSec(wrapHHMM),s=sortedGuesses(guesses),b=boundaries(guesses);
-  let wi=0; b.forEach((bd,i)=>{ if(wrapSec>=bd.sec) wi=i+1; });
-  const winner=s[wi]; const points=(wrapHHMM===winner.time.slice(0,5))?3:1;
-  return {winner,points};
+function calcWinner(guesses, wrapHHMM) {
+  const wrapSec = toSec(wrapHHMM);
+  const validGuesses = guesses.filter(g => g.time);
+  const s = validGuesses.sort((a,b) => toSec(a.time) - toSec(b.time));
+  const b = boundaries(guesses);
+  
+  let wi = 0;
+  b.forEach((bd,i) => { if (wrapSec >= bd.sec) wi = i + 1; });
+  
+  const winner = s[wi];
+  const points = (wrapHHMM === winner.time.slice(0,5)) ? 3 : 1;
+  
+  // Check for ties (same winning time)
+  const winners = s.filter(g => g.time === winner.time);
+  
+  return { winner: winner.name, winners, points };
 }
 
 // ── Clock ────────────────────────────────────────────────────────
@@ -243,7 +293,7 @@ function renderPlayer(app) {
 const LOGO_DATA = "imgs/tuncan.png";
 
 function renderSetup() {
-  const tags=S.players.map(p=>`<div class="tag">${p.name}<span class="tag-x" data-rm="${p.name}">×</span></div>`).join('');
+  const tags=S.playerRoster.map(p=>`<div class="tag">${p.name}<span class="tag-x" data-rm="${p.name}">×</span></div>`).join('');
   return `
 <div class="setup-wrap">
   <img src="${LOGO_DATA}" alt="TotoWrap" class="setup-logo">
@@ -251,15 +301,15 @@ function renderSetup() {
   <div class="setup-card">
     <div class="setup-step">First Launch · Setup</div>
     <div class="setup-title">Add Your Players</div>
-    ${S.players.length?`<div class="tags" id="ptags">${tags}</div>`:''}
+    ${S.playerRoster.length?`<div class="tags" id="ptags">${tags}</div>`:''}
     <div class="flex-row mt8">
       <input type="text" id="pname" placeholder="Player name…" maxlength="20" autocomplete="off">
       <button class="btn btn-s btn-sm" id="add-btn">Add</button>
     </div>
     <div class="mt12">
-      <button class="btn btn-p" id="start-btn" ${S.players.length<2?'disabled':''}>Start the Game →</button>
+      <button class="btn btn-p" id="start-btn" ${S.playerRoster.length<2?'disabled':''}>Start the Game →</button>
     </div>
-    ${S.players.length<2?`<p class="mono dim center mt8">Add at least 2 players to continue</p>`:''}
+    ${S.playerRoster.length<2?`<p class="mono dim center mt8">Add at least 2 players to continue</p>`:''}
   </div>
 </div>`;
 }
@@ -287,52 +337,95 @@ function renderMain() {
 }
 
 function renderToday() {
-  const t=S.today;
-  if(!t){
-    const last=S.days.length?S.days[S.days.length-1]:null;
-    return `<div class="card"><div class="card-lbl">New Day</div><button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button></div>${last?`<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> — ${last.winner} won</p>`:''}`;
+  const t = S.today;
+  
+  // No active day
+  if (!t) {
+    return `<div class="card">
+      <div class="card-lbl">Start New Day</div>
+      <button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button>
+    </div>`;
   }
-  if(t.wrapTime){
-    const sg=sortedGuesses(t.guesses);
+  
+  // Wrap submitted
+  if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
     return `
-<div class="winner-banner">
-  <div class="winner-sub">🎬 Today's Winner</div>
-  <div class="winner-name">${t.winner}</div>
-  <div class="winner-pts">+${t.points} point${t.points>1?'s':''} · Wrap at <span class="accent">${t.wrapTime}</span></div>
-</div>
-<div class="card"><div class="card-lbl">Results</div>
-${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${g.name===t.winner?'b-win':'b-out'}">${g.name===t.winner?`+${t.points}pt`:'—'}</div></div>`).join('')}
-</div>
-<button class="btn btn-p" id="new-day-btn">Start Next Day →</button>`;
+      <div class="winner-banner">
+        <div class="winner-sub">🎬 Today's Winner</div>
+        <div class="winner-name">${t.winner}</div>
+        <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+      </div>
+      <div class="card"><div class="card-lbl">Results</div>
+        ${sg.map(g => `
+          <div class="row">
+            <div class="row-name">${g.name}</div>
+            ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
+    `;
   }
-  const guessed=t.guesses.length, total=S.players.length, allIn=guessed===total;
-  if(!allIn){
-    return `<div class="card"><div class="card-lbl">Collecting Guesses — ${guessed}/${total}</div>
-${S.players.map(p=>{
-  const g=t.guesses.find(x=>x.name===p.name);
-  if(g) return `<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge b-ok">✓</div></div>`;
-  return `<div class="row" id="grow-${p.name}"><div class="row-name">${p.name}</div><input type="time" id="gi-${p.name}" style="width:118px;padding:7px 10px;font-size:.88rem;"><button class="btn btn-p btn-sm js-guess" data-name="${p.name}">OK</button></div>`;
-}).join('')}
-</div>`;
+  
+  // Guesses submitted, waiting for wrap
+  if (t.guesses && t.guesses.length > 0) {
+    const cur = nowSec();
+    const out = eliminated(t.guesses, cur);
+    const sg = sortedGuesses(t.guesses);
+    const bnds = boundaries(t.guesses);
+    const withTime = sg.filter(g => g.time);
+    
+    return `
+      <div class="card">
+        <div class="big-clock js-clock">--:--:--</div>
+        <div class="big-clock-lbl">Live Time</div>
+      </div>
+      <div class="card"><div class="card-lbl">Player Status</div>
+        ${sg.map(g => `
+          <div class="row">
+            <div class="row-name">${g.name}</div>
+            ${g.time ? `
+              <div class="row-time">${g.time}</div>
+              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+              </div>
+            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+          </div>`).join('')}
+      </div>
+      <div class="card"><div class="card-lbl">Territory Boundaries</div>
+        ${withTime.map((g,i) => {
+          const lo = i===0 ? '00:00:00' : bnds[i-1].str;
+          const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
+          return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="card-lbl">Enter Official Wrap Time</div>
+        <div class="inp-wrap">
+          <label class="inp-lbl">Wrap Time (HH:MM)</label>
+          <input type="time" id="wrap-inp">
+        </div>
+        <button class="btn btn-p" id="wrap-btn">Confirm Wrap ✓</button>
+      </div>
+    `;
   }
-  const cur=nowSec(), out=eliminated(t.guesses,cur), sg=sortedGuesses(t.guesses), bnds=boundaries(t.guesses);
+  
+  // Fresh day, paste guesses
   return `
-<div class="card"><div class="big-clock js-clock">--:--:--</div><div class="big-clock-lbl">Live Time</div></div>
-<div class="card"><div class="card-lbl">Player Status</div>
-${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${out.has(g.name)?'b-out':'b-alive'}" id="st-${g.name}">${out.has(g.name)?'OUT':'ALIVE'}</div></div>`).join('')}
-</div>
-<div class="card"><div class="card-lbl">Territory Boundaries</div>
-${sg.map((g,i)=>{const lo=i===0?'00:00:00':bnds[i-1].str,hi=i===sg.length-1?'23:59:59':bnds[i].str;return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;}).join('')}
-<p class="mono dim mt8" style="font-size:.6rem">Boundary belongs to the later-guessing player</p>
-</div>
-<div class="card"><div class="card-lbl">Input Official Wrap Time</div>
-<div class="inp-wrap"><label class="inp-lbl">Wrap Time (HH:MM)</label><input type="time" id="wrap-inp"></div>
-<button class="btn btn-p" id="wrap-btn">Confirm Wrap ✓</button>
-</div>`;
+    <div class="card">
+      <div class="card-lbl">Paste Today's Guesses</div>
+      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line)</p>
+      <textarea id="paste-inp" placeholder="Luigi - 18:30
+Daniela - 19:15
+Marco - 17:45"></textarea>
+      <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
+    </div>
+  `;
 }
 
 function renderBoard() {
-  const pl=[...S.players].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0));
+  const pl=[...S.playerRoster].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0));
   if(!pl.length) return '<div class="empty">No players yet</div>';
   return `<div class="card"><div class="card-lbl">Standings</div>
 ${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
@@ -353,7 +446,7 @@ ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="r
 
 function renderSettings() {
   return `<div class="card"><div class="card-lbl">Player Roster</div>
-${S.players.map(p=>`<div class="row"><div class="row-name">${p.name}</div><div class="mono dim">${S.scores[p.name]||0} pts</div></div>`).join('')}
+${S.playerRoster.map(p=>`<div class="row"><div class="row-name">${p.name}</div><div class="mono dim">${S.scores[p.name]||0} pts</div></div>`).join('')}
 </div>
 <div class="card"><div class="card-lbl">Danger Zone</div>
 <p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
@@ -388,65 +481,113 @@ function renderPlayerIdle() {
 
 function renderPlayerDay() {
   const t = S.today;
-  const guessed = t.guesses.length, total = S.players.length, allIn = guessed === total;
+  const dayNum = S.days.length + (t ? 1 : 0);
+  const dotClass = (t && t.wrapTime) ? 'off' : 'live';
   
-  // Player Header
-  let html = `
+  if (!t) {
+    const last = S.days.length ? S.days[S.days.length-1] : null;
+    return `
 <div class="hdr">
-  <div class="hdr-day">Day ${S.days.length + (S.today ? 1 : 0)}</div>
+  <div class="hdr-day">Day ${dayNum}</div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${t.wrapTime?'off':'live'}" id="sync-dot"></span>
+    <span class="sync-dot" id="sync-dot"></span>
   </div>
 </div>
-<div style="padding: 16px; max-width: 480px; margin: 0 auto;">`;
-
-  // 1. Day is Finished
+<div style="padding:16px">
+  <div class="empty">No active game today</div>
+  ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
+</div>`;
+  }
+  
+  // Winner announced
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
-    html += `
-    <div class="winner-banner">
-      <div class="winner-sub">🎬 Today's Winner</div>
-      <div class="winner-name">${t.winner}</div>
-      <div class="winner-pts">+${t.points} point${t.points>1?'s':''} · Wrap at <span class="accent">${t.wrapTime}</span></div>
-    </div>
-    <div class="card"><div class="card-lbl">Results</div>
-    ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${g.name===t.winner?'b-win':'b-out'}">${g.name===t.winner?`+${t.points}pt`:'—'}</div></div>`).join('')}
-    </div>`;
-  } 
-  // 2. Waiting for Guesses
-  else if (!allIn) {
-    html += `
-    <div class="card"><div class="card-lbl">Collecting Guesses — ${guessed}/${total}</div>
-    ${S.players.map(p=>{
-      const g = t.guesses.find(x=>x.name===p.name);
-      if(g) return `<div class="row"><div class="row-name">${p.name}</div><div class="row-time">${g.time}</div><div class="badge b-ok">✓</div></div>`;
-      return `<div class="row"><div class="row-name">${p.name}</div><div class="mono dim">Thinking...</div></div>`;
-    }).join('')}
-    </div>`;
-  } 
-  // 3. Live Game (All guesses in)
-  else {
-    const cur = nowSec(), out = eliminated(t.guesses, cur), sg = sortedGuesses(t.guesses), bnds = boundaries(t.guesses);
-    html += `
-    <div class="card"><div class="big-clock js-clock">--:--:--</div><div class="big-clock-lbl">Live Time</div></div>
-    <div class="card"><div class="card-lbl">Player Status</div>
-    ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${out.has(g.name)?'b-out':'b-alive'}" id="st-${g.name}">${out.has(g.name)?'OUT':'ALIVE'}</div></div>`).join('')}
-    </div>
-    <div class="card"><div class="card-lbl">Territory Boundaries</div>
-    ${sg.map((g,i)=>{const lo=i===0?'00:00:00':bnds[i-1].str,hi=i===sg.length-1?'23:59:59':bnds[i].str;return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;}).join('')}
-    </div>`;
-  }
-
-  // Always show Leaderboard at the bottom for players
-  const pl = [...S.players].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0));
-  html += `
-  <div class="card mt16"><div class="card-lbl">Leaderboard</div>
-  ${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
+    return `
+<div class="hdr">
+  <div class="hdr-day">Day ${dayNum}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot off" id="sync-dot"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="winner-banner">
+    <div class="winner-sub">🎬 Today's Winner</div>
+    <div class="winner-name">${t.winner}</div>
+    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+  </div>
+  <div class="card"><div class="card-lbl">Results</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+      </div>`).join('')}
   </div>
 </div>`;
-
-  return html;
+  }
+  
+  // Live game or collecting
+  const sg = sortedGuesses(t.guesses || []);
+  const hasValidGuesses = sg.some(g => g.time);
+  
+  if (!hasValidGuesses) {
+    return `
+<div class="hdr">
+  <div class="hdr-day">Day ${dayNum}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="card">
+    <div class="card-lbl">Collecting Guesses</div>
+    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
+  </div>
+</div>`;
+  }
+  
+  // Live status
+  const cur = nowSec();
+  const out = eliminated(t.guesses, cur);
+  const bnds = boundaries(t.guesses);
+  const withTime = sg.filter(g => g.time);
+  
+  return `
+<div class="hdr">
+  <div class="hdr-day">Day ${dayNum}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="card">
+    <div class="big-clock js-clock">--:--:--</div>
+    <div class="big-clock-lbl">Live Time</div>
+  </div>
+  <div class="card"><div class="card-lbl">Player Status</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `
+          <div class="row-time">${g.time}</div>
+          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          </div>
+        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+      </div>`).join('')}
+  </div>
+  <div class="card"><div class="card-lbl">Territory Boundaries</div>
+    ${withTime.map((g,i) => {
+      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
+      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
+      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+    }).join('')}
+  </div>
+</div>`;
 }
     
 // ── Event binding ─────────────────────────────────────────────────
@@ -456,6 +597,63 @@ function bindSetup() {
   document.getElementById('start-btn')?.addEventListener('click', finishSetup);
   document.querySelectorAll('.tag-x').forEach(el=>el.addEventListener('click',()=>removePlayer(el.dataset.rm)));
 }
+
+function showPreview() {
+  const inp = document.getElementById('paste-inp');
+  const text = inp?.value || '';
+  if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
+  
+  const parsed = parsePaste(text);
+  if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
+  
+  const fullList = buildFullGuessList(parsed);
+  const sorted = sortedGuesses(fullList);
+  
+  // Show preview
+  const totalDays = S.days.length + (S.today ? 1 : 0);
+  const app = document.getElementById('app');
+  
+  app.innerHTML = `
+<div class="hdr">
+  <div class="hdr-day">Day ${totalDays} Preview</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot live" id="sync-dot"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="card">
+    <div class="card-lbl">Confirm These Guesses</div>
+    <div class="preview-card">
+      ${sorted.map(g => `
+        <div class="row">
+          <div class="row-name">${g.name}</div>
+          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        </div>`).join('')}
+    </div>
+    <p class="mono dim" style="font-size:.7rem;margin-top:10px">
+      ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
+    </p>
+  </div>
+  <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
+  <button class="btn btn-s" id="cancel-btn">← Go Back</button>
+</div>
+  `;
+  
+  startClock();
+  
+  document.getElementById('confirm-btn')?.addEventListener('click', () => {
+    S.today.guesses = fullList;
+    saveS();
+    toast('Day started!', 'ok');
+    render();
+  });
+  
+  document.getElementById('cancel-btn')?.addEventListener('click', () => {
+    render();
+  });
+}
+
 function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
   document.getElementById('new-day-btn')?.addEventListener('click', startDay);
@@ -464,7 +662,7 @@ function bindMain() {
   document.getElementById('export-btn')?.addEventListener('click', exportCSV);
   document.getElementById('reset-btn')?.addEventListener('click',()=>{
     if(confirm('Reset the entire game for everyone? This cannot be undone.')){
-      S={setup:false,players:[],scores:{},days:[],today:null};
+      S={setup:false,playerRoster:[],scores:{},days:[],today:null};
       saveS(); render();
     }
   });
@@ -473,12 +671,12 @@ function bindMain() {
 // ── Actions ───────────────────────────────────────────────────────
 function addPlayer() {
   const inp=document.getElementById('pname'); const name=inp.value.trim(); if(!name) return;
-  if(S.players.find(p=>p.name.toLowerCase()===name.toLowerCase())){toast('Player already exists','err');return;}
-  S.players.push({name}); S.scores[name]=0;
+  if(S.playerRoster.find(p=>p.name.toLowerCase()===name.toLowerCase())){toast('Player already exists','err');return;}
+  S.playerRoster.push({name}); S.scores[name]=0;
   inp.value=''; saveS(); render(); document.getElementById('pname')?.focus();
 }
-function removePlayer(name) { S.players=S.players.filter(p=>p.name!==name); delete S.scores[name]; saveS(); render(); }
-function finishSetup() { if(S.players.length<2) return; S.setup=true; saveS(); render(); }
+function removePlayer(name) { S.playerRoster=S.playerRoster.filter(p=>p.name!==name); delete S.scores[name]; saveS(); render(); }
+function finishSetup() { if(S.playerRoster.length<2) return; S.setup=true; saveS(); render(); }
 
 function startDay() {
   if(S.today&&S.today.wrapTime){
@@ -489,43 +687,37 @@ function startDay() {
   saveS(); render();
 }
 
-function submitGuess(name) {
-  const inp=document.getElementById(`gi-${name}`); if(!inp||!inp.value){toast('Enter a time first','err');return;}
-  const hhmm=inp.value;
-  const dup=S.today.guesses.find(g=>g.time.slice(0,5)===hhmm);
-  if(dup){
-    toast(`${dup.name} already guessed ${hhmm} — add seconds below`,'err');
-    const row=document.getElementById(`grow-${name}`);
-    if(row){
-      row.innerHTML=`<div class="row-name">${name}</div><input type="text" id="gi-ss-${name}" placeholder="HH:MM:SS" value="${hhmm}:" maxlength="8" style="width:128px;padding:7px 10px;font-size:.88rem;"><button class="btn btn-p btn-sm js-guess-ss" data-name="${name}">OK</button>`;
-      row.querySelector('.js-guess-ss').addEventListener('click',()=>submitGuessWithSS(name));
-      document.getElementById(`gi-ss-${name}`)?.focus();
-    }
-    return;
-  }
-  S.today.guesses.push({name,time:hhmm}); saveS(); render();
-}
 
-function submitGuessWithSS(name) {
-  const inp=document.getElementById(`gi-ss-${name}`); const val=(inp?.value||'').trim();
-  if(!/^\d{2}:\d{2}:\d{2}$/.test(val)){toast('Use format HH:MM:SS','err');return;}
-  const parts=val.split(':').map(Number); if(parts[1]>59||parts[2]>59){toast('Invalid time','err');return;}
-  const dup=S.today.guesses.find(g=>g.time===val); if(dup){toast(`${dup.name} already has ${val}`,'err');return;}
-  S.today.guesses.push({name,time:val}); saveS(); render();
-}
 
 function submitWrap() {
-  const inp=document.getElementById('wrap-inp'); if(!inp?.value){toast('Enter the wrap time','err');return;}
-  const wrapHHMM=inp.value;
-  const {winner,points}=calcWinner(S.today.guesses,wrapHHMM);
-  S.today.wrapTime=wrapHHMM; S.today.winner=winner.name; S.today.points=points;
-  S.scores[winner.name]=(S.scores[winner.name]||0)+points;
-  saveS(); toast(`${winner.name} wins +${points} pt${points>1?'s':''}! 🎬`,'ok'); render();
+  const inp = document.getElementById('wrap-inp');
+  if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
+  
+  const wrapHHMM = inp.value;
+  const validGuesses = S.today.guesses.filter(g => g.time);
+  
+  if (!validGuesses.length) { toast('No valid guesses to score', 'err'); return; }
+  
+  const { winner, winners, points } = calcWinner(S.today.guesses, wrapHHMM);
+  
+  S.today.wrapTime = wrapHHMM;
+  S.today.winner = winner;
+  S.today.points = points;
+  
+  // Award points to all tied winners
+  winners.forEach(w => {
+    S.scores[w.name] = (S.scores[w.name] || 0) + points;
+  });
+  
+  const winnerNames = winners.map(w => w.name).join(' & ');
+  saveS();
+  toast(`${winnerNames} win${winners.length>1?'':'s'} +${points} pt! 🎬`, 'ok');
+  render();
 }
 
 function exportCSV() {
   const rows=[['Rank','Player','Points']];
-  [...S.players].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0)).forEach((p,i)=>rows.push([i+1,p.name,S.scores[p.name]||0]));
+  [...S.playerRoster].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0)).forEach((p,i)=>rows.push([i+1,p.name,S.scores[p.name]||0]));
   const csv=rows.map(r=>r.join(',')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='totowrap_scores.csv'; a.click();
 }
