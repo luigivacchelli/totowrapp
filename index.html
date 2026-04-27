@@ -140,7 +140,6 @@ const STATE_REF = doc(db, "totowrap", "state");
 
 // ── State ────────────────────────────────────────────────────────
 let S = {
-  setup: false,
   playerRoster: [],  // Fixed list of all players
   scores: {},
   days: [],
@@ -264,7 +263,7 @@ function toast(msg,type='') {
 function render() {
   const app=document.getElementById('app');
   if(IS_ADMIN) {
-    if(!S.setup){app.innerHTML=renderSetup();bindSetup();return;}
+    // Bypassed setup check entirely
     app.innerHTML=renderMain();
     startClock();
     bindMain();
@@ -274,45 +273,17 @@ function render() {
 }
 
 function renderPlayer(app) {
-  // Not set up yet
-  if(!S.setup) {
-    app.innerHTML=renderPlayerWaiting();
-    return;
-  }
-  // Set up but no active day
+  // Bypassed setup check entirely
   if(!S.today) {
     app.innerHTML=renderPlayerIdle();
     startClock();
     return;
   }
-  // Active day
   app.innerHTML=renderPlayerDay();
   startClock();
 }
 
 const LOGO_DATA = "imgs/tuncan.png";
-
-function renderSetup() {
-  const tags=S.playerRoster.map(p=>`<div class="tag">${p.name}<span class="tag-x" data-rm="${p.name}">×</span></div>`).join('');
-  return `
-<div class="setup-wrap">
-  <img src="${LOGO_DATA}" alt="TotoWrap" class="setup-logo">
-  <div class="setup-tag">The Movie Set Wrap Time Game</div>
-  <div class="setup-card">
-    <div class="setup-step">First Launch · Setup</div>
-    <div class="setup-title">Add Your Players</div>
-    ${S.playerRoster.length?`<div class="tags" id="ptags">${tags}</div>`:''}
-    <div class="flex-row mt8">
-      <input type="text" id="pname" placeholder="Player name…" maxlength="20" autocomplete="off">
-      <button class="btn btn-s btn-sm" id="add-btn">Add</button>
-    </div>
-    <div class="mt12">
-      <button class="btn btn-p" id="start-btn" ${S.playerRoster.length<2?'disabled':''}>Start the Game →</button>
-    </div>
-    ${S.playerRoster.length<2?`<p class="mono dim center mt8">Add at least 2 players to continue</p>`:''}
-  </div>
-</div>`;
-}
 
 function renderMain() {
   const totalDays=S.days.length+(S.today?1:0);
@@ -591,68 +562,79 @@ function renderPlayerDay() {
 }
     
 // ── Event binding ─────────────────────────────────────────────────
-function bindSetup() {
-  document.getElementById('add-btn')?.addEventListener('click', addPlayer);
-  document.getElementById('pname')?.addEventListener('keydown', e=>{if(e.key==='Enter') addPlayer();});
-  document.getElementById('start-btn')?.addEventListener('click', finishSetup);
-  document.querySelectorAll('.tag-x').forEach(el=>el.addEventListener('click',()=>removePlayer(el.dataset.rm)));
-}
 
-function showPreview() {
-  const inp = document.getElementById('paste-inp');
-  const text = inp?.value || '';
-  if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
-  
-  const parsed = parsePaste(text);
-  if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
-  
-  const fullList = buildFullGuessList(parsed);
-  const sorted = sortedGuesses(fullList);
-  
-  // Show preview
-  const totalDays = S.days.length + (S.today ? 1 : 0);
-  const app = document.getElementById('app');
-  
-  app.innerHTML = `
-<div class="hdr">
-  <div class="hdr-day">Day ${totalDays} Preview</div>
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot live" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="card">
-    <div class="card-lbl">Confirm These Guesses</div>
-    <div class="preview-card">
-      ${sorted.map(g => `
-        <div class="row">
-          <div class="row-name">${g.name}</div>
-          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        </div>`).join('')}
+    function showPreview() {
+      const inp = document.getElementById('paste-inp');
+      const text = inp?.value || '';
+      if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
+
+      const parsed = parsePaste(text);
+      if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
+
+      // 1. Identify new players from the pasted list
+      const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
+      const newPlayers = [];
+      parsed.forEach(g => {
+        if (!existingNames.has(g.name.toLowerCase())) {
+          newPlayers.push(g.name);
+          existingNames.add(g.name.toLowerCase()); // prevent duplicates in the same paste
+        }
+      });
+
+      const fullList = buildFullGuessList(parsed);
+      const sorted = sortedGuesses(fullList);
+
+      // 2. Show preview
+      const totalDays = S.days.length + (S.today ? 1 : 0);
+      const app = document.getElementById('app');
+      
+      app.innerHTML = `
+    <div class="hdr">
+      <div class="hdr-day">Day ${totalDays} Preview</div>
+      <div class="hdr-right">
+        <div class="hdr-clock js-clock">--:--:--</div>
+        <span class="sync-dot live" id="sync-dot"></span>
+      </div>
     </div>
-    <p class="mono dim" style="font-size:.7rem;margin-top:10px">
-      ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
-    </p>
-  </div>
-  <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
-  <button class="btn btn-s" id="cancel-btn">← Go Back</button>
-</div>
-  `;
-  
-  startClock();
-  
-  document.getElementById('confirm-btn')?.addEventListener('click', () => {
-    S.today.guesses = fullList;
-    saveS();
-    toast('Day started!', 'ok');
-    render();
-  });
-  
-  document.getElementById('cancel-btn')?.addEventListener('click', () => {
-    render();
-  });
-}
+    <div style="padding:16px">
+      <div class="card">
+        <div class="card-lbl">Confirm These Guesses</div>
+        <div class="preview-card">
+          ${sorted.map(g => `
+            <div class="row">
+              <div class="row-name">${g.name}</div>
+              ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            </div>`).join('')}
+        </div>
+        <p class="mono dim" style="font-size:.7rem;margin-top:10px">
+          ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
+          ${newPlayers.length > 0 ? `<br><span style="color:var(--green)">+ ${newPlayers.length} new player(s) will be added to the roster</span>` : ''}
+        </p>
+      </div>
+      <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
+      <button class="btn btn-s" id="cancel-btn">← Go Back</button>
+    </div>
+      `;
+      
+      startClock();
+      
+      document.getElementById('confirm-btn')?.addEventListener('click', () => {
+        // 3. Automatically add new players to the roster and initialize their scores
+        newPlayers.forEach(name => {
+          S.playerRoster.push({ name: name });
+          S.scores[name] = 0;
+        });
+
+        S.today.guesses = fullList;
+        saveS();
+        toast('Day started!', 'ok');
+        render();
+      });
+      
+      document.getElementById('cancel-btn')?.addEventListener('click', () => {
+        render();
+      });
+    }
 
 function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
@@ -662,21 +644,13 @@ function bindMain() {
   document.getElementById('export-btn')?.addEventListener('click', exportCSV);
   document.getElementById('reset-btn')?.addEventListener('click',()=>{
     if(confirm('Reset the entire game for everyone? This cannot be undone.')){
-      S={setup:false,playerRoster:[],scores:{},days:[],today:null};
+      S={playerRoster:[],scores:{},days:[],today:null};
       saveS(); render();
     }
   });
 }
 
 // ── Actions ───────────────────────────────────────────────────────
-function addPlayer() {
-  const inp=document.getElementById('pname'); const name=inp.value.trim(); if(!name) return;
-  if(S.playerRoster.find(p=>p.name.toLowerCase()===name.toLowerCase())){toast('Player already exists','err');return;}
-  S.playerRoster.push({name}); S.scores[name]=0;
-  inp.value=''; saveS(); render(); document.getElementById('pname')?.focus();
-}
-function removePlayer(name) { S.playerRoster=S.playerRoster.filter(p=>p.name!==name); delete S.scores[name]; saveS(); render(); }
-function finishSetup() { if(S.playerRoster.length<2) return; S.setup=true; saveS(); render(); }
 
 function startDay() {
   if(S.today&&S.today.wrapTime){
@@ -740,7 +714,7 @@ onSnapshot(STATE_REF, (snap) => {
   } else {
     // Document doesn't exist yet — game hasn't been set up
     // FIX: Changed 'players' to 'playerRoster'
-    S = { setup: false, playerRoster: [], scores: {}, days: [], today: null };
+    S = { playerRoster: [], scores: {}, days: [], today: null };
   }
   render();
 
