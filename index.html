@@ -642,6 +642,7 @@ function bindMain() {
   document.querySelectorAll('.js-guess').forEach(btn=>btn.addEventListener('click',()=>submitGuess(btn.dataset.name)));
   document.getElementById('wrap-btn')?.addEventListener('click', submitWrap);
   document.getElementById('export-btn')?.addEventListener('click', exportCSV);
+  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
   document.getElementById('reset-btn')?.addEventListener('click',()=>{
     if(confirm('Reset the entire game for everyone? This cannot be undone.')){
       S={playerRoster:[],scores:{},days:[],today:null};
