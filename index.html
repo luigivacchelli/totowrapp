@@ -731,9 +731,16 @@ onSnapshot(STATE_REF, (snap) => {
   if(_writing) return; // skip echo-back from our own write
   if(snap.exists()) {
     S = snap.data();
+    
+    // MIGRATION CHECK: Fall back to 'players' if 'playerRoster' is missing
+    if (!S.playerRoster) {
+      S.playerRoster = S.players || [];
+    }
+    
   } else {
     // Document doesn't exist yet — game hasn't been set up
-    S = { setup: false, players: [], scores: {}, days: [], today: null };
+    // FIX: Changed 'players' to 'playerRoster'
+    S = { setup: false, playerRoster: [], scores: {}, days: [], today: null };
   }
   render();
 
