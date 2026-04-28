@@ -207,11 +207,31 @@ function sortedGuesses(guesses) {
   const missing = guesses.filter(g => !g.time);
   return [...withTime, ...missing];
 }
-function boundaries(guesses) {
-  const s=sortedGuesses(guesses);
-  return s.slice(0,-1).map((g,i)=>{ const t1=toSec(s[i].time),t2=toSec(s[i+1].time),mid=midSec(t1,t2); return {nameA:s[i].name,nameB:s[i+1].name,sec:mid,str:secToHMS(mid)}; });
-}
-function eliminated(guesses,curSec) { const s=sortedGuesses(guesses),b=boundaries(guesses),out=new Set(); b.forEach((bd,i)=>{ if(curSec>bd.sec) out.add(s[i].name); }); return out; }
+    function boundaries(guesses) {
+      // Only calculate boundaries for players who actually have a time
+      const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+      
+      return valid.slice(0,-1).map((g,i) => {
+        const t1 = toSec(valid[i].time);
+        const t2 = toSec(valid[i+1].time);
+        const mid = midSec(t1,t2);
+        
+        return { nameA: valid[i].name, nameB: valid[i+1].name, sec: mid, str: secToHMS(mid) };
+      });
+    }
+
+    function eliminated(guesses, curSec) {
+      // Only eliminate players who actually have a time
+      const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+      const b = boundaries(guesses);
+      const out = new Set();
+      
+      b.forEach((bd,i) => {
+        if (curSec > bd.sec) out.add(valid[i].name);
+      });
+      
+      return out;
+    }
 function calcWinner(guesses, wrapHHMM) {
   const wrapSec = toSec(wrapHHMM);
   const validGuesses = guesses.filter(g => g.time);
