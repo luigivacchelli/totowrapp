@@ -75,11 +75,9 @@ body::before {
 }
 
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; }
-.hdr-right { text-align: right; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
+.hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
 .hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
-
-/* New Brand Class */
-.hdr-toto { flex: 2; text-align: center; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); font-weight: bold; white-space: nowrap; }
+.hdr-toto { font-family: 'Alte Haas Grotesk', sans-serif; flex: 2; text-align: center; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--accent); font-weight: bold; white-space: nowrap; }
 .hdr-toto span { font-weight: normal; color: var(--dim); font-size: 0.55rem; }
 
 .hdr-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; color: var(--accent); letter-spacing: .05em; }
@@ -353,7 +351,7 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}</div>
-  <div class="hdr-toto">TonnoWrap <span>powered by TotoWrap®️</span></div>
+  <div class="hdr-toto">TonnoWrap powered by TotoWrap®️</span></div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${dotClass}" id="sync-dot"></span>
@@ -450,7 +448,7 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}</div>
-  <div class="hdr-toto">TonnoWrap <span>powered by TotoWrap®️</span></div>
+  <div class="hdr-toto">TonnoWrap powered by TotoWrap®️</span></div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
@@ -614,7 +612,7 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays} Preview</div>
-  <div class="hdr-toto">TonnoWrap <span>powered by TotoWrap®️</span></div>
+  <div class="hdr-toto">TonnoWrap powered by TotoWrap®️</span></div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot live" id="sync-dot"></span>
