@@ -539,8 +539,20 @@ ${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="r
 }
 
 function renderSettings() {
-  return `<div class="card"><div class="card-lbl">Player Roster</div>
-${S.playerRoster.map(p=>`<div class="row"><div class="row-name">${p.name}</div><div class="mono dim">${S.scores[p.name]||0} pts</div></div>`).join('')}
+  return `<div class="card"><div class="card-lbl">Player Roster — Editable</div>
+${S.playerRoster.map((p, idx)=>`
+  <div class="row" style="flex-wrap:wrap;align-items:flex-start;padding:12px 0;">
+    <div style="flex:1;min-width:120px;">
+      <input type="text" value="${p.name}" id="name-${idx}" 
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Sans',sans-serif;">
+    </div>
+    <div style="width:100px;margin-left:8px;">
+      <input type="number" value="${S.scores[p.name]||0}" id="pts-${idx}" 
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Mono',monospace;text-align:right;">
+    </div>
+    <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${idx})">Save</button>
+    <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${idx})">×</button>
+  </div>`).join('')}
 </div>
 <div class="card"><div class="card-lbl">Danger Zone</div>
 <p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
@@ -636,6 +648,92 @@ function renderPlayerWaiting() {
         render();
       });
     }
+
+
+function savePlayer(idx) {
+  const nameInput = document.getElementById(`name-${idx}`);
+  const ptsInput = document.getElementById(`pts-${idx}`);
+  
+  if (!nameInput || !ptsInput) return;
+  
+  const oldName = S.playerRoster[idx].name;
+  const newName = nameInput.value.trim();
+  const newPoints = parseInt(ptsInput.value) || 0;
+  
+  if (!newName) {
+    toast('Name cannot be empty', 'err');
+    return;
+  }
+  
+  // Check for duplicate names (excluding current player)
+  const duplicate = S.playerRoster.find((p, i) => 
+    i !== idx && p.name.toLowerCase() === newName.toLowerCase()
+  );
+  if (duplicate) {
+    toast('Player name already exists', 'err');
+    return;
+  }
+  
+  // Update name if changed
+  if (oldName !== newName) {
+    // Update in roster
+    S.playerRoster[idx].name = newName;
+    
+    // Update in scores (move old score to new name)
+    S.scores[newName] = S.scores[oldName] || 0;
+    delete S.scores[oldName];
+    
+    // Update in all historical days
+    S.days.forEach(day => {
+      day.guesses.forEach(g => {
+        if (g.name === oldName) g.name = newName;
+      });
+      if (day.winner === oldName) day.winner = newName;
+    });
+    
+    // Update in today's game if exists
+    if (S.today && S.today.guesses) {
+      S.today.guesses.forEach(g => {
+        if (g.name === oldName) g.name = newName;
+      });
+      if (S.today.winner === oldName) S.today.winner = newName;
+    }
+  }
+  
+  // Update points
+  S.scores[newName] = newPoints;
+  
+  saveS();
+  toast('Player updated!', 'ok');
+  render();
+}
+
+function deletePlayer(idx) {
+  const player = S.playerRoster[idx];
+  if (!confirm(`Delete ${player.name}? This will remove them from all games.`)) return;
+  
+  const name = player.name;
+  
+  // Remove from roster
+  S.playerRoster.splice(idx, 1);
+  
+  // Remove from scores
+  delete S.scores[name];
+  
+  // Remove from historical days
+  S.days.forEach(day => {
+    day.guesses = day.guesses.filter(g => g.name !== name);
+  });
+  
+  // Remove from today's game
+  if (S.today && S.today.guesses) {
+    S.today.guesses = S.today.guesses.filter(g => g.name !== name);
+  }
+  
+  saveS();
+  toast('Player deleted', 'ok');
+  render();
+}
 
 function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
