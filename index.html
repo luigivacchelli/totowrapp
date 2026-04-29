@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TotoWrap</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
 /* Custom Font Declaration */
 @font-face {
@@ -16,10 +17,10 @@
 }
 
 :root {
-  --bg:      #263759;
-  --bg2:     #3a4b6d;
-  --bg3:     #31405d;
-  --bg4:     #2c3954;
+  --bg:      #263759; /* Main Color */
+  --bg2:     #3a4b6d; /* Updated from Green */
+  --bg3:     #31405d; /* Updated from Green */
+  --bg4:     #2c3954; /* Updated from Green */
   --border:  #3d5433;
   --text:    #eec763;
   --dim:     #b8c9a8;
@@ -28,16 +29,9 @@
   --red:     #d96060;
   --green:   #8fdf6a;
   --radius:  10px;
-  /* Global Font Variable */
-  --font-main: 'Alte Haas Grotesk', sans-serif;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 html, body { height: 100%; }
 
@@ -48,7 +42,8 @@ body {
   background-attachment: fixed;
   background-position: center;
   color: var(--text);
-  font-family: var(--font-main);
+  /* Primary font updated to Alte Haas Grotesk */
+  font-family: 'Alte Haas Grotesk', 'DM Sans', sans-serif;
   font-size: 15px;
   line-height: 1.4;
   overscroll-behavior: none;
@@ -67,8 +62,7 @@ body::before {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: blur(8px);
-  opacity: 0.2;
+  filter: blur(4px);
   z-index: 0;
   pointer-events: none;
 }
@@ -84,88 +78,91 @@ body::before {
 
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; }
 .hdr-right { text-align: right; display: flex; align-items: center; gap: 8px; }
-.hdr-day { font-family: var(--font-main); font-weight: bold; font-size: 2rem; color: var(--accent); letter-spacing: .02em; }
-.hdr-clock { font-family: var(--font-main); font-size: .95rem; color: var(--accent); letter-spacing: .05em; }
-
+.hdr-day { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--accent); letter-spacing: .02em; }
+.hdr-clock { font-family: 'DM Mono', monospace; font-size: .9rem; color: var(--accent); letter-spacing: .05em; }
 .nav { position: sticky; top: 66px; z-index: 199; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; }
-.nav-btn { flex: 1; padding: 11px 4px; background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--font-main); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); cursor: pointer; transition: color .2s, border-color .2s; }
+.nav-btn { flex: 1; padding: 11px 4px; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'DM Mono', monospace; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); cursor: pointer; transition: color .2s, border-color .2s; }
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
-
 .sec { padding: 16px; display: none; }
 .sec.on { display: block; }
 
 .preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
-.card-lbl { font-family: var(--font-main); font-size: .65rem; font-weight: bold; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
-
+.card-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
 .row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
 .row:last-child { border-bottom: none; }
 .row-name { flex: 1; font-weight: 500; }
-.row-time { font-family: var(--font-main); font-size: .9rem; color: var(--accent); }
-.row-pts { font-family: var(--font-main); font-weight: bold; font-size: 1.25rem; min-width: 28px; text-align: right; }
-
-.badge { font-family: var(--font-main); font-size: .65rem; font-weight: bold; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+.row-time { font-family: 'DM Mono', monospace; font-size: .88rem; color: var(--accent); }
+.row-pts { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; min-width: 28px; text-align: right; }
+.badge { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
-.b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .6rem; font-style: italic; }
-
+.b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
 .inp-wrap { margin-bottom: 12px; }
-.inp-lbl { display: block; font-family: var(--font-main); font-size: .65rem; font-weight: bold; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-
-input[type=text], input[type=time], input[type=number], textarea {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 10px 14px;
-  color: var(--text);
-  font-family: var(--font-main);
-  font-size: .95rem;
-  outline: none;
-  transition: border-color .2s;
-}
-textarea { resize: vertical; min-height: 140px; line-height: 1.6; }
+.inp-lbl { display: block; font-family: 'DM Mono', monospace; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+input[type=text], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: .9rem; outline: none; transition: border-color .2s; }
+textarea { resize: vertical; min-height: 140px; font-size: .85rem; line-height: 1.6; }
 input:focus, textarea:focus { border-color: var(--accent); }
-
-.btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 7px; font-family: var(--font-main); font-weight: bold; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .15s, opacity .15s; }
+input::placeholder, textarea::placeholder { color: var(--dim); }
+.flex-row { display: flex; gap: 8px; }
+.flex-row input { flex: 1; }
+.btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 7px; font-family: 'DM Mono', monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .15s, opacity .15s; }
 .btn + .btn { margin-top: 8px; }
-.btn-p { background: var(--accent); color: #000; }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn-p { background: var(--accent); color: #000; font-weight: 500; }
+.btn-p:hover:not(:disabled) { background: var(--accent2); }
 .btn-s { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+.btn-s:hover { background: var(--bg4); }
 .btn-d { background: rgba(217,85,85,.12); color: var(--red); border: 1px solid rgba(217,85,85,.25); }
-
-.big-clock { font-family: var(--font-main); font-weight: bold; font-size: 3.8rem; letter-spacing: .02em; color: var(--accent); text-align: center; line-height: 1; }
-.big-clock-lbl { font-family: var(--font-main); font-size: .65rem; font-weight: bold; letter-spacing: .15em; text-transform: uppercase; color: var(--dim); text-align: center; margin-top: 4px; }
-
+.btn-sm { width: auto; padding: 8px 14px; font-size: .65rem; }
+.big-clock { font-family: 'Bebas Neue', sans-serif; font-size: 3.8rem; letter-spacing: .04em; color: var(--accent); text-align: center; line-height: 1; }
+.big-clock-lbl { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); text-align: center; margin-top: 4px; }
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
-.winner-sub { font-family: var(--font-main); font-size: .65rem; font-weight: bold; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-.winner-name { font-family: var(--font-main); font-weight: bold; font-size: 2.8rem; color: var(--accent); line-height: 1; }
-
-.lb-rank { font-family: var(--font-main); font-weight: bold; font-size: 1.8rem; min-width: 32px; color: var(--dim); }
+.winner-sub { font-family: 'DM Mono', monospace; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.winner-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
+.winner-pts { font-family: 'DM Mono', monospace; font-size: .7rem; color: var(--dim); margin-top: 4px; }
+.setup-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+.setup-logo { max-width: 260px; width: 85%; margin-bottom: 8px; }
+.setup-tag { font-family: 'DM Mono', monospace; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); margin-bottom: 36px; }
+.setup-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; width: 100%; max-width: 400px; }
+.setup-step { font-family: 'DM Mono', monospace; font-size: .6rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.setup-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; margin-bottom: 16px; }
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.tag { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-family: 'DM Mono', monospace; font-size: .72rem; display: flex; align-items: center; gap: 6px; }
+.tag-x { color: var(--red); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+.lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; min-width: 32px; color: var(--dim); }
 .lb-rank.first { color: var(--accent); }
-
-.day-chip { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: var(--font-main); font-size: .65rem; color: var(--dim); margin-bottom: 8px; }
-
-#toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: var(--font-main); font-size: .8rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
+.day-chip { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'DM Mono', monospace; font-size: .6rem; color: var(--dim); margin-bottom: 8px; }
+.day-footer { font-family: 'DM Mono', monospace; font-size: .67rem; color: var(--dim); margin-top: 8px; }
+.bnd-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: .72rem; }
+.bnd-row:last-child { border-bottom: none; }
+.bnd-range { color: var(--dim); font-size: .65rem; }
+#toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: 'DM Mono', monospace; font-size: .72rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-.loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
-.loading-txt { font-family: var(--font-main); font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--dim); }
-
-.sync-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); }
+#toast.ok  { border-color: var(--accent); color: var(--accent); }
+#toast.err { border-color: var(--red); color: var(--red); }
+.sync-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); transition: background .3s; }
 .sync-dot.live { background: var(--green); }
 .sync-dot.off { background: var(--red); }
+.mt8 { margin-top: 8px; } .mt12 { margin-top: 12px; } .mt16 { margin-top: 16px; }
+.dim { color: var(--dim); } .mono { font-family: 'DM Mono', monospace; font-size: .75rem; }
+.empty { text-align: center; padding: 44px 20px; font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--dim); letter-spacing: .1em; }
+.center { text-align: center; } .accent { color: var(--accent); } .red { color: var(--red); }
+.loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.loading-screen img { max-width: 200px; }
+.loading-txt { font-family: 'DM Mono', monospace; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
 </style>
 </head>
 <body>
 <div id="app">
   <div class="loading-screen">
-    <img src="imgs/tunacan.png" alt="TotoWrap" style="max-width: 200px;">
+    <img src="imgs/tunacan.png" alt="TotoWrap">
     <div class="loading-txt" style="text-align:center;line-height:2.2">
-      <span style="color:var(--accent);font-size:.8rem;">Wait for the admin to start today's game</span><br>
-      <span style="color:var(--accent);font-style:italic;opacity:.8">"At my signal, unleash hell"</span>
+      <span style="color:var(--accent);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase">Wait for the admin to start today's game</span><br>
+      <span style="color:var(--accent);font-style:italic;font-size:.7rem;opacity:.8">"At my signal, unleash hell"</span>
     </div>
   </div>
 </div>
@@ -173,8 +170,9 @@ input:focus, textarea:focus { border-color: var(--accent); }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+// ── Firebase config ──────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyDChGuB5CtWRD0u8j-GFzDOvqsGXdkDNFI",
   authDomain: "totowrapp.firebaseapp.com",
@@ -189,97 +187,140 @@ const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const STATE_REF = doc(db, "totowrap", "state");
 
-let S = { playerRoster: [], scores: {}, days: [], today: null };
+// ── State ────────────────────────────────────────────────────────
+let S = {
+  playerRoster: [],  // Fixed list of all players
+  scores: {},
+  days: [],
+  today: null
+};
+
 const IS_ADMIN = /[?&]admin/.test(location.search) || location.href.includes('?admin');
 let _tab = 'today';
 let _clockInterval = null;
 let _toastTO = null;
-let _writing = false;
+let _writing = false; // prevent echo-back loops
 
+// ── Save to Firestore ────────────────────────────────────────────
 async function saveS() {
   _writing = true;
-  try { await setDoc(STATE_REF, S); }
-  catch(e) { toast("Sync error", "err"); }
+  try {
+    await setDoc(STATE_REF, S);
+  } catch(e) {
+    console.error("Save error:", e);
+    toast("Sync error — check connection", "err");
+  }
   setTimeout(() => { _writing = false; }, 500);
 }
 
+// ── Time utils ───────────────────────────────────────────────────
 function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
 function pad(n) { return String(n).padStart(2,'0'); }
 function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
 function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-
+// ── Parse paste input ────────────────────────────────────────────
 function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   const guesses = [];
   for (const line of lines) {
     const match = line.match(/^(.+?)\s*-\s*(\d{2}:\d{2})$/);
-    if (match) guesses.push({ name: match[1].trim(), time: match[2] });
+    if (match) {
+      guesses.push({ name: match[1].trim(), time: match[2] });
+    }
   }
   return guesses;
 }
 
+// Build full guess list with missing players
 function buildFullGuessList(parsed) {
-  const result = [...parsed];
+  const result = [];
   const submitted = new Set(parsed.map(g => g.name));
-  S.playerRoster.forEach(p => { if (!submitted.has(p.name)) result.push({ name: p.name, time: null }); });
+  
+  // Add parsed guesses
+  parsed.forEach(g => result.push(g));
+  
+  // Add missing players
+  S.playerRoster.forEach(p => {
+    if (!submitted.has(p.name)) {
+      result.push({ name: p.name, time: null });
+    }
+  });
+  
   return result;
 }
 
+function midSec(a,b) { return Math.floor((a+b)/2); }
 function sortedGuesses(guesses) {
   const withTime = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
   const missing = guesses.filter(g => !g.time);
   return [...withTime, ...missing];
 }
+    function boundaries(guesses) {
+      // Only calculate boundaries for players who actually have a time
+      const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+      
+      return valid.slice(0,-1).map((g,i) => {
+        const t1 = toSec(valid[i].time);
+        const t2 = toSec(valid[i+1].time);
+        const mid = midSec(t1,t2);
+        
+        return { nameA: valid[i].name, nameB: valid[i+1].name, sec: mid, str: secToHMS(mid) };
+      });
+    }
 
-function boundaries(guesses) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  return valid.slice(0,-1).map((g,i) => {
-    const t1 = toSec(valid[i].time), t2 = toSec(valid[i+1].time);
-    const mid = Math.floor((t1+t2)/2);
-    return { sec: mid, str: secToHMS(mid) };
-  });
-}
-
-function eliminated(guesses, curSec) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  const b = boundaries(guesses);
-  const out = new Set();
-  b.forEach((bd,i) => { if (curSec > bd.sec) out.add(valid[i].name); });
-  return out;
-}
-
+    function eliminated(guesses, curSec) {
+      // Only eliminate players who actually have a time
+      const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+      const b = boundaries(guesses);
+      const out = new Set();
+      
+      b.forEach((bd,i) => {
+        if (curSec > bd.sec) out.add(valid[i].name);
+      });
+      
+      return out;
+    }
 function calcWinner(guesses, wrapHHMM) {
   const wrapSec = toSec(wrapHHMM);
-  const s = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+  const validGuesses = guesses.filter(g => g.time);
+  const s = validGuesses.sort((a,b) => toSec(a.time) - toSec(b.time));
   const b = boundaries(guesses);
+  
   let wi = 0;
   b.forEach((bd,i) => { if (wrapSec >= bd.sec) wi = i + 1; });
+  
   const winner = s[wi];
   const points = (wrapHHMM === winner.time.slice(0,5)) ? 3 : 1;
+  
+  // Check for ties (same winning time)
   const winners = s.filter(g => g.time === winner.time);
+  
   return { winner: winner.name, winners, points };
 }
 
+// ── Clock ────────────────────────────────────────────────────────
 function startClock() {
   if(_clockInterval) clearInterval(_clockInterval);
   _clockInterval = setInterval(tickClock, 1000);
   tickClock();
 }
-
 function tickClock() {
   const t=nowHMS();
   document.querySelectorAll('.js-clock').forEach(el=>el.textContent=t);
-  if(S.today && S.today.guesses.length && !S.today.wrapTime) {
-    const cur=nowSec(), out=eliminated(S.today.guesses,cur);
-    S.today.guesses.forEach(g=>{
-      const el=document.getElementById('st-'+g.name); if(!el) return;
-      if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
-      else{el.className='badge b-alive';el.textContent='ALIVE';}
-    });
-  }
+  refreshStatusBadges();
+}
+function refreshStatusBadges() {
+  if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
+  const cur=nowSec(), out=eliminated(S.today.guesses,cur);
+  S.today.guesses.forEach(g=>{
+    const el=document.getElementById('st-'+g.name); if(!el) return;
+    if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
+    else{el.className='badge b-alive';el.textContent='ALIVE';}
+  });
 }
 
+// ── Toast ─────────────────────────────────────────────────────────
 function toast(msg,type='') {
   const el=document.getElementById('toast');
   el.textContent=msg; el.className=`show ${type}`;
@@ -287,112 +328,560 @@ function toast(msg,type='') {
   _toastTO=setTimeout(()=>el.className='',3000);
 }
 
+// ── Render ────────────────────────────────────────────────────────
 function render() {
   const app=document.getElementById('app');
-  app.innerHTML = IS_ADMIN ? renderMain() : renderPlayerMain();
+  if(IS_ADMIN) {
+    // Bypassed setup check entirely
+    app.innerHTML=renderMain();
+    startClock();
+    bindMain();
+  } else {
+    renderPlayer(app);
+  }
+}
+
+function renderPlayer(app) {
+  // Bypassed setup check entirely - players always see the main view
+  app.innerHTML=renderPlayerMain();
   startClock();
-  IS_ADMIN ? bindMain() : bindPlayerNav();
+  bindPlayerNav();
 }
 
 function renderPlayerMain() {
   const dayNum = S.days.length + (S.today ? 1 : 0);
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+  
   return `
-    <div class="hdr">
-      <div class="hdr-day">Day ${dayNum || '—'}</div>
-      <div class="hdr-right"><div class="hdr-clock js-clock">--:--:--</div><span class="sync-dot ${S.today?.wrapTime?'off':'live'}"></span></div>
-    </div>
-    <nav class="nav">
-      ${['today', 'board', 'history'].map(t => `<button class="nav-btn ${_tab===t?'on':''}" data-tab="${t}">${t}</button>`).join('')}
-    </nav>
-    <div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
-    <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
-    <div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
-  `;
+<div class="hdr">
+  <div class="hdr-day">Day ${dayNum || '—'}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
+  </div>
+</div>
+<nav class="nav">
+  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
+  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
+  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
+</nav>
+<div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
+<div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
+<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
+`;
 }
 
 function renderPlayerToday() {
   const t = S.today;
-  if (!t) return '<div class="empty">No active game today</div>';
+  
+  // No active day
+  if (!t) {
+    const last = S.days.length ? S.days[S.days.length-1] : null;
+    return `
+      <div class="empty">No active game today</div>
+      ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
+    `;
+  }
+  
+  // Winner announced
   if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
+    return `
+  <div class="winner-banner">
+    <div class="winner-sub">🎬 Today's Winner</div>
+    <div class="winner-name">${t.winner}</div>
+    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+  </div>
+  <div class="card"><div class="card-lbl">Results</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+      </div>`).join('')}
+  </div>`;
+  }
+  
+  // Live game or collecting
+  const sg = sortedGuesses(t.guesses || []);
+  const hasValidGuesses = sg.some(g => g.time);
+  
+  if (!hasValidGuesses) {
+    return `
+  <div class="card">
+    <div class="card-lbl">Collecting Guesses</div>
+    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
+  </div>`;
+  }
+  
+  // Live status
+  const cur = nowSec();
+  const out = eliminated(t.guesses, cur);
+  const bnds = boundaries(t.guesses);
+  const withTime = sg.filter(g => g.time);
+  
+  return `
+  <div class="card">
+    <div class="big-clock js-clock">--:--:--</div>
+    <div class="big-clock-lbl">Live Time</div>
+  </div>
+  <div class="card"><div class="card-lbl">Player Status</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `
+          <div class="row-time">${g.time}</div>
+          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          </div>
+        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+      </div>`).join('')}
+  </div>
+  <div class="card"><div class="card-lbl">Territory Boundaries</div>
+    ${withTime.map((g,i) => {
+      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
+      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
+      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
+function bindPlayerNav() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _tab = btn.dataset.tab;
+      render();
+    });
+  });
+}
+
+const LOGO_DATA = "imgs/tunacan.png";
+
+function renderMain() {
+  const totalDays=S.days.length+(S.today?1:0);
+  return `
+<div class="hdr">
+  <div class="hdr-day">Day ${totalDays||'—'}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
+  </div>
+</div>
+<nav class="nav">
+  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
+  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
+  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
+  <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
+</nav>
+<div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
+<div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
+<div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
+<div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
+}
+
+function renderToday() {
+  const t = S.today;
+  
+  // No active day
+  if (!t) {
+    return `<div class="card">
+      <div class="card-lbl">Start New Day</div>
+      <button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button>
+    </div>`;
+  }
+  
+  // Wrap submitted
+  if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
     return `
       <div class="winner-banner">
         <div class="winner-sub">🎬 Today's Winner</div>
         <div class="winner-name">${t.winner}</div>
+        <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
       </div>
       <div class="card"><div class="card-lbl">Results</div>
-        ${sortedGuesses(t.guesses).map(g => `<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time||'--'}</div>${g.name===t.winner?`<div class="badge b-win">+${t.points}pt</div>`:''}</div>`).join('')}
-      </div>`;
+        ${sg.map(g => `
+          <div class="row">
+            <div class="row-name">${g.name}</div>
+            ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
+    `;
   }
-  const sg = sortedGuesses(t.guesses || []);
-  if (!sg.some(g => g.time)) return '<div class="empty">Waiting for guesses...</div>';
+  
+  // Guesses submitted, waiting for wrap
+  if (t.guesses && t.guesses.length > 0) {
+    const cur = nowSec();
+    const out = eliminated(t.guesses, cur);
+    const sg = sortedGuesses(t.guesses);
+    const bnds = boundaries(t.guesses);
+    const withTime = sg.filter(g => g.time);
+    
+    return `
+      <div class="card">
+        <div class="big-clock js-clock">--:--:--</div>
+        <div class="big-clock-lbl">Live Time</div>
+      </div>
+      <div class="card"><div class="card-lbl">Player Status</div>
+        ${sg.map(g => `
+          <div class="row">
+            <div class="row-name">${g.name}</div>
+            ${g.time ? `
+              <div class="row-time">${g.time}</div>
+              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+              </div>
+            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+          </div>`).join('')}
+      </div>
+      <div class="card"><div class="card-lbl">Territory Boundaries</div>
+        ${withTime.map((g,i) => {
+          const lo = i===0 ? '00:00:00' : bnds[i-1].str;
+          const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
+          return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="card-lbl">Enter Official Wrap Time</div>
+        <div class="inp-wrap">
+          <label class="inp-lbl">Wrap Time (HH:MM)</label>
+          <input type="time" id="wrap-inp">
+        </div>
+        <button class="btn btn-p" id="wrap-btn">Confirm Wrap ✓</button>
+      </div>
+    `;
+  }
+  
+  // Fresh day, paste guesses
   return `
-    <div class="card"><div class="big-clock js-clock">--:--:--</div><div class="big-clock-lbl">Live Time</div></div>
-    <div class="card"><div class="card-lbl">Player Status</div>
-      ${sg.map(g => `<div class="row"><div class="row-name">${g.name}</div>${g.time?`<div class="row-time">${g.time}</div><div class="badge" id="st-${g.name}">...</div>`:`<div class="badge b-missing">Missing</div>`}</div>`).join('')}
-    </div>`;
-}
-
-function renderMain() {
-  return `
-    <div class="hdr"><div class="hdr-day">Admin Panel</div><div class="hdr-right"><div class="hdr-clock js-clock">--:--:--</div></div></div>
-    <nav class="nav">${['today', 'board', 'settings'].map(t => `<button class="nav-btn ${_tab===t?'on':''}" data-tab="${t}">${t}</button>`).join('')}</nav>
-    <div class="sec ${_tab==='today'?'on':''}">${renderAdminToday()}</div>
-    <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
-    <div class="sec ${_tab==='settings'?'on':''}">${renderSettings()}</div>
+    <div class="card">
+      <div class="card-lbl">Paste Today's Guesses</div>
+      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line)</p>
+      <textarea id="paste-inp" placeholder="Luigi - 18:30
+Daniela - 19:15
+Marco - 17:45"></textarea>
+      <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
+    </div>
   `;
-}
-
-function renderAdminToday() {
-  const t = S.today;
-  if (!t) return '<button class="btn btn-p" id="new-day-btn">Start Today</button>';
-  if (t.wrapTime) return '<button class="btn btn-p" id="new-day-btn">Start Next Day</button>';
-  if (t.guesses.length > 0) {
-    return `<div class="card"><div class="card-lbl">Wrap Time</div><input type="time" id="wrap-inp"><button class="btn btn-p mt12" id="wrap-btn">Confirm Wrap</button></div>`;
-  }
-  return `<div class="card"><div class="card-lbl">Paste Guesses</div><textarea id="paste-inp"></textarea><button class="btn btn-p mt12" id="parse-btn">Confirm Guesses</button></div>`;
 }
 
 function renderBoard() {
   const pl=[...S.playerRoster].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0));
-  return `<div class="card"><div class="card-lbl">Standings</div>${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts">${S.scores[p.name]||0}</div></div>`).join('')}</div>`;
+  if(!pl.length) return '<div class="empty">No players yet</div>';
+  return `<div class="card"><div class="card-lbl">Standings</div>
+${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
+</div><button class="btn btn-s" id="export-btn">Export CSV</button>`;
 }
 
 function renderHistory() {
-  return S.days.length ? S.days.map(d => `<div class="card">${d.date}: ${d.winner} (+${d.points})</div>`).join('') : '<div class="empty">No history</div>';
+  let all=[...S.days];
+  if(S.today&&S.today.wrapTime) all.push(S.today);
+  if(!all.length) return '<div class="empty">No completed days yet</div>';
+  return [...all].reverse().map((d,i)=>{
+    const num=all.length-i, sg=sortedGuesses(d.guesses);
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div class="day-chip">Day ${num}</div><div class="mono dim">${d.date}</div></div>
+${sg.map(g=>`<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time}</div><div class="badge ${g.name===d.winner?'b-win':'b-out'}">${g.name===d.winner?`+${d.points}pt`:'—'}</div></div>`).join('')}
+<div class="day-footer">Wrap: <span class="accent">${d.wrapTime}</span> · Winner: <span class="accent">${d.winner}</span></div></div>`;
+  }).join('');
 }
 
 function renderSettings() {
-  return `<div class="card"><div class="card-lbl">Players</div>${S.playerRoster.map((p,i)=>`<div class="row"><input type="text" value="${p.name}" onchange="updatePlayer(${i}, this.value)"><input type="number" value="${S.scores[p.name]||0}" style="width:60px" onchange="updateScore('${p.name}', this.value)"></div>`).join('')}</div><button class="btn btn-d" onclick="resetGame()">Reset All Data</button>`;
+  return `<div class="card"><div class="card-lbl">Player Roster — Editable</div>
+${S.playerRoster.map((p, idx)=>`
+  <div class="row" style="flex-wrap:wrap;align-items:flex-start;padding:12px 0;">
+    <div style="flex:1;min-width:120px;">
+      <input type="text" value="${p.name}" id="name-${idx}"
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Sans',sans-serif;">
+    </div>
+    <div style="width:100px;margin-left:8px;">
+      <input type="number" value="${S.scores[p.name]||0}" id="pts-${idx}"
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Mono',monospace;text-align:right;">
+    </div>
+    <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${idx})">Save</button>
+    <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${idx})">×</button>
+  </div>`).join('')}
+</div>
+<div class="card"><div class="card-lbl">Danger Zone</div>
+<p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
+<button class="btn btn-d" id="reset-btn">Reset Entire Game</button>
+</div>`;
 }
 
-function bindPlayerNav() { document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => { _tab = b.dataset.tab; render(); }); }
+// ── Player Views ──────────────────────────────────────────────────
+
+function renderPlayerWaiting() {
+  return `
+<div class="loading-screen">
+  <img src="${LOGO_DATA}" alt="TotoWrap" style="max-width:200px;margin-bottom:16px;">
+  <div class="loading-txt" style="text-align:center;line-height:2.2">
+    <span style="color:var(--accent);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase">Waiting for Setup...</span>
+  </div>
+</div>`;
+}
+
+
+    
+// ── Event binding ─────────────────────────────────────────────────
+
+    function showPreview() {
+      const inp = document.getElementById('paste-inp');
+      const text = inp?.value || '';
+      if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
+
+      const parsed = parsePaste(text);
+      if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
+
+      // 1. Identify new players from the pasted list
+      const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
+      const newPlayers = [];
+      parsed.forEach(g => {
+        if (!existingNames.has(g.name.toLowerCase())) {
+          newPlayers.push(g.name);
+          existingNames.add(g.name.toLowerCase()); // prevent duplicates in the same paste
+        }
+      });
+
+      const fullList = buildFullGuessList(parsed);
+      const sorted = sortedGuesses(fullList);
+
+      // 2. Show preview
+      const totalDays = S.days.length + (S.today ? 1 : 0);
+      const app = document.getElementById('app');
+      
+      app.innerHTML = `
+    <div class="hdr">
+      <div class="hdr-day">Day ${totalDays} Preview</div>
+      <div class="hdr-right">
+        <div class="hdr-clock js-clock">--:--:--</div>
+        <span class="sync-dot live" id="sync-dot"></span>
+      </div>
+    </div>
+    <div style="padding:16px">
+      <div class="card">
+        <div class="card-lbl">Confirm These Guesses</div>
+        <div class="preview-card">
+          ${sorted.map(g => `
+            <div class="row">
+              <div class="row-name">${g.name}</div>
+              ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            </div>`).join('')}
+        </div>
+        <p class="mono dim" style="font-size:.7rem;margin-top:10px">
+          ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
+          ${newPlayers.length > 0 ? `<br><span style="color:var(--green)">+ ${newPlayers.length} new player(s) will be added to the roster</span>` : ''}
+        </p>
+      </div>
+      <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
+      <button class="btn btn-s" id="cancel-btn">← Go Back</button>
+    </div>
+      `;
+      
+      startClock();
+      
+      document.getElementById('confirm-btn')?.addEventListener('click', () => {
+        // 3. Automatically add new players to the roster and initialize their scores
+        newPlayers.forEach(name => {
+          S.playerRoster.push({ name: name });
+          S.scores[name] = 0;
+        });
+
+        S.today.guesses = fullList;
+        saveS();
+        toast('Day started!', 'ok');
+        render();
+      });
+      
+      document.getElementById('cancel-btn')?.addEventListener('click', () => {
+        render();
+      });
+    }
+
+
+function savePlayer(idx) {
+  const nameInput = document.getElementById(`name-${idx}`);
+  const ptsInput = document.getElementById(`pts-${idx}`);
+  
+  if (!nameInput || !ptsInput) return;
+  
+  const oldName = S.playerRoster[idx].name;
+  const newName = nameInput.value.trim();
+  const newPoints = parseInt(ptsInput.value) || 0;
+  
+  if (!newName) {
+    toast('Name cannot be empty', 'err');
+    return;
+  }
+  
+  // Check for duplicate names (excluding current player)
+  const duplicate = S.playerRoster.find((p, i) =>
+    i !== idx && p.name.toLowerCase() === newName.toLowerCase()
+  );
+  if (duplicate) {
+    toast('Player name already exists', 'err');
+    return;
+  }
+  
+  // Update name if changed
+  if (oldName !== newName) {
+    // Update in roster
+    S.playerRoster[idx].name = newName;
+    
+    // Update in scores (move old score to new name)
+    S.scores[newName] = S.scores[oldName] || 0;
+    delete S.scores[oldName];
+    
+    // Update in all historical days
+    S.days.forEach(day => {
+      day.guesses.forEach(g => {
+        if (g.name === oldName) g.name = newName;
+      });
+      if (day.winner === oldName) day.winner = newName;
+    });
+    
+    // Update in today's game if exists
+    if (S.today && S.today.guesses) {
+      S.today.guesses.forEach(g => {
+        if (g.name === oldName) g.name = newName;
+      });
+      if (S.today.winner === oldName) S.today.winner = newName;
+    }
+  }
+  
+  // Update points
+  S.scores[newName] = newPoints;
+  
+  saveS();
+  toast('Player updated!', 'ok');
+  render();
+}
+
+function deletePlayer(idx) {
+  const player = S.playerRoster[idx];
+  if (!confirm(`Delete ${player.name}? This will remove them from all games.`)) return;
+  
+  const name = player.name;
+  
+  // Remove from roster
+  S.playerRoster.splice(idx, 1);
+  
+  // Remove from scores
+  delete S.scores[name];
+  
+  // Remove from historical days
+  S.days.forEach(day => {
+    day.guesses = day.guesses.filter(g => g.name !== name);
+  });
+  
+  // Remove from today's game
+  if (S.today && S.today.guesses) {
+    S.today.guesses = S.today.guesses.filter(g => g.name !== name);
+  }
+  
+  saveS();
+  toast('Player deleted', 'ok');
+  render();
+}
+
 function bindMain() {
-  bindPlayerNav();
-  document.getElementById('new-day-btn')?.addEventListener('click', () => { S.today={date:new Date().toLocaleDateString(), guesses:[], wrapTime:null}; saveS(); });
-  document.getElementById('parse-btn')?.addEventListener('click', () => {
-    const parsed = parsePaste(document.getElementById('paste-inp').value);
-    parsed.forEach(g => { if(!S.playerRoster.find(p=>p.name===g.name)) S.playerRoster.push({name:g.name}); });
-    S.today.guesses = buildFullGuessList(parsed);
-    saveS();
-  });
-  document.getElementById('wrap-btn')?.addEventListener('click', () => {
-    const t = document.getElementById('wrap-inp').value;
-    const res = calcWinner(S.today.guesses, t);
-    S.today.wrapTime = t; S.today.winner = res.winner; S.today.points = res.points;
-    res.winners.forEach(w => S.scores[w.name] = (S.scores[w.name]||0) + res.points);
-    S.days.push({...S.today});
-    saveS();
+  document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
+  document.getElementById('new-day-btn')?.addEventListener('click', startDay);
+  document.querySelectorAll('.js-guess').forEach(btn=>btn.addEventListener('click',()=>submitGuess(btn.dataset.name)));
+  document.getElementById('wrap-btn')?.addEventListener('click', submitWrap);
+  document.getElementById('export-btn')?.addEventListener('click', exportCSV);
+  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
+  document.getElementById('reset-btn')?.addEventListener('click',()=>{
+    if(confirm('Reset the entire game for everyone? This cannot be undone.')){
+      S={playerRoster:[],scores:{},days:[],today:null};
+      saveS(); render();
+    }
   });
 }
 
-window.updatePlayer = (i, val) => { S.playerRoster[i].name = val; saveS(); };
-window.updateScore = (name, val) => { S.scores[name] = parseInt(val); saveS(); };
-window.resetGame = () => { if(confirm('Reset?')) { S={playerRoster:[], scores:{}, days:[], today:null}; saveS(); } };
+// ── Actions ───────────────────────────────────────────────────────
+
+function startDay() {
+  if(S.today&&S.today.wrapTime){
+    const alreadySaved=S.days.find(d=>d.date===S.today.date&&d.wrapTime===S.today.wrapTime);
+    if(!alreadySaved) S.days.push({...S.today});
+  }
+  S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null};
+  saveS(); render();
+}
+
+
+
+function submitWrap() {
+  const inp = document.getElementById('wrap-inp');
+  if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
+  
+  const wrapHHMM = inp.value;
+  const validGuesses = S.today.guesses.filter(g => g.time);
+  
+  if (!validGuesses.length) { toast('No valid guesses to score', 'err'); return; }
+  
+  const { winner, winners, points } = calcWinner(S.today.guesses, wrapHHMM);
+  
+  S.today.wrapTime = wrapHHMM;
+  S.today.winner = winner;
+  S.today.points = points;
+  
+  // Award points to all tied winners
+  winners.forEach(w => {
+    S.scores[w.name] = (S.scores[w.name] || 0) + points;
+  });
+  
+  const winnerNames = winners.map(w => w.name).join(' & ');
+  saveS();
+  toast(`${winnerNames} win${winners.length>1?'':'s'} +${points} pt! 🎬`, 'ok');
+  render();
+}
+
+function exportCSV() {
+  const rows=[['Rank','Player','Points']];
+  [...S.playerRoster].sort((a,b)=>(S.scores[b.name]||0)-(S.scores[a.name]||0)).forEach((p,i)=>rows.push([i+1,p.name,S.scores[p.name]||0]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='totowrap_scores.csv'; a.click();
+}
+
+// ── Real-time Firestore listener ──────────────────────────────────
+
+// For players: render immediately so they never see a stuck loading screen
+if(!IS_ADMIN) render();
 
 onSnapshot(STATE_REF, (snap) => {
-  if(_writing) return;
-  if(snap.exists()) S = snap.data();
+  if(_writing) return; // skip echo-back from our own write
+  if(snap.exists()) {
+    S = snap.data();
+    
+    // MIGRATION CHECK: Fall back to 'players' if 'playerRoster' is missing
+    if (!S.playerRoster) {
+      S.playerRoster = S.players || [];
+    }
+    
+  } else {
+    // Document doesn't exist yet — game hasn't been set up
+    // FIX: Changed 'players' to 'playerRoster'
+    S = { playerRoster: [], scores: {}, days: [], today: null };
+  }
   render();
+
+  // Update sync dot
+  const dot = document.getElementById('sync-dot');
+  if(dot) { dot.classList.add('live'); dot.title = 'Live sync'; }
+
+}, (err) => {
+  console.error("Firestore error:", err);
+  const dot = document.getElementById('sync-dot');
+  if(dot) { dot.classList.remove('live'); dot.style.background = 'var(--red)'; dot.title = 'Sync error'; }
+  // For players: show connection error instead of stuck loader
+  if(!IS_ADMIN) {
+    const app = document.getElementById('app');
+    if(app.querySelector('.loading-screen')) {
+      app.innerHTML = renderPlayerWaiting();
+    }
+  }
 });
 </script>
 </body>
