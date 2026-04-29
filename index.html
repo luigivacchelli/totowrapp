@@ -540,7 +540,7 @@ function renderBoard() {
   if(!pl.length) return '<div class="empty">No players yet</div>';
   return `<div class="card"><div class="card-lbl">Standings</div>
 ${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
-</div><button class="btn btn-s" id="export-btn">Export CSV</button>`;
+</div>`;
 }
 
 function renderHistory() {
@@ -699,18 +699,10 @@ function bindMain() {
     toast(`${winners.map(w=>w.name).join(' & ')} win +${points} pt!`, 'ok');
     render();
   });
-  document.getElementById('export-btn')?.addEventListener('click', exportCSV);
   document.getElementById('parse-btn')?.addEventListener('click', showPreview);
   document.getElementById('reset-btn')?.addEventListener('click',()=>{
     if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
   });
-}
-
-function exportCSV() {
-  const rows=[['Rank','Player','Points']];
-  getSortedPlayerRoster().forEach((p,i)=>rows.push([i+1,p.name,S.scores[p.name]||0]));
-  const csv=rows.map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='totowrap_scores.csv'; a.click();
 }
 
 if(!IS_ADMIN) render();
