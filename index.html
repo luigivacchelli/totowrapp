@@ -70,19 +70,43 @@ body::before {
   z-index: 1;
   max-width: 480px;
   margin: 0 auto;
-  padding-bottom: 90px;
+  padding-bottom: 120px; /* Increased to make room for new footer */
   min-height: 100vh;
 }
 
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; }
-.hdr-right { text-align: right; display: flex; align-items: center; gap: 8px; }
-.hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2rem; color: var(--accent); letter-spacing: .02em; }
+.hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
+.hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
+
+/* New Footer Styling */
+.ftr-toto {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 15px;
+  text-align: center;
+  z-index: 200;
+  font-family: 'Alte Haas Grotesk', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.ftr-toto span { font-weight: normal; color: var(--dim); font-size: 0.6rem; }
+
 .hdr-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; color: var(--accent); letter-spacing: .05em; }
 .nav { position: sticky; top: 66px; z-index: 199; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; }
 .nav-btn { flex: 1; padding: 11px 4px; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); cursor: pointer; transition: color .2s, border-color .2s; }
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
 .sec { padding: 16px; display: none; }
 .sec.on { display: block; }
+
+.powered-by { text-align: center; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); margin: 12px 0 -4px 0; opacity: 0.8; }
+
 .preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
 .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
 .card-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
@@ -137,7 +161,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .bnd-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; }
 .bnd-row:last-child { border-bottom: none; }
 .bnd-range { color: var(--dim); font-size: .65rem; }
-#toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
+#toast { position: fixed; bottom: 125px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.ok  { border-color: var(--accent); color: var(--accent); }
 #toast.err { border-color: var(--red); color: var(--red); }
@@ -164,6 +188,10 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   </div>
 </div>
 <div id="toast"></div>
+
+<footer class="ftr-toto">
+    <span> TonnoWrap powered by TotoWrap </span>
+</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -355,6 +383,7 @@ function renderPlayerMain() {
   <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
 </nav>
+
 <div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
 <div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
@@ -451,6 +480,7 @@ function renderMain() {
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
   <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
 </nav>
+
 <div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
 <div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
