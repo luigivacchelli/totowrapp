@@ -294,13 +294,120 @@ function render() {
 
 function renderPlayer(app) {
   // Bypassed setup check entirely
-  if(!S.today) {
-    app.innerHTML=renderPlayerIdle();
-    startClock();
+  if(!S.setup) {
+    app.innerHTML=renderPlayerWaiting();
     return;
   }
-  app.innerHTML=renderPlayerDay();
+  app.innerHTML=renderPlayerMain();
   startClock();
+  bindPlayerNav();
+}
+
+function renderPlayerMain() {
+  const dayNum = S.days.length + (S.today ? 1 : 0);
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+  
+  return `
+<div class="hdr">
+  <div class="hdr-day">Day ${dayNum || '—'}</div>
+  <div class="hdr-right">
+    <div class="hdr-clock js-clock">--:--:--</div>
+    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
+  </div>
+</div>
+<nav class="nav">
+  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
+  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
+  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
+</nav>
+<div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
+<div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
+<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
+`;
+}
+
+function renderPlayerToday() {
+  const t = S.today;
+  
+  // No active day
+  if (!t) {
+    const last = S.days.length ? S.days[S.days.length-1] : null;
+    return `
+      <div class="empty">No active game today</div>
+      ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
+    `;
+  }
+  
+  // Winner announced
+  if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
+    return `
+  <div class="winner-banner">
+    <div class="winner-sub">🎬 Today's Winner</div>
+    <div class="winner-name">${t.winner}</div>
+    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+  </div>
+  <div class="card"><div class="card-lbl">Results</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+      </div>`).join('')}
+  </div>`;
+  }
+  
+  // Live game or collecting
+  const sg = sortedGuesses(t.guesses || []);
+  const hasValidGuesses = sg.some(g => g.time);
+  
+  if (!hasValidGuesses) {
+    return `
+  <div class="card">
+    <div class="card-lbl">Collecting Guesses</div>
+    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
+  </div>`;
+  }
+  
+  // Live status
+  const cur = nowSec();
+  const out = eliminated(t.guesses, cur);
+  const bnds = boundaries(t.guesses);
+  const withTime = sg.filter(g => g.time);
+  
+  return `
+  <div class="card">
+    <div class="big-clock js-clock">--:--:--</div>
+    <div class="big-clock-lbl">Live Time</div>
+  </div>
+  <div class="card"><div class="card-lbl">Player Status</div>
+    ${sg.map(g => `
+      <div class="row">
+        <div class="row-name">${g.name}</div>
+        ${g.time ? `
+          <div class="row-time">${g.time}</div>
+          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          </div>
+        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+      </div>`).join('')}
+  </div>
+  <div class="card"><div class="card-lbl">Territory Boundaries</div>
+    ${withTime.map((g,i) => {
+      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
+      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
+      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
+function bindPlayerNav() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _tab = btn.dataset.tab;
+      render();
+    });
+  });
 }
 
 const LOGO_DATA = "imgs/tuncan.png";
@@ -457,129 +564,7 @@ function renderPlayerWaiting() {
 </div>`;
 }
 
-function renderPlayerIdle() {
-  const last = S.days.length ? S.days[S.days.length-1] : null;
-  return `
-<div class="loading-screen" style="padding:20px;">
-  <img src="${LOGO_DATA}" alt="TotoWrap" style="max-width:200px;margin-bottom:16px;">
-  <div class="card" style="width:100%;max-width:400px;text-align:center;">
-    <div class="card-lbl">Standby</div>
-    <div class="mono" style="margin-top:8px;">Waiting for admin to start today's game.</div>
-  </div>
-  ${last ? `<p class="mono dim center mt16">Last wrap: <span class="accent">${last.wrapTime}</span> — ${last.winner} won</p>` : ''}
-</div>`;
-}
 
-function renderPlayerDay() {
-  const t = S.today;
-  const dayNum = S.days.length + (t ? 1 : 0);
-  const dotClass = (t && t.wrapTime) ? 'off' : 'live';
-  
-  if (!t) {
-    const last = S.days.length ? S.days[S.days.length-1] : null;
-    return `
-<div class="hdr">
-  <div class="hdr-day">Day ${dayNum}</div>
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="empty">No active game today</div>
-  ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
-</div>`;
-  }
-  
-  // Winner announced
-  if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses);
-    return `
-<div class="hdr">
-  <div class="hdr-day">Day ${dayNum}</div>
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot off" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="winner-banner">
-    <div class="winner-sub">🎬 Today's Winner</div>
-    <div class="winner-name">${t.winner}</div>
-    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
-  </div>
-  <div class="card"><div class="card-lbl">Results</div>
-    ${sg.map(g => `
-      <div class="row">
-        <div class="row-name">${g.name}</div>
-        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-      </div>`).join('')}
-  </div>
-</div>`;
-  }
-  
-  // Live game or collecting
-  const sg = sortedGuesses(t.guesses || []);
-  const hasValidGuesses = sg.some(g => g.time);
-  
-  if (!hasValidGuesses) {
-    return `
-<div class="hdr">
-  <div class="hdr-day">Day ${dayNum}</div>
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="card">
-    <div class="card-lbl">Collecting Guesses</div>
-    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
-  </div>
-</div>`;
-  }
-  
-  // Live status
-  const cur = nowSec();
-  const out = eliminated(t.guesses, cur);
-  const bnds = boundaries(t.guesses);
-  const withTime = sg.filter(g => g.time);
-  
-  return `
-<div class="hdr">
-  <div class="hdr-day">Day ${dayNum}</div>
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="card">
-    <div class="big-clock js-clock">--:--:--</div>
-    <div class="big-clock-lbl">Live Time</div>
-  </div>
-  <div class="card"><div class="card-lbl">Player Status</div>
-    ${sg.map(g => `
-      <div class="row">
-        <div class="row-name">${g.name}</div>
-        ${g.time ? `
-          <div class="row-time">${g.time}</div>
-          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
-          </div>
-        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-      </div>`).join('')}
-  </div>
-  <div class="card"><div class="card-lbl">Territory Boundaries</div>
-    ${withTime.map((g,i) => {
-      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
-      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
-      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
-    }).join('')}
-  </div>
-</div>`;
-}
     
 // ── Event binding ─────────────────────────────────────────────────
 
