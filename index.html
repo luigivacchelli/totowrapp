@@ -293,11 +293,7 @@ function render() {
 }
 
 function renderPlayer(app) {
-  // Bypassed setup check entirely
-  if(!S.setup) {
-    app.innerHTML=renderPlayerWaiting();
-    return;
-  }
+  // Bypassed setup check entirely - players always see the main view
   app.innerHTML=renderPlayerMain();
   startClock();
   bindPlayerNav();
