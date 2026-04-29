@@ -74,6 +74,17 @@ body::before {
   min-height: 100vh;
 }
 
+/* New Branding Style */
+.powered-by {
+  text-align: center;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin: 14px 0 -4px 0;
+  opacity: 0.8;
+}
+
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; }
 .hdr-right { text-align: right; display: flex; align-items: center; gap: 8px; }
 .hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2rem; color: var(--accent); letter-spacing: .02em; }
@@ -204,7 +215,9 @@ function getSortedPlayerRoster() {
   return [...S.playerRoster].sort((a, b) => {
     const scoreA = S.scores[a.name] || 0;
     const scoreB = S.scores[b.name] || 0;
+    // Primary: Score descending
     if (scoreB !== scoreA) return scoreB - scoreA;
+    // Secondary: Alphabetical name ascending
     return a.name.localeCompare(b.name);
   });
 }
@@ -354,6 +367,9 @@ function renderPlayerMain() {
   <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
 </nav>
+
+<div class="powered-by">TonnoWrap powered by TotoWrap®️</div>
+
 <div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
 <div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
@@ -450,6 +466,9 @@ function renderMain() {
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
   <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
 </nav>
+
+<div class="powered-by">TonnoWrap powered by TotoWrap®️</div>
+
 <div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
 <div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
