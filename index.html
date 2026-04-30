@@ -106,7 +106,7 @@ body::before {
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
-.b-streak { background: rgba(240,180,40,.15); color: var(--accent); border: 1px solid rgba(240,180,40,.3); }
+.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 9px; border-radius: 20px; font-weight: bold; }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
@@ -327,7 +327,7 @@ function getPreviousStreak(playerName) {
   if (count >= 2) {
     return { 
       count: count, 
-      pill: `<div class="badge b-alive">${count} Days Streak</div>`
+      pill: `<div class="badge b-streak">${count} Days Streak</div>`
     };
   }
   return { count: 0, pill: "" };
@@ -423,12 +423,15 @@ function renderPlayerMain() {
 function renderPlayerToday() {
   const t = S.today;
   if (!t) {
-    const last = S.days.length ? S.days[S.days.length-1] : null;
+    const last = S.days.length ? S.days[S.days.length - 1] : null;
     return `
       <div class="empty">No active game today</div>
       ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
     `;
   }
+  const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
+  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-style:italic; font-size:0.6rem;">Last Winner: ${prevWinner}</span>` : ''}`;
+  
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
@@ -473,7 +476,7 @@ function renderPlayerToday() {
     <div class="big-clock-lbl">Live Time</div>
     <div id="next-out-countdown" class="countdown-txt"></div>
   </div>
-  <div class="card"><div class="card-lbl">Player Status</div>
+  <div class="card"><div class="card-lbl">${statusHeader}</div>
     ${sg.map(g => {
       const st = getPreviousStreak(g.name);
       return `
@@ -532,6 +535,9 @@ function renderMain() {
 
 function renderToday() {
   const t = S.today;
+  const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
+  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-style:italic; font-size:0.6rem;">Last Winner: ${prevWinner}</span>` : ''}`;
+  
   if (!t) {
     return `<div class="card">
       <div class="card-lbl">Start New Day</div>
@@ -582,7 +588,7 @@ function renderToday() {
     const withTime = sg.filter(g => g.time);
     return `
       ${clockCard}
-      <div class="card"><div class="card-lbl">Player Status</div>
+      <div class="card"><div class="card-lbl">${statusHeader}</div>
         ${sg.map(g => {
           const st = getPreviousStreak(g.name);
           return `
