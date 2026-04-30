@@ -78,6 +78,15 @@ body::before {
 .hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
 .hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
 
+/* New Header Logo Styling */
+.hdr-logo {
+  height: 15px; /* Adjust this to change the image size */
+  width: auto;
+  object-fit: contain;
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+
 .hdr-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 1rem; color: var(--accent); letter-spacing: .05em; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; }
 .nav-btn { flex: 1; padding: 11px 4px; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); cursor: pointer; transition: color .2s, border-color .2s; }
@@ -343,6 +352,7 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${dotClass}" id="sync-dot"></span>
@@ -439,6 +449,7 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
@@ -635,6 +646,7 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot live" id="sync-dot"></span>
