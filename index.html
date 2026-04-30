@@ -130,6 +130,15 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .btn-sm { width: auto; padding: 8px 14px; font-size: .65rem; }
 .big-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 3.8rem; letter-spacing: .04em; color: var(--accent); text-align: center; line-height: 1; }
 .big-clock-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); text-align: center; margin-top: 4px; }
+.countdown-txt {
+  font-family: 'Alte Haas Grotesk', sans-serif;
+  font-size: 0.9rem;
+  color: #ff8a8a; /* Soft reddish pink */
+  text-align: center;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+  font-weight: bold;
+}
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
 .winner-sub { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 .winner-name { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
@@ -312,6 +321,26 @@ function startClock() {
 function tickClock() {
   const t=nowHMS();
   document.querySelectorAll('.js-clock').forEach(el=>el.textContent=t);
+  
+  // Logic for the countdown
+    const countdownEl = document.getElementById('next-out-countdown');
+    if (countdownEl && S.today && S.today.guesses.length > 0 && !S.today.wrapTime) {
+      const bnds = boundaries(S.today.guesses);
+      // Find the first boundary that is in the future
+      const nextBnd = bnds.find(b => b.sec > cur);
+
+      if (nextBnd) {
+        const diff = nextBnd.sec - cur;
+        countdownEl.textContent = `Next elimination in: ${secToHMS(diff)}`;
+        countdownEl.style.display = 'block';
+      } else {
+        // If no more boundaries exist, all potential eliminations are done
+        countdownEl.textContent = "Final territory reached";
+      }
+    } else if (countdownEl) {
+      countdownEl.style.display = 'none';
+    }
+
   refreshStatusBadges();
 }
 function refreshStatusBadges() {
@@ -415,6 +444,7 @@ function renderPlayerToday() {
   <div class="card">
     <div class="big-clock js-clock">--:--:--</div>
     <div class="big-clock-lbl">Live Time</div>
+    <div id="next-out-countdown" class="countdown-txt"></div>
   </div>
   <div class="card"><div class="card-lbl">Player Status</div>
     ${sg.map(g => `
