@@ -101,61 +101,36 @@ body::before {
 .row:last-child { border-bottom: none; }
 .row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); flex: 1; font-weight: 500; display: flex; align-items: center; gap: 6px; }
 .row-time { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); }
-.row-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.25rem; min-width: 28px; text-align: right; }
 .badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
-.b-streak { background: rgba(240,180,40,.15); color: var(--accent); border: 1px solid rgba(240,180,40,.3); }
-.b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
-.b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-input[type=text], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
+input[type=text], input[type=number], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; }
 textarea { resize: vertical; min-height: 140px; font-size: .85rem; line-height: 1.6; }
-input:focus, textarea:focus { border-color: var(--accent); }
-input::placeholder, textarea::placeholder { color: var(--dim); }
 .flex-row { display: flex; gap: 8px; }
-.flex-row input { flex: 1; }
-.btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 7px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .15s, opacity .15s; }
-.btn + .btn { margin-top: 8px; }
-.btn:disabled { opacity: .4; cursor: default; }
+.btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 7px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
 .btn-p { background: var(--accent); color: #000; font-weight: 500; }
-.btn-p:hover:not(:disabled) { background: var(--accent2); }
 .btn-s { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
-.btn-s:hover { background: var(--bg4); }
 .btn-d { background: rgba(217,85,85,.12); color: var(--red); border: 1px solid rgba(217,85,85,.25); }
 .btn-sm { width: auto; padding: 8px 14px; font-size: .65rem; }
 .big-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 3.8rem; letter-spacing: .04em; color: var(--accent); text-align: center; line-height: 1; }
 .big-clock-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); text-align: center; margin-top: 4px; }
-.countdown-txt {
-  font-family: 'Alte Haas Grotesk', sans-serif;
-  font-size: 0.9rem;
-  color: #ff8a8a;
-  text-align: center;
-  margin-top: 8px;
-  letter-spacing: 0.05em;
-  font-weight: bold;
-}
-.countdown-name {
-  text-transform: uppercase;
-    }
+.countdown-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.9rem; color: #ff8a8a; text-align: center; margin-top: 8px; letter-spacing: 0.05em; font-weight: bold; }
+.countdown-name { text-transform: uppercase; }
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
 .winner-sub { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 .winner-name { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
 .winner-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .7rem; color: var(--dim); margin-top: 4px; }
 .lb-rank { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.8rem; min-width: 32px; color: var(--dim); }
 .lb-rank.first { color: var(--accent); }
-.day-chip { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; color: var(--dim); margin-bottom: 8px; }
-.day-footer { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .67rem; color: var(--dim); margin-top: 8px; }
 .bnd-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--accent) }
 .bnd-row:last-child { border-bottom: none; }
 .bnd-range { color: var(--dim); font-size: .65rem; }
 #toast { position: fixed; bottom: 125px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-#toast.ok  { border-color: var(--accent); color: var(--accent); }
-#toast.err { border-color: var(--red); color: var(--red); }
 .sync-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--dim); transition: background .3s; }
 .sync-dot.live { background: var(--green); }
 .sync-dot.off { background: var(--red); }
@@ -165,17 +140,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
 .loading-screen img { max-width: 200px; }
 .loading-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
-
-/* History Accordion Styles */
-.hist-row { cursor: pointer; padding: 0 !important; overflow: hidden; }
-.hist-summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; }
-.hist-day-tag { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 0.7rem; color: var(--dim); text-transform: uppercase; margin-right: 10px; }
-.hist-main-info { flex: 1; display: flex; align-items: baseline; gap: 6px; }
-.hist-meta { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; }
-.hist-arrow { font-size: 0.6rem; transition: transform 0.3s ease; color: var(--accent); opacity: 0.7; }
-.hist-row.open .hist-arrow { transform: rotate(90deg); }
-.hist-details { display: none; padding: 0 16px 16px; border-top: 1px solid rgba(61, 84, 51, 0.2); background: rgba(0,0,0,0.05); }
-.hist-row.open .hist-details { display: block; }
 </style>
 </head>
 <body>
@@ -192,7 +156,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDChGuB5CtWRD0u8j-GFzDOvqsGXdkDNFI",
@@ -208,13 +172,7 @@ const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const STATE_REF = doc(db, "totowrap", "state");
 
-let S = {
-  playerRoster: [],
-  scores: {},
-  days: [],
-  today: null
-};
-
+let S = { playerRoster: [], scores: {}, days: [], today: null };
 const IS_ADMIN = /[?&]admin/.test(location.search) || location.href.includes('?admin');
 let _tab = 'today';
 let _clockInterval = null;
@@ -222,22 +180,12 @@ let _toastTO = null;
 let _writing = false;
 
 function getSortedPlayerRoster() {
-  return [...S.playerRoster].sort((a, b) => {
-    const scoreA = S.scores[a.name] || 0;
-    const scoreB = S.scores[b.name] || 0;
-    if (scoreB !== scoreA) return scoreB - scoreA;
-    return a.name.localeCompare(b.name);
-  });
+  return [...S.playerRoster].sort((a, b) => (S.scores[b.name] || 0) - (S.scores[a.name] || 0) || a.name.localeCompare(b.name));
 }
 
 async function saveS() {
   _writing = true;
-  try {
-    await setDoc(STATE_REF, S);
-  } catch(e) {
-    console.error("Save error:", e);
-    toast("Sync error — check connection", "err");
-  }
+  try { await setDoc(STATE_REF, S); } catch(e) { toast("Sync error", "err"); }
   setTimeout(() => { _writing = false; }, 500);
 }
 
@@ -248,42 +196,26 @@ function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*
 function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
 function parsePaste(text) {
-  const lines = text.trim().split('\n').filter(l => l.trim());
+  const lines = text.trim().split('\n');
   const guesses = [];
   for (const line of lines) {
     const match = line.match(/^(.+?)\s*-\s*(\d{2}:\d{2})$/);
-    if (match) {
-      guesses.push({ name: match[1].trim(), time: match[2] });
-    }
+    if (match) guesses.push({ name: match[1].trim(), time: match[2] });
   }
   return guesses;
 }
 
 function buildFullGuessList(parsed) {
-  const result = [];
+  const result = [...parsed];
   const submitted = new Set(parsed.map(g => g.name));
-  parsed.forEach(g => result.push(g));
-  S.playerRoster.forEach(p => {
-    if (!submitted.has(p.name)) {
-      result.push({ name: p.name, time: null });
-    }
-  });
+  S.playerRoster.forEach(p => { if (!submitted.has(p.name)) result.push({ name: p.name, time: null }); });
   return result;
-}
-
-function midSec(a,b) { return Math.floor((a+b)/2); }
-function sortedGuesses(guesses) {
-  const withTime = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  const missing = guesses.filter(g => !g.time);
-  return [...withTime, ...missing];
 }
 
 function boundaries(guesses) {
   const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
   return valid.slice(0,-1).map((g,i) => {
-    const t1 = toSec(valid[i].time);
-    const t2 = toSec(valid[i+1].time);
-    const mid = midSec(t1,t2);
+    const mid = Math.floor((toSec(valid[i].time) + toSec(valid[i+1].time))/2);
     return { nameA: valid[i].name, nameB: valid[i+1].name, sec: mid, str: secToHMS(mid) };
   });
 }
@@ -292,45 +224,34 @@ function eliminated(guesses, curSec) {
   const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
   const b = boundaries(guesses);
   const out = new Set();
-  b.forEach((bd,i) => {
-    if (curSec > bd.sec) out.add(valid[i].name);
-  });
+  b.forEach((bd,i) => { if (curSec > bd.sec) out.add(valid[i].name); });
   return out;
 }
 
 function calcWinner(guesses, wrapHHMM) {
   const wrapSec = toSec(wrapHHMM);
-  const validGuesses = guesses.filter(g => g.time);
-  const s = validGuesses.sort((a,b) => toSec(a.time) - toSec(b.time));
+  const s = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
   const b = boundaries(guesses);
   let wi = 0;
   b.forEach((bd,i) => { if (wrapSec >= bd.sec) wi = i + 1; });
   const winner = s[wi];
-  const points = (wrapHHMM === winner.time.slice(0,5)) ? 3 : 1;
-  const winners = s.filter(g => g.time === winner.time);
-  return { winner: winner.name, winners, points };
+  const points = (wrapHHMM.slice(0,5) === winner.time) ? 3 : 1;
+  return { winner: winner.name, winners: s.filter(g => g.time === winner.time), points };
 }
-    
+
 function getPreviousStreak(playerName) {
-  if (!S.days || S.days.length === 0) return { count: 0, pill: "" };
+  if (!S.days.length) return { count: 0, pill: "" };
   let count = 0;
-  // Loop backwards through history to count consecutive wins
   for (let i = S.days.length - 1; i >= 0; i--) {
-    if (S.days[i].winner === playerName) {
-      count++;
-    } else {
-      break;
-    }
+    if (S.days[i].winner === playerName) count++; else break;
   }
-  
-  // Only return a pill if the streak is 2 or more
-  if (count >= 2) {
-    return { 
-      count: count, 
-      pill: `<div class="badge b-alive">${count} Days Streak</div>` 
-    };
-  }
-  return { count: 0, pill: "" };
+  return count >= 2 ? { count, pill: `<div class="badge b-alive">${count} Days Streak</div>` } : { count: 0, pill: "" };
+}
+
+function getLastWinnerHeader() {
+  const last = S.days.length ? S.days[S.days.length - 1] : null;
+  if (!last) return "";
+  return `<span style="margin: 0 8px; opacity: 0.3">|</span> <span style="color:var(--accent); text-transform: none; letter-spacing: normal;">Yesterday's Winner: ${last.winner} 🥇</span>`;
 }
 
 function startClock() {
@@ -343,32 +264,27 @@ function tickClock() {
   const t = nowHMS();
   const cur = nowSec();
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
-  
   const countdownEl = document.getElementById('next-out-countdown');
-  if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
+  if (countdownEl && S.today?.guesses?.length && !S.today.wrapTime) {
     const bnds = boundaries(S.today.guesses);
     const nextBnd = bnds.find(b => b.sec > cur);
-
     if (nextBnd) {
-      const diff = nextBnd.sec - cur;
-      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(diff)}`;
+      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(nextBnd.sec - cur)}`;
       countdownEl.style.display = 'block';
     } else {
       countdownEl.textContent = "Final territory reached";
     }
-  } else if (countdownEl) {
-    countdownEl.style.display = 'none';
-  }
+  } else if (countdownEl) countdownEl.style.display = 'none';
   refreshStatusBadges();
 }
 
 function refreshStatusBadges() {
-  if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
-  const cur=nowSec(), out=eliminated(S.today.guesses,cur);
-  S.today.guesses.forEach(g=>{
-    const el=document.getElementById('st-'+g.name); if(!el) return;
-    if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
-    else{el.className='badge b-alive';el.textContent='ALIVE';}
+  if(!S.today?.guesses.length || S.today.wrapTime) return;
+  const out = eliminated(S.today.guesses, nowSec());
+  S.today.guesses.forEach(g => {
+    const el = document.getElementById('st-'+g.name); if(!el) return;
+    if(out.has(g.name)) { el.className='badge b-out'; el.textContent='OUT'; }
+    else { el.className='badge b-alive'; el.textContent='ALIVE'; }
   });
 }
 
@@ -381,19 +297,8 @@ function toast(msg,type='') {
 
 function render() {
   const app=document.getElementById('app');
-  if(IS_ADMIN) {
-    app.innerHTML=renderMain();
-    startClock();
-    bindMain();
-  } else {
-    renderPlayer(app);
-  }
-}
-
-function renderPlayer(app) {
-  app.innerHTML=renderPlayerMain();
-  startClock();
-  bindPlayerNav();
+  if(IS_ADMIN) { app.innerHTML=renderMain(); startClock(); bindMain(); }
+  else { app.innerHTML=renderPlayerMain(); startClock(); bindPlayerNav(); }
 }
 
 function renderPlayerMain() {
@@ -403,155 +308,26 @@ function renderPlayerMain() {
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
-  </div>
+  <div class="hdr-right"><div class="hdr-clock js-clock">--:--:--</div><span class="sync-dot ${dotClass}" id="sync-dot"></span></div>
 </div>
 <nav class="nav">
   <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
   <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
 </nav>
-
 <div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
-<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
-`;
+<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>`;
 }
 
 function renderPlayerToday() {
   const t = S.today;
-  if (!t) {
-    const last = S.days.length ? S.days[S.days.length-1] : null;
-    return `
-      <div class="empty">No active game today</div>
-      ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
-    `;
-  }
+  const lastWinnerHtml = getLastWinnerHeader();
+  if (!t) return `<div class="empty">No active game today</div>`;
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count >= 2
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
-  : '';
-    return `
-  <div class="winner-banner">
-    <div class="winner-sub">🎬 Today's Winner</div>
-    <div class="winner-name">${t.winner}</div>
-    ${streakHtml}
-    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
-  </div>
-  <div class="card"><div class="card-lbl">Results</div>
-    ${sg.map(g => {
-      const st = getPreviousStreak(g.name);
-      return `
-      <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
-        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-      </div>`;
-    }).join('')}
-  </div>`;
-  }
-  const sg = sortedGuesses(t.guesses || []);
-  const hasValidGuesses = sg.some(g => g.time);
-  if (!hasValidGuesses) {
-    return `
-  <div class="card">
-    <div class="card-lbl">Collecting Guesses</div>
-    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
-  </div>`;
-  }
-  const cur = nowSec();
-  const out = eliminated(t.guesses, cur);
-  const bnds = boundaries(t.guesses);
-  const withTime = sg.filter(g => g.time);
-  return `
-  <div class="card">
-    <div class="big-clock js-clock">--:--:--</div>
-    <div class="big-clock-lbl">Live Time</div>
-    <div id="next-out-countdown" class="countdown-txt"></div>
-  </div>
-  <div class="card"><div class="card-lbl">Player Status</div>
-    ${sg.map(g => {
-      const st = getPreviousStreak(g.name);
-      return `
-      <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
-        ${g.time ? `
-          <div class="row-time">${g.time}</div>
-          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
-          </div>
-        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-      </div>`;
-    }).join('')}
-  </div>
-  <div class="card"><div class="card-lbl">Territory Boundaries</div>
-    ${withTime.map((g,i) => {
-      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
-      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
-      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
-    }).join('')}
-  </div>`;
-}
-
-function bindPlayerNav() {
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      _tab = btn.dataset.tab;
-      render();
-    });
-  });
-}
-
-function renderMain() {
-  const totalDays=S.days.length+(S.today?1:0);
-  return `
-<div class="hdr">
-  <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
-  </div>
-</div>
-<nav class="nav">
-  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
-  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
-  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
-  <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
-</nav>
-
-<div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
-<div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
-<div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
-<div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
-}
-
-function renderToday() {
-  const t = S.today;
-  if (!t) {
-    return `<div class="card">
-      <div class="card-lbl">Start New Day</div>
-      <button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button>
-    </div>`;
-  }
-
-  const clockCard = `
-    <div class="card">
-      <div class="big-clock js-clock">--:--:--</div>
-      <div class="big-clock-lbl">Live Time</div>
-      <div id="next-out-countdown" class="countdown-txt"></div>
-    </div>`;
-
-  if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses);
-    const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count >= 2
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
-  : '';
+    const streakHtml = streakInfo.count >= 2 ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>` : '';
     return `
       <div class="winner-banner">
         <div class="winner-sub">🎬 Today's Winner</div>
@@ -559,307 +335,115 @@ function renderToday() {
         ${streakHtml}
         <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
       </div>
-      <div class="card"><div class="card-lbl">Results</div>
-        ${sg.map(g => {
-          const st = getPreviousStreak(g.name);
-          return `
-          <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
-            ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-            ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-          </div>`;
-        }).join('')}
-      </div>
-      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
-    `;
+      <div class="card"><div class="card-lbl">Results ${lastWinnerHtml}</div>
+        ${sg.map(g => `<div class="row"><div class="row-name">${g.name} ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Missing bet</div>`}${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}</div>`).join('')}
+      </div>`;
   }
-  
-  if (t.guesses && t.guesses.length > 0) {
-    const cur = nowSec();
-    const out = eliminated(t.guesses, cur);
-    const sg = sortedGuesses(t.guesses);
-    const bnds = boundaries(t.guesses);
-    const withTime = sg.filter(g => g.time);
-    return `
-      ${clockCard}
-      <div class="card"><div class="card-lbl">Player Status</div>
-        ${sg.map(g => {
-          const st = getPreviousStreak(g.name);
-          return `
-          <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
-            ${g.time ? `
-              <div class="row-time">${g.time}</div>
-              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
-              </div>
-            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="card"><div class="card-lbl">Territory Boundaries</div>
-        ${withTime.map((g,i) => {
-          const lo = i===0 ? '00:00:00' : bnds[i-1].str;
-          const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
-          return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
-        }).join('')}
-      </div>
-      <div class="card">
-        <div class="card-lbl">Enter Official Wrap Time</div>
-        <div class="inp-wrap">
-          <label class="inp-lbl">Wrap Time (HH:MM:SS)</label>
-          <input type="text" id="wrap-inp" placeholder="18:30:45" maxlength="8" 
-            pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" 
-            style="font-family:'DM Mono',monospace;">
-        </div>
-        <div class="flex-row">
-          <button class="btn btn-s" id="set-now-btn" style="flex:1;">⏰ Set Current Time</button>
-          <button class="btn btn-p" id="wrap-btn" style="flex:1;">Confirm Wrap ✓</button>
-        </div>
-      </div>
-    `;
-  }
+  const sg = sortedGuesses(t.guesses || []);
+  if (!sg.some(g => g.time)) return `<div class="card"><div class="card-lbl">Collecting Guesses ${lastWinnerHtml}</div><p class="mono dim center">Waiting for guesses...</p></div>`;
+  const out = eliminated(t.guesses, nowSec());
+  const bnds = boundaries(t.guesses);
   return `
-    <div class="card">
-      <div class="card-lbl">Paste Today's Guesses</div>
-      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line)</p>
-      <textarea id="paste-inp" placeholder="Luigi - 18:30
-Daniela - 19:15
-Marco - 17:45"></textarea>
-      <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
+    <div class="card"><div class="big-clock js-clock">--:--:--</div><div class="big-clock-lbl">Live Time</div><div id="next-out-countdown" class="countdown-txt"></div></div>
+    <div class="card"><div class="card-lbl">Player Status ${lastWinnerHtml}</div>
+      ${sg.map(g => `<div class="row"><div class="row-name">${g.name} ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div><div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">${out.has(g.name) ? 'OUT' : 'ALIVE'}</div>` : `<div class="badge b-missing">Missing bet</div>`}</div>`).join('')}
     </div>
-  `;
+    <div class="card"><div class="card-lbl">Territory Boundaries</div>
+      ${sg.filter(g => g.time).map((g,i) => `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${i===0 ? '00:00:00' : bnds[i-1].str} → ${i===sg.filter(g=>g.time).length-1 ? '23:59:59' : bnds[i].str}</span></div>`).join('')}
+    </div>`;
+}
+
+function bindPlayerNav() { document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => { _tab = btn.dataset.tab; render(); })); }
+
+function renderMain() {
+  const totalDays=S.days.length+(S.today?1:0);
+  return `
+<div class="hdr">
+  <div class="hdr-day">Day ${totalDays||'—'}/50</div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  <div class="hdr-right"><div class="hdr-clock js-clock">--:--:--</div><span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot"></span></div>
+</div>
+<nav class="nav">
+  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
+  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
+  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
+  <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
+</nav>
+<div class="sec ${_tab==='today'?'on':''}">${renderToday()}</div>
+<div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
+<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
+<div class="sec ${_tab==='settings'?'on':''}">${renderSettings()}</div>`;
+}
+
+function renderToday() {
+  const t = S.today;
+  const lastWinnerHtml = getLastWinnerHeader();
+  if (!t) return `<div class="card"><div class="card-lbl">Start New Day</div><button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button></div>`;
+  if (t.wrapTime) {
+    return `
+      <div class="winner-banner"><div class="winner-sub">🎬 Today's Winner</div><div class="winner-name">${t.winner}</div><div class="winner-pts">+${t.points} pt</div></div>
+      <div class="card"><div class="card-lbl">Results ${lastWinnerHtml}</div>
+        ${sortedGuesses(t.guesses).map(g => `<div class="row"><div class="row-name">${g.name}</div>${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}</div>`).join('')}
+      </div>
+      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>`;
+  }
+  if (t.guesses?.length > 0) {
+    const sg = sortedGuesses(t.guesses);
+    const out = eliminated(t.guesses, nowSec());
+    return `
+      <div class="card"><div class="big-clock js-clock">--:--:--</div><div id="next-out-countdown" class="countdown-txt"></div></div>
+      <div class="card"><div class="card-lbl">Player Status ${lastWinnerHtml}</div>
+        ${sg.map(g => `<div class="row"><div class="row-name">${g.name} ${getPreviousStreak(g.name).pill}</div><div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">${out.has(g.name) ? 'OUT' : 'ALIVE'}</div></div>`).join('')}
+      </div>
+      <div class="card"><div class="card-lbl">Enter Wrap Time</div><input type="text" id="wrap-inp" placeholder="18:30:45"><div class="flex-row" style="margin-top:10px"><button class="btn btn-s" id="set-now-btn" style="flex:1">⏰ Now</button><button class="btn btn-p" id="wrap-btn" style="flex:1">Confirm ✓</button></div></div>`;
+  }
+  return `<div class="card"><div class="card-lbl">Paste Guesses ${lastWinnerHtml}</div><textarea id="paste-inp" placeholder="Name - HH:MM"></textarea><button class="btn btn-p" id="parse-btn" style="margin-top:10px">Preview →</button></div>`;
 }
 
 function renderBoard() {
   const pl = getSortedPlayerRoster();
-  if(!pl.length) return '<div class="empty">No players yet</div>';
-  return `<div class="card"><div class="card-lbl">Standings</div>
-${pl.map((p,i)=>{
-  const st = getPreviousStreak(p.name);
-  return `<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} ${st.pill}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`
-}).join('')}
-</div>`;
+  return `<div class="card"><div class="card-lbl">Standings</div>${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} ${getPreviousStreak(p.name).pill}</div><div class="accent">${S.scores[p.name]||0} pts</div></div>`).join('')}</div>`;
 }
 
 function renderHistory() {
-  let all = [...S.days];
-  if (S.today && S.today.wrapTime) all.push(S.today);
-  if (!all.length) return '<div class="empty">No completed days yet</div>';
-
-  return [...all].reverse().map((d, i) => {
-    const num = all.length - i;
-    const sg = sortedGuesses(d.guesses);
-    const winnerBet = d.guesses.find(g => g.name === d.winner)?.time || '--:--';
-    
-    return `
-    <div class="card hist-row" onclick="this.classList.toggle('open')">
-      <div class="hist-summary">
-        <div class="hist-main-info">
-          <span class="hist-day-tag">Day ${num}</span>
-          <span class="accent" style="font-weight:bold">${d.winner}</span>
-          <span class="mono dim" style="font-size:0.75rem">(${winnerBet})</span>
-        </div>
-        <div class="hist-meta">
-          <span class="accent mono">${d.wrapTime}</span>
-          <span class="dim mono" style="font-size:0.7rem; min-width:35px">+${d.points}pt</span>
-          <span class="hist-arrow">▶</span>
-        </div>
-      </div>
-      <div class="hist-details" onclick="event.stopPropagation()">
-        <div class="card-lbl" style="margin:12px 0 8px 0; border-bottom:1px solid rgba(238,199,99,0.1); padding-bottom:4px;">Day Details</div>
-        ${sg.map(g => `
-          <div class="row">
-            <div class="row-name">${g.name}</div>
-            <div class="row-time">${g.time || '--:--'}</div>
-            <div class="badge ${g.name === d.winner ? 'b-win' : 'b-out'}">
-              ${g.name === d.winner ? `+${d.points}pt` : '—'}
-            </div>
-          </div>`).join('')}
-        <div class="day-footer" style="text-align:right; font-size:0.6rem; opacity:0.5; margin-top:10px;">${d.date}</div>
-      </div>
-    </div>`;
-  }).join('');
+  let all = [...S.days]; if (S.today?.wrapTime) all.push(S.today);
+  return [...all].reverse().map((d, i) => `<div class="card"><div class="row"><div class="row-name">${d.winner}</div><div class="accent">${d.wrapTime}</div><div class="dim">+${d.points}pt</div></div></div>`).join('');
 }
 
 function renderSettings() {
-  const pl = getSortedPlayerRoster();
-  return `<div class="card"><div class="card-lbl">Player Roster — Editable</div>
-${pl.map((p, idx)=> {
-  const realIdx = S.playerRoster.findIndex(orig => orig.name === p.name);
-  return `
-  <div class="row" style="flex-wrap:wrap;align-items:flex-start;padding:12px 0;">
-    <div style="flex:1;min-width:120px;">
-      <input type="text" value="${p.name}" id="name-${realIdx}"
-        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;">
-    </div>
-    <div style="width:100px;margin-left:8px;">
-      <input type="number" value="${S.scores[p.name]||0}" id="pts-${realIdx}"
-        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;text-align:right;">
-    </div>
-    <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${realIdx})">Save</button>
-    <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${realIdx})">×</button>
-  </div>`}).join('')}
-</div>
-<div class="card"><div class="card-lbl">Danger Zone</div>
-<p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
-<button class="btn btn-d" id="reset-btn">Reset Entire Game</button>
-</div>`;
-}
-
-function showPreview() {
-  const inp = document.getElementById('paste-inp');
-  const text = inp?.value || '';
-  if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
-  const parsed = parsePaste(text);
-  if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
-  const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
-  const newPlayers = [];
-  parsed.forEach(g => {
-    if (!existingNames.has(g.name.toLowerCase())) {
-      newPlayers.push(g.name);
-      existingNames.add(g.name.toLowerCase());
-    }
-  });
-  const fullList = buildFullGuessList(parsed);
-  const sorted = sortedGuesses(fullList);
-  const totalDays = S.days.length + (S.today ? 1 : 0);
-  const app = document.getElementById('app');
-  app.innerHTML = `
-<div class="hdr">
-  <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
-  <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot live" id="sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="card">
-    <div class="card-lbl">Confirm These Guesses</div>
-    <div class="preview-card">
-      ${sorted.map(g => `
-        <div class="row">
-          <div class="row-name">${g.name}</div>
-          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        </div>`).join('')}
-    </div>
-    <p class="mono dim" style="font-size:.7rem;margin-top:10px">
-      ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
-      ${newPlayers.length > 0 ? `<br><span style="color:var(--green)">+ ${newPlayers.length} new player(s) will be added to the roster</span>` : ''}
-    </p>
-  </div>
-  <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
-  <button class="btn btn-s" id="cancel-btn">← Go Back</button>
-</div>`;
-  startClock();
-  document.getElementById('confirm-btn')?.addEventListener('click', () => {
-    newPlayers.forEach(name => {
-      S.playerRoster.push({ name: name });
-      S.scores[name] = 0;
-    });
-    S.today.guesses = fullList;
-    saveS();
-    toast('Day started!', 'ok');
-    render();
-  });
-  document.getElementById('cancel-btn')?.addEventListener('click', () => { render(); });
+  return `<div class="card"><div class="card-lbl">Player Roster</div>${S.playerRoster.map((p, idx)=> `<div class="row"><input type="text" value="${p.name}" id="name-${idx}"><input type="number" value="${S.scores[p.name]||0}" id="pts-${idx}" style="width:80px"><button class="btn btn-s btn-sm" onclick="savePlayer(${idx})">Save</button></div>`).join('')}</div><button class="btn btn-d" id="reset-btn">Reset All</button>`;
 }
 
 window.savePlayer = (idx) => {
-  const nameInput = document.getElementById(`name-${idx}`);
-  const ptsInput = document.getElementById(`pts-${idx}`);
-  if (!nameInput || !ptsInput) return;
+  const newName = document.getElementById(`name-${idx}`).value.trim();
+  const newPts = parseInt(document.getElementById(`pts-${idx}`).value) || 0;
   const oldName = S.playerRoster[idx].name;
-  const newName = nameInput.value.trim();
-  const newPoints = parseInt(ptsInput.value) || 0;
-  if (!newName) { toast('Name cannot be empty', 'err'); return; }
-  const duplicate = S.playerRoster.find((p, i) => i !== idx && p.name.toLowerCase() === newName.toLowerCase());
-  if (duplicate) { toast('Player name already exists', 'err'); return; }
-  if (oldName !== newName) {
-    S.playerRoster[idx].name = newName;
-    S.scores[newName] = S.scores[oldName] || 0;
-    delete S.scores[oldName];
-    S.days.forEach(day => {
-      day.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
-      if (day.winner === oldName) day.winner = newName;
-    });
-    if (S.today && S.today.guesses) {
-      S.today.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
-      if (S.today.winner === oldName) S.today.winner = newName;
-    }
-  }
-  S.scores[newName] = newPoints;
-  saveS();
-  toast('Player updated!', 'ok');
-  render();
+  if(oldName !== newName) { S.scores[newName] = S.scores[oldName]; delete S.scores[oldName]; S.playerRoster[idx].name = newName; }
+  S.scores[newName] = newPts; saveS(); render();
 };
-
-window.deletePlayer = (idx) => {
-  const player = S.playerRoster[idx];
-  if (!confirm(`Delete ${player.name}?`)) return;
-  const name = player.name;
-  S.playerRoster.splice(idx, 1);
-  delete S.scores[name];
-  S.days.forEach(day => { day.guesses = day.guesses.filter(g => g.name !== name); });
-  if (S.today && S.today.guesses) S.today.guesses = S.today.guesses.filter(g => g.name !== name);
-  saveS();
-  toast('Player deleted', 'ok');
-  render();
-};
-
-function setCurrentTime() {
-  const now = nowHMS();
-  const inp = document.getElementById('wrap-inp');
-  if (inp) {
-    inp.value = now;
-    toast('Time set to ' + now, 'ok');
-  }
-}
 
 function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
-  document.getElementById('new-day-btn')?.addEventListener('click', () => {
-    if(S.today&&S.today.wrapTime) S.days.push({...S.today});
-    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null};
+  document.getElementById('new-day-btn')?.addEventListener('click', () => { if(S.today?.wrapTime) S.days.push({...S.today}); S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null}; saveS(); render(); });
+  document.getElementById('wrap-btn')?.addEventListener('click', () => {
+    const val = document.getElementById('wrap-inp').value; if(!val) return;
+    const { winner, winners, points } = calcWinner(S.today.guesses, val);
+    S.today.wrapTime = val; S.today.winner = winner; S.today.points = points;
+    winners.forEach(w => S.scores[w.name] = (S.scores[w.name] || 0) + points);
     saveS(); render();
   });
-  document.getElementById('wrap-btn')?.addEventListener('click', () => {
-    const inp = document.getElementById('wrap-inp');
-    if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
-    const { winner, winners, points } = calcWinner(S.today.guesses, inp.value);
-    S.today.wrapTime = inp.value;
-    S.today.winner = winner;
-    S.today.points = points;
-    winners.forEach(w => { S.scores[w.name] = (S.scores[w.name] || 0) + points; });
-    saveS();
-    toast(`${winners.map(w=>w.name).join(' & ')} win +${points} pt!`, 'ok');
-    render();
+  document.getElementById('set-now-btn')?.addEventListener('click', () => { document.getElementById('wrap-inp').value = nowHMS(); });
+  document.getElementById('parse-btn')?.addEventListener('click', () => {
+    const parsed = parsePaste(document.getElementById('paste-inp').value);
+    if(parsed.length) {
+      parsed.forEach(g => { if(!S.playerRoster.find(p=>p.name===g.name)) S.playerRoster.push({name:g.name}); });
+      S.today.guesses = buildFullGuessList(parsed); saveS(); render();
+    }
   });
-  document.getElementById('set-now-btn')?.addEventListener('click', setCurrentTime);
-  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
-  document.getElementById('reset-btn')?.addEventListener('click',()=>{
-    if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
-  });
+  document.getElementById('reset-btn')?.addEventListener('click', () => { if(confirm('Reset?')) { S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); } });
 }
 
-if(!IS_ADMIN) render();
-onSnapshot(STATE_REF, (snap) => {
-  if(_writing) return;
-  if(snap.exists()) {
-    S = snap.data();
-    if (!S.playerRoster) S.playerRoster = S.players || [];
-  } else {
-    S = { playerRoster: [], scores: {}, days: [], today: null };
-  }
-  render();
-  const dot = document.getElementById('sync-dot');
-  if(dot) { dot.classList.add('live'); }
-}, (err) => {
-  console.error("Firestore error:", err);
-  const dot = document.getElementById('sync-dot');
-  if(dot) { dot.classList.remove('live'); dot.style.background = 'var(--red)'; }
-});
+onSnapshot(STATE_REF, (snap) => { if(!_writing && snap.exists()) { S = snap.data(); render(); } });
 </script>
 </body>
 </html>
