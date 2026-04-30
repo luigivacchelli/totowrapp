@@ -436,6 +436,7 @@ function renderPlayerToday() {
   <div class="winner-banner">
     <div class="winner-sub">🎬 Today's Winner</div>
     <div class="winner-name">${t.winner}</div>
+    ${streakHtml}
     <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
   </div>
   <div class="card"><div class="card-lbl">Results</div>
@@ -546,6 +547,7 @@ function renderToday() {
       <div class="winner-banner">
         <div class="winner-sub">🎬 Today's Winner</div>
         <div class="winner-name">${t.winner}</div>
+        ${streakHtml}
         <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
       </div>
       <div class="card"><div class="card-lbl">Results</div>
@@ -559,6 +561,7 @@ function renderToday() {
       <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
     `;
   }
+  // ... rest of the admin function (Paste input, etc.)
   if (t.guesses && t.guesses.length > 0) {
     const cur = nowSec();
     const out = eliminated(t.guesses, cur);
