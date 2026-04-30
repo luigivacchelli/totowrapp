@@ -80,7 +80,7 @@ body::before {
 
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg);  backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; height: 50px}
 .hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
-.hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.3rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
+.hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.1rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
 
 .hdr-logo {
   height: 30px;
@@ -305,43 +305,91 @@ function sortedGuesses(guesses) {
   return [...withTime, ...missing];
 }
 
+/**
+ * Enhanced boundary calculation with 1-second offset.
+ * Each slice returns a 'start' and 'end' in total seconds.
+ */
 function boundaries(guesses) {
   const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  return valid.slice(0,-1).map((g,i) => {
-    const t1 = toSec(valid[i].time);
-    const t2 = toSec(valid[i+1].time);
-    const mid = midSec(t1,t2);
-    return { nameA: valid[i].name, nameB: valid[i+1].name, sec: mid, str: secToHMS(mid) };
+  if (valid.length === 0) return [];
+
+  // Group players by identical guess times
+  const groups = [];
+  valid.forEach(g => {
+    const sec = toSec(g.time);
+    const existing = groups.find(grp => grp.sec === sec);
+    if (existing) {
+      existing.names.push(g.name);
+    } else {
+      groups.push({ names: [g.name], sec: sec });
+    }
   });
+
+  const slices = [];
+  for (let i = 0; i < groups.length; i++) {
+    let startSec = 0;
+    let endSec = 86399; // 23:59:59
+
+    // Calculate start based on previous midpoint
+    if (i > 0) {
+      const prevMid = midSec(groups[i-1].sec, groups[i].sec);
+      startSec = prevMid;
+    }
+
+    // Calculate end based on next midpoint
+    if (i < groups.length - 1) {
+      const nextMid = midSec(groups[i].sec, groups[i+1].sec);
+      endSec = nextMid - 1; // Subtract 1 second to give boundary to next player
+    }
+
+    slices.push({
+      names: groups[i].names,
+      start: startSec,
+      end: endSec,
+      startStr: secToHMS(startSec),
+      endStr: secToHMS(endSec)
+    });
+  }
+  return slices;
 }
 
 function eliminated(guesses, curSec) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  const b = boundaries(guesses);
+  const slices = boundaries(guesses);
   const out = new Set();
-  b.forEach((bd,i) => {
-    if (curSec > bd.sec) out.add(valid[i].name);
+  slices.forEach(slice => {
+    // If the clock has passed the end of their territory
+    if (curSec > slice.end) {
+      slice.names.forEach(name => out.add(name));
+    }
   });
   return out;
 }
 
-function calcWinner(guesses, wrapHHMM) {
-  const wrapSec = toSec(wrapHHMM);
-  const validGuesses = guesses.filter(g => g.time);
-  const s = validGuesses.sort((a,b) => toSec(a.time) - toSec(b.time));
-  const b = boundaries(guesses);
-  let wi = 0;
-  b.forEach((bd,i) => { if (wrapSec >= bd.sec) wi = i + 1; });
-  const winner = s[wi];
-  const points = (wrapHHMM === winner.time.slice(0,5)) ? 3 : 1;
-  const winners = s.filter(g => g.time === winner.time);
-  return { winner: winner.name, winners, points };
+function calcWinner(guesses, wrapHMSInput) {
+  const wrapSec = toSec(wrapHMSInput);
+  const slices = boundaries(guesses);
+  
+  // Find the slice where wrapSec falls between start and end (inclusive)
+  const winningSlice = slices.find(s => wrapSec >= s.start && wrapSec <= s.end);
+  
+  if (!winningSlice) {
+    // Fallback if somehow outside range
+    return { winner: "Error", winners: [], points: 0 };
+  }
+
+  const winnerName = winningSlice.names[0];
+  const winners = winningSlice.names.map(name => ({ name }));
+  
+  // 3 points for exact HH:MM match (ignoring seconds for bonus check)
+  const firstWinnerGuess = guesses.find(g => g.name === winnerName).time;
+  const points = (wrapHMSInput.slice(0,5) === firstWinnerGuess) ? 3 : 1;
+
+  return { winner: winnerName, winners, points };
 }
     
 function getPreviousStreak(playerName) {
   if (!S.days || S.days.length === 0) return { count: 0, pill: "" };
   let count = 0;
-  // Loop backwards through history to count consecutive wins
   for (let i = S.days.length - 1; i >= 0; i--) {
     if (S.days[i].winner === playerName) {
       count++;
@@ -349,11 +397,9 @@ function getPreviousStreak(playerName) {
       break;
     }
   }
-  
-  // Only return a pill if the streak is 2 or more
   if (count >= 2) {
-    return { 
-      count: count, 
+    return {
+      count: count,
       pill: `<div class="badge b-streak">${count} Days Streak</div>`
     };
   }
@@ -373,18 +419,15 @@ function tickClock() {
   
   const countdownEl = document.getElementById('next-out-countdown');
   if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
-    const bnds = boundaries(S.today.guesses);
-    const nextBnd = bnds.find(b => b.sec > cur);
+    const slices = boundaries(S.today.guesses);
+    const nextBoundary = slices.find(s => s.end >= cur);
 
-    if (nextBnd) {
-      const diff = nextBnd.sec - cur;
-      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(diff)}`;
+    if (nextBoundary && cur <= nextBoundary.end) {
+      const diff = (nextBoundary.end + 1) - cur;
+      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBoundary.names.join(' & ')}</span> in: ${secToHMS(diff)}`;
       countdownEl.style.display = 'block';
     } else {
-      // Find the last person in the sorted guess list (the current leader)
-      const valid = S.today.guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-      const currentLeader = valid.length > 0 ? valid[valid.length - 1].name : "tonno";
-      
+      const currentLeader = slices[slices.length - 1].names.join(' & ');
       countdownEl.innerHTML = `
         Good job <span class="countdown-name">${currentLeader}</span>!<br>
         <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
@@ -457,13 +500,12 @@ function renderPlayerMain() {
 
 function renderPlayerToday() {
   const t = S.today;
-  
   const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
-  const winnerHtml = prevWinner 
+  const winnerHtml = prevWinner
     ? `<div class="prev-winner-tag">
         <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
         <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
-       </div>` 
+       </div>`
     : '';
 
   const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -506,6 +548,7 @@ function renderPlayerToday() {
     }).join('')}
   </div>`;
   }
+
   const sg = sortedGuesses(t.guesses || []);
   const hasValidGuesses = sg.some(g => g.time);
   if (!hasValidGuesses) {
@@ -515,10 +558,10 @@ function renderPlayerToday() {
     <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
   </div>`;
   }
+
   const cur = nowSec();
   const out = eliminated(t.guesses, cur);
-  const bnds = boundaries(t.guesses);
-  const withTime = sg.filter(g => g.time);
+  const slices = boundaries(t.guesses);
   return `
   <div class="card">
     <div class="big-clock js-clock">--:--:--</div>
@@ -541,10 +584,8 @@ function renderPlayerToday() {
     }).join('')}
   </div>
   <div class="card"><div class="card-lbl">Territory Boundaries</div>
-    ${withTime.map((g,i) => {
-      const lo = i===0 ? '00:00:00' : bnds[i-1].str;
-      const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
-      return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+    ${slices.map(s => {
+      return `<div class="bnd-row"><span>${s.names.join(' & ')}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
     }).join('')}
   </div>`;
 }
@@ -585,14 +626,13 @@ function renderMain() {
 function renderToday() {
   const t = S.today;
   const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
-  const winnerHtml = prevWinner 
+  const winnerHtml = prevWinner
     ? `<div class="prev-winner-tag">
         <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
         <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
-       </div>` 
+       </div>`
     : '';
 
-  // Use the flexbox header to align "Player Status" and the Marquee
   const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
     <span>Player Status</span>
     ${winnerHtml}
@@ -644,8 +684,7 @@ function renderToday() {
     const cur = nowSec();
     const out = eliminated(t.guesses, cur);
     const sg = sortedGuesses(t.guesses);
-    const bnds = boundaries(t.guesses);
-    const withTime = sg.filter(g => g.time);
+    const slices = boundaries(t.guesses);
     return `
       ${clockCard}
       <div class="card"><div class="card-lbl">${statusHeader}</div>
@@ -664,10 +703,8 @@ function renderToday() {
         }).join('')}
       </div>
       <div class="card"><div class="card-lbl">Territory Boundaries</div>
-        ${withTime.map((g,i) => {
-          const lo = i===0 ? '00:00:00' : bnds[i-1].str;
-          const hi = i===withTime.length-1 ? '23:59:59' : bnds[i].str;
-          return `<div class="bnd-row"><span>${g.name}</span><span class="bnd-range">${lo} → ${hi}</span></div>`;
+        ${slices.map(s => {
+          return `<div class="bnd-row"><span>${s.names.join(' & ')}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
         }).join('')}
       </div>
       <div class="card">
