@@ -94,7 +94,6 @@ body::before {
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
 .sec { padding: 16px; display: none; }
 .sec.on { display: block; }
-
 .preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
 .card { background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); }
 .card-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
@@ -138,6 +137,9 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   letter-spacing: 0.05em;
   font-weight: bold;
 }
+.countdown-name {
+  text-transform: uppercase;
+    }
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
 .winner-sub { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 .winner-name { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
@@ -314,29 +316,30 @@ function startClock() {
   tickClock();
 }
 
-function tickClock() {
-  const t = nowHMS();
-  const cur = nowSec(); // Fix: Define cur so the script doesn't crash
-  document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
-  
-  const countdownEl = document.getElementById('next-out-countdown');
-  if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
-    const bnds = boundaries(S.today.guesses);
-    const nextBnd = bnds.find(b => b.sec > cur);
+    function tickClock() {
+      const t = nowHMS();
+      const cur = nowSec();
+      document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
+      
+      const countdownEl = document.getElementById('next-out-countdown');
+      if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
+        const bnds = boundaries(S.today.guesses);
+        const nextBnd = bnds.find(b => b.sec > cur);
 
-    if (nextBnd) {
-      const diff = nextBnd.sec - cur;
-      countdownEl.textContent = `Next elimination in: ${secToHMS(diff)}`;
-      countdownEl.style.display = 'block';
-    } else {
-      countdownEl.textContent = "Final territory reached";
+        if (nextBnd) {
+          const diff = nextBnd.sec - cur;
+          // We use nextBnd.nameA because that is the person eliminated at that specific time
+          countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(diff)}`;
+          countdownEl.style.display = 'block';
+        } else {
+          countdownEl.textContent = "Final territory reached";
+        }
+      } else if (countdownEl) {
+        countdownEl.style.display = 'none';
+      }
+
+      refreshStatusBadges();
     }
-  } else if (countdownEl) {
-    countdownEl.style.display = 'none';
-  }
-
-  refreshStatusBadges();
-}
 
 function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
