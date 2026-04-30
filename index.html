@@ -151,7 +151,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 }
 .prev-winner-tag span {
   display: inline-block;
-  padding-right: 50px; /* Gap between loops */
+  padding-right: 35px; /* Gap between loops */
   animation: marquee 8s linear infinite;
   color: var(--accent);
   font-weight: bold;
@@ -383,7 +383,11 @@ function tickClock() {
       const valid = S.today.guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
       const currentLeader = valid.length > 0 ? valid[valid.length - 1].name : "tonno";
       
-      countdownEl.innerHTML = `Good job <span class="countdown-name">${currentLeader}</span>, today was your lucky day!`;
+      countdownEl.innerHTML = `
+        Good job <span class="countdown-name">${currentLeader}</span>!<br>
+        <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
+      `;
+      countdownEl.style.display = 'block';
     }
   } else if (countdownEl) {
     countdownEl.style.display = 'none';
