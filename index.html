@@ -99,7 +99,7 @@ body::before {
 .card-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
 .row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
 .row:last-child { border-bottom: none; }
-.row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); flex: 1; font-weight: 500; }
+.row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); flex: 1; font-weight: 500; display: flex; align-items: center; gap: 6px; }
 .row-time { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); }
 .row-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.25rem; min-width: 28px; text-align: right; }
 .badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
@@ -312,8 +312,9 @@ function calcWinner(guesses, wrapHHMM) {
 }
     
 function getPreviousStreak(playerName) {
-  if (!S.days || S.days.length === 0) return { count: 0, text: "", pill: "" };
+  if (!S.days || S.days.length === 0) return { count: 0, pill: "" };
   let count = 0;
+  // Loop backwards through history to count consecutive wins
   for (let i = S.days.length - 1; i >= 0; i--) {
     if (S.days[i].winner === playerName) {
       count++;
@@ -321,9 +322,15 @@ function getPreviousStreak(playerName) {
       break;
     }
   }
-  if (count === 1) return { count: 1, text: "Yesterday's Winner", pill: `<div class="badge b-streak">Winner</div>` };
-  if (count > 1) return { count: count, text: `${count} Day Streak`, pill: `<div class="badge b-streak">${count} Day Streak</div>` };
-  return { count: 0, text: "", pill: "" };
+  
+  // Only return a pill if the streak is 2 or more
+  if (count >= 2) {
+    return { 
+      count: count, 
+      pill: `<div class="badge b-alive">${count} Day Streak</div>` 
+    };
+  }
+  return { count: 0, pill: "" };
 }
 
 function startClock() {
@@ -425,9 +432,9 @@ function renderPlayerToday() {
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count > 0
-      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>`
-      : '';
+    const streakHtml = streakInfo.count >= 2
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Day Streak</div>`
+  : '';
     return `
   <div class="winner-banner">
     <div class="winner-sub">🎬 Today's Winner</div>
@@ -542,9 +549,9 @@ function renderToday() {
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count > 0
-      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>`
-      : '';
+    const streakHtml = streakInfo.count >= 2
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Day Streak</div>`
+  : '';
     return `
       <div class="winner-banner">
         <div class="winner-sub">🎬 Today's Winner</div>
