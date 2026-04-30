@@ -343,7 +343,6 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
-  <div class="hdr-center">TonnoWrap powered by TotoWrap</div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${dotClass}" id="sync-dot"></span>
@@ -440,7 +439,6 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  <div class="hdr-center">TonnoWrap powered by TotoWrap</div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
@@ -637,7 +635,6 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  <div class="hdr-center">TonnoWrap powered by TotoWrap</div>
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot live" id="sync-dot"></span>
