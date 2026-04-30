@@ -327,7 +327,7 @@ function getPreviousStreak(playerName) {
   if (count >= 2) {
     return { 
       count: count, 
-      pill: `<div class="badge b-alive">${count} Day Streak</div>` 
+      pill: `<div class="badge b-alive">${count} Days Streak</div>` 
     };
   }
   return { count: 0, pill: "" };
@@ -433,7 +433,7 @@ function renderPlayerToday() {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
     const streakHtml = streakInfo.count >= 2
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Day Streak</div>`
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
   : '';
     return `
   <div class="winner-banner">
@@ -550,7 +550,7 @@ function renderToday() {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
     const streakHtml = streakInfo.count >= 2
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Day Streak</div>`
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
   : '';
     return `
       <div class="winner-banner">
