@@ -141,6 +141,12 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .countdown-name {
   text-transform: uppercase;
     }
+.prev-winner-tag {
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
 .winner-sub { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 .winner-name { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
@@ -251,7 +257,7 @@ function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   const guesses = [];
   for (const line of lines) {
-    const match = line.match(/^(.+?)\s*-\s*(\d{2}:\d{2})$/);
+    const match = line.match(/^(.+?)(?:\s*[-\s:]\s*)(\d{2}:\d{2})$/);
     if (match) {
       guesses.push({ name: match[1].trim(), time: match[2] });
     }
@@ -422,15 +428,19 @@ function renderPlayerMain() {
 
 function renderPlayerToday() {
   const t = S.today;
+  
+  const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
+  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-weight:bold; text-transform:uppercase; font-size:0.6rem;">YESTERDAY’S WINNER: ${prevWinner} 🥇</span>` : ''}`;
+  
   if (!t) {
     const last = S.days.length ? S.days[S.days.length - 1] : null;
     return `
-      <div class="empty">No active game today</div>
+      <div class="card"><div class="card-lbl">${statusHeader}</div>
+        <div class="empty" style="padding:20px 0;">No active game today</div>
+      </div>
       ${last ? `<p class="mono dim center">Last wrap: <span class="accent">${last.wrapTime}</span> · ${last.winner} won</p>` : ''}
     `;
   }
-  const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
-  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-style:italic; font-size:0.6rem;">Last Winner: ${prevWinner}</span>` : ''}`;
   
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
@@ -536,7 +546,7 @@ function renderMain() {
 function renderToday() {
   const t = S.today;
   const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
-  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-style:italic; font-size:0.6rem;">Last Winner: ${prevWinner}</span>` : ''}`;
+  const statusHeader = `Player Status ${prevWinner ? `<span class="prev-winner-tag" style="float:right; color:var(--accent); font-weight:bold; text-transform:uppercase; font-size:0.6rem;">YESTERDAY’S WINNER: ${prevWinner} 🥇</span>` : ''}`;
   
   if (!t) {
     return `<div class="card">
