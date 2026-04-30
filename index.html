@@ -175,6 +175,9 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .hist-row.open .hist-arrow { transform: rotate(90deg); }
 .hist-details { display: none; padding: 0 16px 16px; border-top: 1px solid rgba(61, 84, 51, 0.2); background: rgba(0,0,0,0.05); }
 .hist-row.open .hist-details { display: block; }
+
+/* Inline Streak Tag */
+.streak-tag { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.55rem; color: var(--accent); margin-left: 6px; letter-spacing: 0.05em; font-weight: bold; opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -312,9 +315,7 @@ function calcWinner(guesses, wrapHHMM) {
     
 function getPreviousStreak(playerName) {
   if (!S.days || S.days.length === 0) return { count: 0, text: "" };
-  
   let count = 0;
-  // Start from the last completed day in history
   for (let i = S.days.length - 1; i >= 0; i--) {
     if (S.days[i].winner === playerName) {
       count++;
@@ -322,10 +323,9 @@ function getPreviousStreak(playerName) {
       break;
     }
   }
-
-  if (count === 1) return { count: 1, text: "Yesterday's Winner" };
-  if (count > 1) return { count: count, text: ` ${count} Day Streak` };
-  return { count: 0, text: "" };
+  if (count === 1) return { count: 1, text: "Yesterday's Winner", inline: "(WINNER)" };
+  if (count > 1) return { count: count, text: `${count} Day Streak`, inline: `(${count} STREAK)` };
+  return { count: 0, text: "", inline: "" };
 }
 
 function startClock() {
@@ -334,30 +334,28 @@ function startClock() {
   tickClock();
 }
 
-    function tickClock() {
-      const t = nowHMS();
-      const cur = nowSec();
-      document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
-      
-      const countdownEl = document.getElementById('next-out-countdown');
-      if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
-        const bnds = boundaries(S.today.guesses);
-        const nextBnd = bnds.find(b => b.sec > cur);
+function tickClock() {
+  const t = nowHMS();
+  const cur = nowSec();
+  document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
+  
+  const countdownEl = document.getElementById('next-out-countdown');
+  if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
+    const bnds = boundaries(S.today.guesses);
+    const nextBnd = bnds.find(b => b.sec > cur);
 
-        if (nextBnd) {
-          const diff = nextBnd.sec - cur;
-          // We use nextBnd.nameA because that is the person eliminated at that specific time
-          countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(diff)}`;
-          countdownEl.style.display = 'block';
-        } else {
-          countdownEl.textContent = "Final territory reached";
-        }
-      } else if (countdownEl) {
-        countdownEl.style.display = 'none';
-      }
-
-      refreshStatusBadges();
+    if (nextBnd) {
+      const diff = nextBnd.sec - cur;
+      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${nextBnd.nameA}</span> in: ${secToHMS(diff)}`;
+      countdownEl.style.display = 'block';
+    } else {
+      countdownEl.textContent = "Final territory reached";
     }
+  } else if (countdownEl) {
+    countdownEl.style.display = 'none';
+  }
+  refreshStatusBadges();
+}
 
 function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
@@ -429,8 +427,8 @@ function renderPlayerToday() {
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count > 0 
-      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>` 
+    const streakHtml = streakInfo.count > 0
+      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>`
       : '';
     return `
   <div class="winner-banner">
@@ -440,12 +438,15 @@ function renderPlayerToday() {
     <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
   </div>
   <div class="card"><div class="card-lbl">Results</div>
-    ${sg.map(g => `
+    ${sg.map(g => {
+      const st = getPreviousStreak(g.name);
+      return `
       <div class="row">
-        <div class="row-name">${g.name}</div>
+        <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
         ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
         ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-      </div>`).join('')}
+      </div>`;
+    }).join('')}
   </div>`;
   }
   const sg = sortedGuesses(t.guesses || []);
@@ -468,16 +469,19 @@ function renderPlayerToday() {
     <div id="next-out-countdown" class="countdown-txt"></div>
   </div>
   <div class="card"><div class="card-lbl">Player Status</div>
-    ${sg.map(g => `
+    ${sg.map(g => {
+      const st = getPreviousStreak(g.name);
+      return `
       <div class="row">
-        <div class="row-name">${g.name}</div>
+        <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
         ${g.time ? `
           <div class="row-time">${g.time}</div>
           <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
             ${out.has(g.name) ? 'OUT' : 'ALIVE'}
           </div>
         ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-      </div>`).join('')}
+      </div>`;
+    }).join('')}
   </div>
   <div class="card"><div class="card-lbl">Territory Boundaries</div>
     ${withTime.map((g,i) => {
@@ -540,8 +544,8 @@ function renderToday() {
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const streakInfo = getPreviousStreak(t.winner);
-    const streakHtml = streakInfo.count > 0 
-      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>` 
+    const streakHtml = streakInfo.count > 0
+      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.text}</div>`
       : '';
     return `
       <div class="winner-banner">
@@ -551,17 +555,20 @@ function renderToday() {
         <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
       </div>
       <div class="card"><div class="card-lbl">Results</div>
-        ${sg.map(g => `
+        ${sg.map(g => {
+          const st = getPreviousStreak(g.name);
+          return `
           <div class="row">
-            <div class="row-name">${g.name}</div>
+            <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
             ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
             ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
       <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
     `;
   }
-  // ... rest of the admin function (Paste input, etc.)
+  
   if (t.guesses && t.guesses.length > 0) {
     const cur = nowSec();
     const out = eliminated(t.guesses, cur);
@@ -571,16 +578,19 @@ function renderToday() {
     return `
       ${clockCard}
       <div class="card"><div class="card-lbl">Player Status</div>
-        ${sg.map(g => `
+        ${sg.map(g => {
+          const st = getPreviousStreak(g.name);
+          return `
           <div class="row">
-            <div class="row-name">${g.name}</div>
+            <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
             ${g.time ? `
               <div class="row-time">${g.time}</div>
               <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
                 ${out.has(g.name) ? 'OUT' : 'ALIVE'}
               </div>
             ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
       <div class="card"><div class="card-lbl">Territory Boundaries</div>
         ${withTime.map((g,i) => {
