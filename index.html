@@ -517,10 +517,15 @@ function renderToday() {
       <div class="card">
         <div class="card-lbl">Enter Official Wrap Time</div>
         <div class="inp-wrap">
-          <label class="inp-lbl">Wrap Time (HH:MM)</label>
-          <input type="time" id="wrap-inp">
+          <label class="inp-lbl">Wrap Time (HH:MM:SS)</label>
+          <input type="text" id="wrap-inp" placeholder="18:30:45" maxlength="8" 
+            pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" 
+            style="font-family:'DM Mono',monospace;">
         </div>
-        <button class="btn btn-p" id="wrap-btn">Confirm Wrap ✓</button>
+        <div class="flex-row">
+          <button class="btn btn-s" id="set-now-btn" style="flex:1;">⏰ Set Current Time</button>
+          <button class="btn btn-p" id="wrap-btn" style="flex:1;">Confirm Wrap ✓</button>
+        </div>
       </div>
     `;
   }
@@ -708,6 +713,16 @@ window.deletePlayer = (idx) => {
   toast('Player deleted', 'ok');
   render();
 };
+
+
+function setCurrentTime() {
+  const now = nowHMS();
+  const inp = document.getElementById('wrap-inp');
+  if (inp) {
+    inp.value = now;
+    toast('Time set to ' + now, 'ok');
+  }
+}
 
 function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
