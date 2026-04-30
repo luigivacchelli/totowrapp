@@ -108,7 +108,7 @@ body::before {
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
-.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52rem; letter-spacing: 0.02em; transform: translateY(1px); }
+.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
@@ -479,7 +479,7 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  <img src="imgs/tunacan.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${dotClass}" id="sync-dot"></span>
@@ -611,7 +611,7 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  <img src="imgs/tunacan.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
@@ -848,7 +848,7 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  <img src="imgs/tunacan.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot live" id="sync-dot"></span>
