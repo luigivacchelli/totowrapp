@@ -743,6 +743,7 @@ function bindMain() {
     toast(`${winners.map(w=>w.name).join(' & ')} win +${points} pt!`, 'ok');
     render();
   });
+  document.getElementById('set-now-btn')?.addEventListener('click', setCurrentTime);
   document.getElementById('parse-btn')?.addEventListener('click', showPreview);
   document.getElementById('reset-btn')?.addEventListener('click',()=>{
     if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
