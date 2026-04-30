@@ -142,16 +142,15 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   text-transform: uppercase;
     }
 .prev-winner-tag {
-  max-width: 55%;
+  flex: 1;
+  margin-left: 10px;
   overflow: hidden;
   white-space: nowrap;
-  position: relative;
   display: flex;
-  justify-content: flex-end;
 }
 .prev-winner-tag span {
   display: inline-block;
-  padding-left: 20px; /* Gap between loops */
+  padding-right: 50px; /* Gap between loops */
   animation: marquee 8s linear infinite;
   color: var(--accent);
   font-weight: bold;
@@ -451,8 +450,8 @@ function renderPlayerToday() {
   const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
   const winnerHtml = prevWinner 
     ? `<div class="prev-winner-tag">
-        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 &nbsp;&nbsp;</span>
-        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 &nbsp;&nbsp;</span>
+        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
+        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
        </div>` 
     : '';
 
@@ -577,8 +576,8 @@ function renderToday() {
   const prevWinner = S.days && S.days.length > 0 ? S.days[S.days.length - 1].winner : null;
   const winnerHtml = prevWinner 
     ? `<div class="prev-winner-tag">
-        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 &nbsp;&nbsp;</span>
-        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 &nbsp;&nbsp;</span>
+        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
+        <span>YESTERDAY’S WINNER: ${prevWinner} 🥇 </span>
        </div>` 
     : '';
 
