@@ -102,10 +102,11 @@ body::before {
 .row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); flex: 1; font-weight: 500; }
 .row-time { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); }
 .row-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.25rem; min-width: 28px; text-align: right; }
-.badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+.badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
+.b-streak { background: rgba(240,180,40,.15); color: var(--accent); border: 1px solid rgba(240,180,40,.3); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
@@ -175,9 +176,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .hist-row.open .hist-arrow { transform: rotate(90deg); }
 .hist-details { display: none; padding: 0 16px 16px; border-top: 1px solid rgba(61, 84, 51, 0.2); background: rgba(0,0,0,0.05); }
 .hist-row.open .hist-details { display: block; }
-
-/* Inline Streak Tag */
-.streak-tag { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.55rem; color: var(--accent); margin-left: 6px; letter-spacing: 0.05em; font-weight: bold; opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -314,7 +312,7 @@ function calcWinner(guesses, wrapHHMM) {
 }
     
 function getPreviousStreak(playerName) {
-  if (!S.days || S.days.length === 0) return { count: 0, text: "" };
+  if (!S.days || S.days.length === 0) return { count: 0, text: "", pill: "" };
   let count = 0;
   for (let i = S.days.length - 1; i >= 0; i--) {
     if (S.days[i].winner === playerName) {
@@ -323,9 +321,9 @@ function getPreviousStreak(playerName) {
       break;
     }
   }
-  if (count === 1) return { count: 1, text: "Yesterday's Winner", inline: "(WINNER)" };
-  if (count > 1) return { count: count, text: `${count} Day Streak`, inline: `(${count} STREAK)` };
-  return { count: 0, text: "", inline: "" };
+  if (count === 1) return { count: 1, text: "Yesterday's Winner", pill: `<div class="badge b-streak">Winner</div>` };
+  if (count > 1) return { count: count, text: `${count} Day Streak`, pill: `<div class="badge b-streak">${count} Day Streak</div>` };
+  return { count: 0, text: "", pill: "" };
 }
 
 function startClock() {
@@ -442,7 +440,7 @@ function renderPlayerToday() {
       const st = getPreviousStreak(g.name);
       return `
       <div class="row">
-        <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
+        <div class="row-name">${g.name} ${st.pill}</div>
         ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
         ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
       </div>`;
@@ -473,7 +471,7 @@ function renderPlayerToday() {
       const st = getPreviousStreak(g.name);
       return `
       <div class="row">
-        <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
+        <div class="row-name">${g.name} ${st.pill}</div>
         ${g.time ? `
           <div class="row-time">${g.time}</div>
           <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
@@ -559,7 +557,7 @@ function renderToday() {
           const st = getPreviousStreak(g.name);
           return `
           <div class="row">
-            <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
+            <div class="row-name">${g.name} ${st.pill}</div>
             ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
             ${g.name === t.winner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
           </div>`;
@@ -582,7 +580,7 @@ function renderToday() {
           const st = getPreviousStreak(g.name);
           return `
           <div class="row">
-            <div class="row-name">${g.name}${st.inline ? `<span class="streak-tag">${st.inline}</span>` : ''}</div>
+            <div class="row-name">${g.name} ${st.pill}</div>
             ${g.time ? `
               <div class="row-time">${g.time}</div>
               <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
@@ -630,7 +628,10 @@ function renderBoard() {
   const pl = getSortedPlayerRoster();
   if(!pl.length) return '<div class="empty">No players yet</div>';
   return `<div class="card"><div class="card-lbl">Standings</div>
-${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`).join('')}
+${pl.map((p,i)=>{
+  const st = getPreviousStreak(p.name);
+  return `<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} ${st.pill}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`
+}).join('')}
 </div>`;
 }
 
