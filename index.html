@@ -189,12 +189,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .dim { color: var(--dim); } .mono { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .75rem; }
 .empty { text-align: center; padding: 44px 20px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--dim); letter-spacing: .1em; }
 .center { text-align: center; } .accent { color: var(--accent); } .red { color: var(--red); }
-
-.logo-3d-container {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto;
-}
 .loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
 .loading-screen img { max-width: 200px; }
 .loading-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
@@ -210,7 +204,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .hist-details { display: none; padding: 0 16px 16px; border-top: 1px solid rgba(61, 84, 51, 0.2); background: rgba(0,0,0,0.05); }
 .hist-row.open .hist-details { display: block; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -486,7 +479,7 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
-  <div class="logo-3d-container" id="logo-3d"></div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${dotClass}" id="sync-dot"></span>
@@ -618,7 +611,7 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  <div class="logo-3d-container" id="logo-3d"></div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
@@ -855,7 +848,7 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  <div class="logo-3d-container" id="logo-3d"></div>
+  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
     <div class="hdr-clock js-clock">--:--:--</div>
     <span class="sync-dot live" id="sync-dot"></span>
@@ -994,69 +987,6 @@ onSnapshot(STATE_REF, (snap) => {
   const dot = document.getElementById('sync-dot');
   if(dot) { dot.classList.remove('live'); dot.style.background = 'var(--red)'; }
 });
-</script>
-
-<script>
-// Initialize 3D rotating logo
-function init3DLogo(containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ 
-    alpha: true, 
-    antialias: true 
-  });
-  
-  renderer.setSize(120, 120);
-  renderer.setClearColor(0x000000, 0);
-  container.appendChild(renderer.domElement);
-  
-  // Load textures
-  const loader = new THREE.TextureLoader();
-  
-  // Create materials for each face
-  const materials = [
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/tuna-logo.png') }), // Right
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/tuna-logo.png') }), // Left
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/tuna-logo.png') }), // Top
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/tuna-logo.png') }), // Bottom
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/tonnowrap-logo.png') }), // Front (TonnoWrap)
-    new THREE.MeshBasicMaterial({ map: loader.load('imgs/totowrap-logo.png') })  // Back (TotoWrap)
-  ];
-  
-  // Create a thin box (like a coin)
-  const geometry = new THREE.BoxGeometry(2, 2, 0.3);
-  const cube = new THREE.Mesh(geometry, materials);
-  scene.add(cube);
-  
-  camera.position.z = 3;
-  
-  // Smooth continuous rotation
-  let rotation = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    rotation += 0.008; // Slow rotation speed
-    cube.rotation.y = rotation;
-    renderer.render(scene, camera);
-  }
-  animate();
-}
-
-// Initialize all logo instances when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  init3DLogo('logo-3d');
-});
-
-// Re-initialize when render() is called (for dynamic content)
-const originalRender = window.render;
-if (typeof originalRender === 'function') {
-  window.render = function() {
-    originalRender.apply(this, arguments);
-    setTimeout(() => init3DLogo('logo-3d'), 100);
-  };
-}
 </script>
 </body>
 </html>
