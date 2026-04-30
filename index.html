@@ -384,7 +384,6 @@ function tickClock() {
       const currentLeader = valid.length > 0 ? valid[valid.length - 1].name : "tonno";
       
       countdownEl.innerHTML = `Good job <span class="countdown-name">${currentLeader}</span>, today was your lucky day!`;
-      countdownEl.style.color = "var(--accent)"; // Change color to gold to celebrate
     }
   } else if (countdownEl) {
     countdownEl.style.display = 'none';
