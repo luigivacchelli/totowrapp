@@ -89,6 +89,7 @@ body::before {
   perspective: 1000px;
   margin: 0 10px;
   flex-shrink: 0;
+  overflow: visible; /* CRITICAL: allows the shadow to show below */
 }
 
 .logo-3d-inner {
@@ -97,6 +98,7 @@ body::before {
   height: 100%;
   transform-style: preserve-3d;
 }
+
 
 .face {
   position: absolute;
@@ -184,37 +186,37 @@ body::before {
   25.1%, 100% { opacity: 0; }
 }
     
-/* THE SHADOW UNDERNEATH */
+/* THE SHADOW */
 .logo-shadow {
   position: absolute;
-  bottom: -10px; /* Positions it below the logo */
-  left: 10%;
-  width: 80%;
-  height: 4px;
-  background: rgba(0, 0, 0, 0.4);
+  bottom: -6px; /* Distance below the logo */
+  left: 50%;
+  width: 40px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.6); /* Darker for visibility */
+  filter: blur(5px);
   border-radius: 50%;
-  filter: blur(4px);
-  transform: rotateX(90deg); /* Lays it flat on the floor */
+  /* Move to center and lay flat */
+  transform: translateX(-50%) rotateX(90deg); 
   
-  /* Sync with the 3s rotation of the faces */
-  animation: shadow-pulse 3s linear infinite;
-  animation-delay: 3.5s; /* Syncs with the start of the relay/loop */
+  /* Initial state: visible during Step 0 wait */
+  opacity: 0.4;
+  
+  /* SYNC: 12.5s Step 0 (static then pulse) + 12s Loop (constant pulse) */
+  animation: shadow-step0 12.5s linear forwards, shadow-loop 3s linear 12.5s infinite;
 }
 
-/* We also need a special animation for Step 0 Face 1 */
-.logo-shadow-intro {
-    /* Optional: If you want the shadow to exist during the 2s wait */
+/* Step 0: Shadow stays still for 2s, then pulses with the faces */
+@keyframes shadow-step0 {
+  0%, 16% { opacity: 0.4; transform: translateX(-50%) rotateX(90deg) scale(1); } /* 2s wait */
+  28%, 52%, 76%, 100% { transform: translateX(-50%) rotateX(90deg) scale(1.2); opacity: 0.6; }
+  40%, 64%, 88% { transform: translateX(-50%) rotateX(90deg) scale(0.7); opacity: 0.3; }
 }
 
-@keyframes shadow-pulse {
-  0%, 100% {
-    transform: rotateX(90deg) scaleX(0.5);
-    opacity: 0.2;
-  }
-  50% {
-    transform: rotateX(90deg) scaleX(1.2);
-    opacity: 0.5;
-  }
+/* Loop: Continuous pulsing every 3 seconds */
+@keyframes shadow-loop {
+  0%, 100% { transform: translateX(-50%) rotateX(90deg) scale(0.7); opacity: 0.3; }
+  50% { transform: translateX(-50%) rotateX(90deg) scale(1.2); opacity: 0.6; }
 }
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
@@ -380,11 +382,10 @@ function get3DLogoHTML() {
   return `
   <div class="logo-3d-container">
     <div class="logo-3d-inner">
-      <img src="imgs/tonnowrap.png" class="face face-1">
+      <div class="logo-shadow"></div> <img src="imgs/tonnowrap.png" class="face face-1">
       <img src="imgs/tuna.png"      class="face face-2">
       <img src="imgs/totowrap.png"  class="face face-3">
       <img src="imgs/tuna.png"      class="face face-4">
-      <div class="logo-shadow"></div>
     </div>
   </div>`;
 }
