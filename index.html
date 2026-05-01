@@ -531,28 +531,39 @@ function startClock() {
 function tickClock() {
   const t = nowHMS();
   const cur = nowSec();
+  
+  // Update all clocks on the page
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
   
   const countdownEl = document.getElementById('next-out-countdown');
-  if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
-    const slices = boundaries(S.today.guesses);
-    const nextBoundary = slices.find(s => s.end >= cur);
-
-    if (nextBoundary && cur <= nextBoundary.end) {
-      const diff = (nextBoundary.end + 1) - cur;
-      countdownEl.innerHTML = `Next elimination <span class="countdown-name">${formatNames(nextBoundary.names)}</span> in: ${secToHMS(diff)}`;
-      countdownEl.style.display = 'block';
-    } else {
-      const currentLeader = formatNames(slices[slices.length - 1].names);
-      countdownEl.innerHTML = `
-        Good job <span class="countdown-name">${currentLeader}</span>!<br>
-        <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
-      `;
-      countdownEl.style.display = 'block';
-    }
-  } else if (countdownEl) {
-    countdownEl.style.display = 'none';
+  if (!countdownEl || !S.today || !S.today.guesses || S.today.wrapTime) {
+    if (countdownEl) countdownEl.style.display = 'none';
+    return;
   }
+
+  const slices = boundaries(S.today.guesses);
+  if (slices.length === 0) return;
+
+  // Find if there is an upcoming elimination
+  const nextBoundary = slices.find(s => s.end >= cur);
+
+  // PHASE 1: Someone is still at risk
+  if (nextBoundary && cur <= nextBoundary.end) {
+    const diff = (nextBoundary.end + 1) - cur;
+    countdownEl.innerHTML = `Next elimination <span class="countdown-name">${formatNames(nextBoundary.names)}</span> in: ${secToHMS(diff)}`;
+    countdownEl.style.display = 'block';
+  } 
+  // PHASE 2: Final territory passed - The "Lucky Day"
+  else {
+    // The last slice in the array contains the player(s) who survived everything
+    const winnersToday = slices[slices.length - 1].names;
+    countdownEl.innerHTML = `
+      Good job <span class="countdown-name">${formatNames(winnersToday)}</span>!<br>
+      <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
+    `;
+    countdownEl.style.display = 'block';
+  }
+  
   refreshStatusBadges();
 }
 
