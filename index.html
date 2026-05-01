@@ -105,71 +105,53 @@ body::before {
   backface-visibility: hidden;
   object-fit: contain;
   opacity: 0;
+  
+  /* Every face spins clockwise at the same speed */
   animation-duration: 12s;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
 
-/* THE RELAY LOGIC:
-   Face 1: 0% to 25%   (Starts flat, rotates to edge)
-   Face 2: 25% to 50%  (Starts edge, rotates to flat, then to edge)
-   Face 3: 50% to 75%  (Starts edge, rotates to flat, then to edge)
-   Face 4: 75% to 100% (Starts edge, rotates to flat)
+/* THE LOGIC:
+   Each face is pre-rotated so that it is "Front Facing" (0deg)
+   exactly in the middle of its visibility window.
 */
 
+/* Face 1: Visible 0s-3s. Peak front at 0s. */
 .face-1 {
   animation-name: rot-0, snap-1;
 }
 
+/* Face 2: Visible 3s-6s. Peak front at 4.5s.
+   We offset it by -135deg so that after 4.5s (135deg of rotation),
+   it hits exactly 0deg (Flat). */
 .face-2 {
-  /* Offset by 180 so it's upright when the animation hits the 180deg mark */
-  animation-name: rot-180, snap-2;
+  animation-name: rot-90, snap-2;
 }
 
+/* Face 3: Visible 6s-9s. Peak front at 7.5s. */
 .face-3 {
-  /* No offset needed because 360 is the same as 0 */
-  animation-name: rot-0, snap-3;
+  animation-name: rot-180, snap-3;
 }
 
+/* Face 4: Visible 9s-12s. Peak front at 10.5s. */
 .face-4 {
-  /* Offset by 180 so it's upright when the animation hits the 540deg mark */
-  animation-name: rot-180, snap-4;
+  animation-name: rot-270, snap-4;
 }
 
-/* ROTATION KEYFRAMES */
-@keyframes rot-0 {
-  from { transform: rotateY(0deg); }
-  to   { transform: rotateY(360deg); }
-}
+/* INDIVIDUAL ROTATIONS
+   Each face starts at its own 'home' angle and rotates 360 degrees
+*/
+@keyframes rot-0   { from { transform: rotateY(0deg); }   to { transform: rotateY(360deg); } }
+@keyframes rot-90  { from { transform: rotateY(-90deg); } to { transform: rotateY(270deg); } }
+@keyframes rot-180 { from { transform: rotateY(-180deg); } to { transform: rotateY(180deg); } }
+@keyframes rot-270 { from { transform: rotateY(-270deg); } to { transform: rotateY(90deg); } }
 
-@keyframes rot-180 {
-  from { transform: rotateY(-180deg); }
-  to   { transform: rotateY(180deg); }
-}
-
-/* SNAP VISIBILITY KEYFRAMES */
-@keyframes snap-1 {
-  0%, 24.9% { opacity: 1; }
-  25%, 100% { opacity: 0; }
-}
-
-@keyframes snap-2 {
-  0%, 24.9% { opacity: 0; }
-  25%, 49.9% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-
-@keyframes snap-3 {
-  0%, 49.9% { opacity: 0; }
-  50%, 74.9% { opacity: 1; }
-  75%, 100% { opacity: 0; }
-}
-
-@keyframes snap-4 {
-  0%, 74.9% { opacity: 0; }
-  75%, 99.9% { opacity: 1; }
-  100% { opacity: 0; }
-}
+/* OPACITY SNAPS */
+@keyframes snap-1 { 0%, 24.9% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes snap-2 { 0%, 24.9% { opacity: 0; } 25%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes snap-3 { 0%, 49.9% { opacity: 0; } 50%, 74.9% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes snap-4 { 0%, 74.9% { opacity: 0; } 75%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
