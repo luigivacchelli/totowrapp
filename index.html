@@ -96,7 +96,7 @@ body::before {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  /* This constant rotation acts as the master clock */
+  /* Moves at a constant speed */
   animation: master-spin 12s linear infinite;
 }
 
@@ -106,40 +106,39 @@ body::before {
   height: 100%;
   backface-visibility: hidden;
   object-fit: contain;
-  opacity: 0; /* Hidden by default */
+  opacity: 0;
 }
 
-/* We arrange the faces in a cross pattern. 
-   Note: Faces 2 and 4 are rotated 180deg so that when the 
-   master-spin hits them, they appear upright to the user.
+/* The logic:
+   As the container spins POSITIVE (0 -> 90 -> 180),
+   the faces must be placed at NEGATIVE intervals
+   so they rotate INTO the front view.
 */
 .face-1 { transform: rotateY(0deg) translateZ(1px); }
 .face-2 { transform: rotateY(-90deg) translateZ(1px); }
 .face-3 { transform: rotateY(-180deg) translateZ(1px); }
 .face-4 { transform: rotateY(-270deg) translateZ(1px); }
 
-/* The Master Rotation: 0 -> 90 -> 180 -> 270 -> 360 */
 @keyframes master-spin {
   0%   { transform: rotateY(0deg); }
-  25%  { transform: rotateY(90deg); }
-  50%  { transform: rotateY(180deg); }
-  75%  { transform: rotateY(270deg); }
   100% { transform: rotateY(360deg); }
 }
 
-/* The Visibility Relay:
-   Each face is visible for exactly 25% of the total 12s loop (3 seconds).
-   The "Swap" happens at the 90-degree points where the faces are edge-on.
+/* Visibility Logic:
+   Face 1: 0% to 25% (0 to 90 degrees)
+   Face 2: 25% to 50% (90 to 180 degrees)
+   Face 3: 50% to 75% (180 to 270 degrees)
+   Face 4: 75% to 100% (270 to 360 degrees)
 */
-@keyframes face-relay {
-  0%, 24.9% { opacity: 1; }
-  25%, 100% { opacity: 0; }
-}
+@keyframes face-1-vis { 0%, 24.9% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes face-2-vis { 0%, 24.9% { opacity: 0; } 25%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes face-3-vis { 0%, 49.9% { opacity: 0; } 50%, 74.9% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes face-4-vis { 0%, 74.9% { opacity: 0; } 75%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
 
-.face-1 { animation: face-relay 12s infinite; }
-.face-2 { animation: face-relay 12s infinite -3s; } /* Delay by 1/4 */
-.face-3 { animation: face-relay 12s infinite -6s; } /* Delay by 2/4 */
-.face-4 { animation: face-relay 12s infinite -9s; } /* Delay by 3/4 */
+.face-1 { animation: face-1-vis 12s infinite; }
+.face-2 { animation: face-2-vis 12s infinite; }
+.face-3 { animation: face-3-vis 12s infinite; }
+.face-4 { animation: face-4-vis 12s infinite; }
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
