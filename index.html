@@ -895,13 +895,29 @@ function renderToday() {
         <div class="card"><div class="card-lbl">Results</div>
           ${sg.map(g => {
             const st = getPreviousStreak(g.name);
-            const isWinner = todayWinnersList.includes(g.name);
+            const isOut = out.has(g.name);
+            const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+            
+            // ADD THIS LINE: Calculate the % for this player
+            const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+
             return `
             <div class="row">
-              <div class="row-name">${g.name} ${g.time ? st.pill : ''}</div>
+              <div class="row-name">
+                <span id="name-span-${g.name}">${displayName}</span>
+                ${st.pill}
+              </div>
               
-              ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-              ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+              ${g.time ? `
+                <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+                  ${prob.text}
+                </div>
+                
+                <div class="row-time">${g.time}</div>
+                <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                  ${isOut ? 'OUT' : 'ALIVE'}
+                </div>
+              ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
             </div>`;
           }).join('')}
         </div>
