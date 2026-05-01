@@ -393,6 +393,7 @@ function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.get
 function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   const guesses = [];
+  const formatErrors = []; // Track invalid formats here
   let wrapTime = null;
   
   for (const line of lines) {
@@ -403,13 +404,20 @@ function parsePaste(text) {
       continue;
     }
     
-    // Normal player guess
+    // Check for correct format: Name - HH:MM
     const match = line.match(/^(.+?)(?:\s*[-\s:]\s*)(\d{2}:\d{2})$/);
     if (match) {
       guesses.push({ name: match[1].trim(), time: match[2] });
+    } else {
+      // Check if it's a "broken" bet (e.g., 1O:22)
+      // This looks for Name - [something that isn't quite a 4-digit time]
+      const errorMatch = line.match(/^(.+?)(?:\s*[-\s:]\s*)(.+)$/);
+      if (errorMatch && !line.toLowerCase().includes('wrap')) {
+        formatErrors.push({ name: errorMatch[1].trim(), rawTime: errorMatch[2] });
+      }
     }
   }
-  return { guesses, wrapTime };
+  return { guesses, wrapTime, formatErrors };
 }
 
 function buildFullGuessList(parsed) {
@@ -1084,8 +1092,22 @@ function showPreview() {
   const text = inp?.value || '';
   if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
   
-  const { guesses: parsed, wrapTime } = parsePaste(text);
-  if (!parsed.length && !wrapTime) { toast('No valid data found', 'err'); return; }
+  const { guesses: parsed, wrapTime, formatErrors } = parsePaste(text);
+  if (!parsed.length && !wrapTime && (!formatErrors || !formatErrors.length)) {
+      toast('No valid data found', 'err');
+      return;
+  
+  const errorWarning = formatErrors.length > 0
+    ? `<div class="card" style="border: 1px solid var(--red); background: rgba(214, 86, 86, 0.1); margin-bottom: 12px;">
+         <p class="red" style="font-weight:bold; font-size:0.8rem; text-align:center;">
+           ⚠️ TYPO DETECTED (Invalid Time Format):<br>
+           ${formatErrors.map(e => `${e.name}: "${e.rawTime}"`).join('<br>')}
+         </p>
+         <p class="dim" style="font-size:0.6rem; text-align:center; margin-top:4px;">
+           Check for letters like 'O' instead of '0'. Use HH:MM format.
+         </p>
+       </div>`
+    : '';
   
   const nameCounts = {};
   parsed.forEach(g => {
@@ -1126,7 +1148,7 @@ function showPreview() {
   </div>
 </div>
 <div style="padding:16px">
-  <!-- 2. INSERT WARNING MESSAGE HERE -->
+  ${errorWarning}
   ${duplicateWarning}
 
   <div class="card">
