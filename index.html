@@ -79,10 +79,42 @@ body::before {
 }
 
 .hdr { position: sticky; top: 0; z-index: 200; background: var(--bg);  backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); padding: 10px 18px 8px; display: flex; justify-content: space-between; align-items: center; height: 50px}
-.hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 5px; flex: 1; justify-content: flex-end; min-width:0; }
+.hdr-right { font-family: 'Alte Haas Grotesk'; text-align: right; display: flex; align-items: center; gap: 4px; flex: 1; justify-content: flex-end; min-width:0; }
 .hdr-day { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; flex: 1; }
-.hdr-logo { height: 30px; width: auto; object-fit: contain; margin: 0 10px; flex-shrink: 0; }
-.hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .03em; white-space: nowrap; }
+
+/* 3D LOGO STYLES */
+.logo-3d-container {
+  height: 30px;
+  width: 60px; /* Adjust if logos are wider/narrower */
+  perspective: 1000px;
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+.logo-3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: spin-square 20s linear infinite; /* 5s per face x 4 faces */
+}
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  object-fit: contain;
+}
+.face-front { transform: rotateY(0deg) translateZ(1px); }
+.face-right { transform: rotateY(90deg) translateZ(1px); }
+.face-back  { transform: rotateY(180deg) translateZ(1px); }
+.face-left  { transform: rotateY(270deg) translateZ(1px); }
+
+@keyframes spin-square {
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+.hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
 .nav-btn { flex: 1; padding: 11px 4px; background: none; border: none; border-bottom: 2px solid transparent; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); cursor: pointer; transition: color .2s, border-color .2s; }
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
@@ -239,6 +271,19 @@ let _tab = 'today';
 let _clockInterval = null;
 let _toastTO = null;
 let _writing = false;
+
+// Helper function for the 3D Logo HTML
+function get3DLogoHTML() {
+  return `
+  <div class="logo-3d-container">
+    <div class="logo-3d-inner">
+      <img src="imgs/tonnowrap.png" class="face face-front">
+      <img src="imgs/tuna.png"      class="face face-right">
+      <img src="imgs/totowrap.png"  class="face face-back">
+      <img src="imgs/tuna.png"      class="face face-left">
+    </div>
+  </div>`;
+}
 
 // Helper to beautifully format an array of names using commas and "and"
 function formatNames(names) {
@@ -482,7 +527,7 @@ function renderPlayerMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  ${get3DLogoHTML()}
   <div class="hdr-right">
     <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${dotClass}"></span>
@@ -619,7 +664,7 @@ function renderMain() {
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  ${get3DLogoHTML()}
   <div class="hdr-right">
     <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
@@ -865,9 +910,9 @@ function showPreview() {
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
+  ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-clock">Estimated Wrap: ${wrapTime || 'Missing'}</div>
+    <div class="hdr-wrap">Est. Wrap: ${wrapTime || 'Missing'}</div>
     <span class="sync-dot live js-sync-dot"></span>
   </div>
 </div>
