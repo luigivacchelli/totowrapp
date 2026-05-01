@@ -560,9 +560,17 @@ function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
   const cur=nowSec(), out=eliminated(S.today.guesses,cur);
   S.today.guesses.forEach(g=>{
-    const el=document.getElementById('st-'+g.name); if(!el) return;
-    if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
-    else{el.className='badge b-alive';el.textContent='ALIVE';}
+    const el=document.getElementById('st-'+g.name);
+    const nameEl = document.getElementById('name-span-'+g.name);
+    if(!el || !nameEl) return;
+    if(out.has(g.name)){
+      el.className='badge b-out';el.textContent='OUT';
+      nameEl.textContent = g.name + ' 🍣';
+    }
+    else{
+      el.className='badge b-alive';el.textContent='ALIVE';
+      nameEl.textContent = g.name + ' 🐟';
+    }
   });
 }
 
@@ -700,13 +708,15 @@ function renderPlayerToday() {
   <div class="card"><div class="card-lbl">${statusHeader}</div>
     ${sg.map(g => {
       const st = getPreviousStreak(g.name);
+      const isOut = out.has(g.name);
+      const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
       return `
       <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
+        <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
         ${g.time ? `
           <div class="row-time">${g.time}</div>
-          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${isOut ? 'OUT' : 'ALIVE'}
           </div>
         ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
       </div>`;
@@ -832,13 +842,15 @@ function renderToday() {
       <div class="card"><div class="card-lbl">${statusHeader}</div>
         ${sg.map(g => {
           const st = getPreviousStreak(g.name);
+          const isOut = out.has(g.name);
+          const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
           return `
           <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
+            <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
             ${g.time ? `
               <div class="row-time">${g.time}</div>
-              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+              <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                ${isOut ? 'OUT' : 'ALIVE'}
               </div>
             ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
           </div>`;
