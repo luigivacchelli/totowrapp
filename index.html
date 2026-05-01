@@ -91,48 +91,94 @@ body::before {
   flex-shrink: 0;
 }
 
+/* We don't rotate the inner container anymore; we rotate the faces directly 
+   to keep their timing perfectly in sync with their individual visibility. */
 .logo-3d-inner {
   position: relative;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  /* Rotate counter-clockwise to pull faces 2, 3, 4 into view in order */
-  animation: master-spin 12s linear infinite;
 }
 
 .face {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden; /* Vital to hide the 'back' of images */
+  backface-visibility: hidden;
   object-fit: contain;
-  opacity: 0;
+  opacity: 0; /* Default to hidden */
+  
+  /* Every face uses the same rotation speed/timing */
+  animation-duration: 12s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
-/* The + Configuration */
-.face-1 { transform: rotateY(0deg) translateZ(1px); }
-.face-2 { transform: rotateY(90deg) translateZ(1px); }
-.face-3 { transform: rotateY(180deg) translateZ(1px); }
-.face-4 { transform: rotateY(270deg) translateZ(1px); }
-
-@keyframes master-spin {
-  0%   { transform: rotateY(0deg); }
-  100% { transform: rotateY(-360deg); }
+/* --- FACE 1: 0° -> 90° --- */
+.face-1 {
+  animation-name: rotate-face, face-1-snap;
 }
 
-/* Visibility Relay: 
-   Swaps happen at 25%, 50%, 75% 
-   This is when the container is at -90, -180, -270 degrees
-*/
-@keyframes face-1-vis { 0%, 24.9% { opacity: 1; } 25%, 100% { opacity: 0; } }
-@keyframes face-2-vis { 0%, 24.9% { opacity: 0; } 25%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes face-3-vis { 0%, 49.9% { opacity: 0; } 50%, 74.9% { opacity: 1; } 75%, 100% { opacity: 0; } }
-@keyframes face-4-vis { 0%, 74.9% { opacity: 0; } 75%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+/* --- FACE 2: 90° -> 270° --- */
+/* Note: We pre-rotate the image -180deg so it is upright when it reaches the user */
+.face-2 {
+  transform: rotateY(-180deg);
+  animation-name: rotate-face-flipped, face-2-snap;
+}
 
-.face-1 { animation: face-1-vis 12s infinite; }
-.face-2 { animation: face-2-vis 12s infinite; }
-.face-3 { animation: face-3-vis 12s infinite; }
-.face-4 { animation: face-4-vis 12s infinite; }
+/* --- FACE 3: 270° -> 450° --- */
+.face-3 {
+  animation-name: rotate-face, face-3-snap;
+}
+
+/* --- FACE 4: 450° -> 630° --- */
+.face-4 {
+  transform: rotateY(-180deg);
+  animation-name: rotate-face-flipped, face-4-snap;
+}
+
+/* MASTER ROTATIONS */
+@keyframes rotate-face {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
+
+/* This variation ensures that faces 2 and 4 (the tuna) are not mirrored 
+   when they rotate into view. */
+@keyframes rotate-face-flipped {
+  from { transform: rotateY(-180deg); }
+  to   { transform: rotateY(180deg); }
+}
+
+/* OPACITY SNAPS (Based on your degree logic) */
+/* Leg 1: 0 to 90 degrees (first 25% of the 12s loop) */
+@keyframes face-1-snap {
+  0%, 24.9% { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+/* Leg 2: 90 to 270 degrees (25% to 50% of the 12s loop) */
+/* Wait... technically 90 to 270 is 180 degrees. 
+   To keep it even, we divide the 12s loop into 3s chunks (25% each) */
+@keyframes face-2-snap {
+  0%, 24.9% { opacity: 0; }
+  25%, 49.9% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Leg 3: 50% to 75% */
+@keyframes face-3-snap {
+  0%, 49.9% { opacity: 0; }
+  50%, 74.9% { opacity: 1; }
+  75%, 100% { opacity: 0; }
+}
+
+/* Leg 4: 75% to 100% */
+@keyframes face-4-snap {
+  0%, 74.9% { opacity: 0; }
+  75%, 99.9% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
