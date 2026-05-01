@@ -426,8 +426,24 @@ function buildFullGuessList(parsed) {
 
 function midSec(a,b) { return Math.floor((a+b)/2); }
 function sortedGuesses(guesses) {
-  const withTime = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
-  const missing = guesses.filter(g => !g.time);
+  // 1. Filter and sort players who DID bet
+  const withTime = guesses.filter(g => g.time).sort((a, b) => {
+    const secA = toSec(a.time);
+    const secB = toSec(b.time);
+    
+    // If times are different, sort by time (ascending)
+    if (secA !== secB) return secA - secB;
+    
+    // If times are the same, sort alphabetically
+    return a.name.localeCompare(b.name);
+  });
+
+  // 2. Filter and sort players who forgot to bet alphabetically
+  const missing = guesses.filter(g => !g.time).sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
+
+  // Combine them: those with bets on top, missing at the bottom
   return [...withTime, ...missing];
 }
     
