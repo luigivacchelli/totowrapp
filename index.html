@@ -609,7 +609,7 @@ function refreshStatusBadges() {
     const el=document.getElementById('st-'+g.name);
     const nameEl = document.getElementById('name-span-'+g.name);
     if(!el || !nameEl) return;
-    if(!g.time || out.has(g.name)){
+    if(out.has(g.name)){
       el.className='badge b-out';el.textContent='OUT';
       nameEl.textContent = g.name + ' 🍣';
     }
@@ -725,7 +725,7 @@ function renderPlayerToday() {
       <div class="row">
         <div class="row-name">
           <span id="name-span-${g.name}">${displayName}</span>
-          ${st.pill}
+          ${g.time ? st.pill : ''}
         </div>
         
         ${g.time ? `
@@ -779,7 +779,7 @@ function renderPlayerToday() {
       <div class="row">
         <div class="row-name">
           <span id="name-span-${g.name}">${displayName}</span>
-          ${st.pill}
+          ${g.time ? st.pill : ''}
         </div>
         
         ${g.time ? `
@@ -901,7 +901,7 @@ function renderToday() {
             <div class="row">
               <div class="row-name">
                 <span id="name-span-${g.name}">${displayName}</span>
-                ${st.pill}
+                ${g.time ? st.pill : ''}
               </div>
               
               ${g.time ? `
@@ -937,7 +937,8 @@ function renderToday() {
           
           return `
           <div class="row">
-            <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
+            <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${g.time ? st.pill : ''}
+            </div>
             ${g.time ? `
               <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
                 ${prob.text}
