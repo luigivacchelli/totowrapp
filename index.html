@@ -729,9 +729,9 @@ function renderPlayerToday() {
         </div>
         
         ${g.time ? `
-          <div class"badge b-missing"><div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+          <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
             ${prob.text}
-          </div></div>
+          </div>
           
           <div class="row-time">${g.time}</div>
           
@@ -783,9 +783,9 @@ function renderPlayerToday() {
         </div>
         
         ${g.time ? `
-         <div class"badge b-missing"><div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+         <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
             ${prob.text}
-          </div></div>
+          </div>
           
           <div class="row-time">${g.time}</div>
           
@@ -905,9 +905,9 @@ function renderToday() {
               </div>
               
               ${g.time ? `
-                <div class"badge b-missing"><div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
-            ${prob.text}
-          </div></div>
+                <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+                  ${prob.text}
+                </div>
                 
                 <div class="row-time">${g.time}</div>
                 <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
@@ -939,9 +939,9 @@ function renderToday() {
           <div class="row">
             <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
             ${g.time ? `
-              <div class"badge b-missing"><div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
-            ${prob.text}
-          </div></div>
+              <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+                ${prob.text}
+              </div>
               <div class="row-time">${g.time}</div>
               <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
                 ${isOut ? 'OUT' : 'ALIVE'}
