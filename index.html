@@ -183,6 +183,39 @@ body::before {
   25%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
   25.1%, 100% { opacity: 0; }
 }
+    
+/* THE SHADOW UNDERNEATH */
+.logo-shadow {
+  position: absolute;
+  bottom: -10px; /* Positions it below the logo */
+  left: 10%;
+  width: 80%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  filter: blur(4px);
+  transform: rotateX(90deg); /* Lays it flat on the floor */
+  
+  /* Sync with the 3s rotation of the faces */
+  animation: shadow-pulse 3s linear infinite;
+  animation-delay: 3.5s; /* Syncs with the start of the relay/loop */
+}
+
+/* We also need a special animation for Step 0 Face 1 */
+.logo-shadow-intro {
+    /* Optional: If you want the shadow to exist during the 2s wait */
+}
+
+@keyframes shadow-pulse {
+  0%, 100% {
+    transform: rotateX(90deg) scaleX(0.5);
+    opacity: 0.2;
+  }
+  50% {
+    transform: rotateX(90deg) scaleX(1.2);
+    opacity: 0.5;
+  }
+}
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
@@ -351,6 +384,7 @@ function get3DLogoHTML() {
       <img src="imgs/tuna.png"      class="face face-2">
       <img src="imgs/totowrap.png"  class="face face-3">
       <img src="imgs/tuna.png"      class="face face-4">
+      <div class="logo-shadow"></div>
     </div>
   </div>`;
 }
