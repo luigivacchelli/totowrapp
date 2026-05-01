@@ -203,6 +203,11 @@ body::before {
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
 .b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
+.status-emoji {
+  font-size: 0.9rem;
+  margin-left: 5px;
+  vertical-align: middle;
+}
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
@@ -560,9 +565,20 @@ function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
   const cur=nowSec(), out=eliminated(S.today.guesses,cur);
   S.today.guesses.forEach(g=>{
-    const el=document.getElementById('st-'+g.name); if(!el) return;
-    if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
-    else{el.className='badge b-alive';el.textContent='ALIVE';}
+    const el=document.getElementById('st-'+g.name); 
+    const emojiEl=document.getElementById('emoji-'+g.name); // Target the emoji span
+    if(!el) return;
+    
+    if(out.has(g.name)){
+      el.className='badge b-out';
+      el.textContent='OUT';
+      if(emojiEl) emojiEl.textContent = '🍣'; // Change to Sushi
+    }
+    else{
+      el.className='badge b-alive';
+      el.textContent='ALIVE';
+      if(emojiEl) emojiEl.textContent = '🐟'; // Keep as Fish
+    }
   });
 }
 
@@ -644,34 +660,38 @@ function renderPlayerToday() {
     `;
   }
   
+  // --- STATE 1: RESULTS (AFTER WRAP) ---
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
     const todayWinnerStr = formatNames(todayWinnersList);
-    // Grab streak for the first winner for simplicity, or omit if multiple to avoid clutter
     const streakInfo = getPreviousStreak(todayWinnersList[0]);
     const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2)
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
-  : '';
+      ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
+      : '';
+
     return `
-  <div class="winner-banner">
-    <div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div>
-    <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
-    ${streakHtml}
-    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
-  </div>
-  <div class="card"><div class="card-lbl">Results</div>
-    ${sg.map(g => {
-      const st = getPreviousStreak(g.name);
-      const isWinner = todayWinnersList.includes(g.name);
-      return `
-      <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
-        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-      </div>`;
-    }).join('')}
-  </div>`;
+    <div class="winner-banner">
+      <div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div>
+      <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
+      ${streakHtml}
+      <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+    </div>
+    <div class="card"><div class="card-lbl">Results</div>
+      ${sg.map(g => {
+        const st = getPreviousStreak(g.name);
+        const isWinner = todayWinnersList.includes(g.name);
+        // If they didn't win, they become sushi
+        const finalEmoji = isWinner ? '🏆' : '🍣'; 
+        
+        return `
+        <div class="row">
+          <div class="row-name">${g.name} ${st.pill} <span>${finalEmoji}</span></div>
+          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+          ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
   }
 
   const sg = sortedGuesses(t.guesses || []);
@@ -684,10 +704,12 @@ function renderPlayerToday() {
   </div>`;
   }
 
+  // --- STATE 2: LIVE GAME ---
   const cur = nowSec();
   const out = eliminated(t.guesses, cur);
   const slices = boundaries(t.guesses);
   const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+
   return `
   <div class="card">
     <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
@@ -700,13 +722,19 @@ function renderPlayerToday() {
   <div class="card"><div class="card-lbl">${statusHeader}</div>
     ${sg.map(g => {
       const st = getPreviousStreak(g.name);
+      const isEliminated = out.has(g.name);
+      // Logic: If eliminated -> Sushi, else -> Fish
+      const statusEmoji = isEliminated ? '🍣' : '🐟';
+
       return `
       <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
+        <div class="row-name">
+          ${g.name} ${st.pill} <span id="emoji-${g.name}">${statusEmoji}</span>
+        </div>
         ${g.time ? `
           <div class="row-time">${g.time}</div>
-          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          <div class="badge ${isEliminated ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${isEliminated ? 'OUT' : 'ALIVE'}
           </div>
         ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
       </div>`;
@@ -791,6 +819,7 @@ function renderToday() {
       <div id="next-out-countdown" class="countdown-txt"></div>
     </div>`;
 
+  // --- STATE 1: RESULTS (AFTER WRAP) ---
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
     const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
@@ -810,9 +839,10 @@ function renderToday() {
         ${sg.map(g => {
           const st = getPreviousStreak(g.name);
           const isWinner = todayWinnersList.includes(g.name);
+          const finalEmoji = isWinner ? '🏆' : '🍣'; // Winners get trophy, others are sushi
           return `
           <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
+            <div class="row-name">${g.name} ${st.pill} <span>${finalEmoji}</span></div>
             ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
             ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
           </div>`;
@@ -822,6 +852,7 @@ function renderToday() {
     `;
   }
   
+  // --- STATE 2: LIVE GAME ---
   if (t.guesses && t.guesses.length > 0) {
     const cur = nowSec();
     const out = eliminated(t.guesses, cur);
@@ -832,13 +863,17 @@ function renderToday() {
       <div class="card"><div class="card-lbl">${statusHeader}</div>
         ${sg.map(g => {
           const st = getPreviousStreak(g.name);
+          const isEliminated = out.has(g.name);
+          const statusEmoji = isEliminated ? '🍣' : '🐟'; // Sushi if out, Fish if alive
           return `
           <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
+            <div class="row-name">
+              ${g.name} ${st.pill} <span id="emoji-${g.name}">${statusEmoji}</span>
+            </div>
             ${g.time ? `
               <div class="row-time">${g.time}</div>
-              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+              <div class="badge ${isEliminated ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                ${isEliminated ? 'OUT' : 'ALIVE'}
               </div>
             ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
           </div>`;
