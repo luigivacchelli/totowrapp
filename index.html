@@ -91,8 +91,6 @@ body::before {
   flex-shrink: 0;
 }
 
-/* We don't rotate the inner container anymore; we rotate the faces directly 
-   to keep their timing perfectly in sync with their individual visibility. */
 .logo-3d-inner {
   position: relative;
   width: 100%;
@@ -106,75 +104,68 @@ body::before {
   height: 100%;
   backface-visibility: hidden;
   object-fit: contain;
-  opacity: 0; /* Default to hidden */
-  
-  /* Every face uses the same rotation speed/timing */
+  opacity: 0;
   animation-duration: 12s;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
 
-/* --- FACE 1: 0° -> 90° --- */
+/* THE RELAY LOGIC:
+   Face 1: 0% to 25%   (Starts flat, rotates to edge)
+   Face 2: 25% to 50%  (Starts edge, rotates to flat, then to edge)
+   Face 3: 50% to 75%  (Starts edge, rotates to flat, then to edge)
+   Face 4: 75% to 100% (Starts edge, rotates to flat)
+*/
+
 .face-1 {
-  animation-name: rotate-face, face-1-snap;
+  animation-name: rot-0, snap-1;
 }
 
-/* --- FACE 2: 90° -> 270° --- */
-/* Note: We pre-rotate the image -180deg so it is upright when it reaches the user */
 .face-2 {
-  transform: rotateY(-180deg);
-  animation-name: rotate-face-flipped, face-2-snap;
+  /* Offset by 180 so it's upright when the animation hits the 180deg mark */
+  animation-name: rot-180, snap-2;
 }
 
-/* --- FACE 3: 270° -> 450° --- */
 .face-3 {
-  animation-name: rotate-face, face-3-snap;
+  /* No offset needed because 360 is the same as 0 */
+  animation-name: rot-0, snap-3;
 }
 
-/* --- FACE 4: 450° -> 630° --- */
 .face-4 {
-  transform: rotateY(-180deg);
-  animation-name: rotate-face-flipped, face-4-snap;
+  /* Offset by 180 so it's upright when the animation hits the 540deg mark */
+  animation-name: rot-180, snap-4;
 }
 
-/* MASTER ROTATIONS */
-@keyframes rotate-face {
+/* ROTATION KEYFRAMES */
+@keyframes rot-0 {
   from { transform: rotateY(0deg); }
   to   { transform: rotateY(360deg); }
 }
 
-/* This variation ensures that faces 2 and 4 (the tuna) are not mirrored 
-   when they rotate into view. */
-@keyframes rotate-face-flipped {
+@keyframes rot-180 {
   from { transform: rotateY(-180deg); }
   to   { transform: rotateY(180deg); }
 }
 
-/* OPACITY SNAPS (Based on your degree logic) */
-/* Leg 1: 0 to 90 degrees (first 25% of the 12s loop) */
-@keyframes face-1-snap {
+/* SNAP VISIBILITY KEYFRAMES */
+@keyframes snap-1 {
   0%, 24.9% { opacity: 1; }
   25%, 100% { opacity: 0; }
 }
 
-/* Leg 2: 90 to 270 degrees (25% to 50% of the 12s loop) */
-/* Wait... technically 90 to 270 is 180 degrees. 
-   To keep it even, we divide the 12s loop into 3s chunks (25% each) */
-@keyframes face-2-snap {
+@keyframes snap-2 {
   0%, 24.9% { opacity: 0; }
   25%, 49.9% { opacity: 1; }
   50%, 100% { opacity: 0; }
 }
 
-/* Leg 3: 50% to 75% */
-@keyframes face-3-snap {
+@keyframes snap-3 {
   0%, 49.9% { opacity: 0; }
   50%, 74.9% { opacity: 1; }
   75%, 100% { opacity: 0; }
 }
 
-/* Leg 4: 75% to 100% */
-@keyframes face-4-snap {
+@keyframes snap-4 {
   0%, 74.9% { opacity: 0; }
   75%, 99.9% { opacity: 1; }
   100% { opacity: 0; }
