@@ -550,15 +550,22 @@ function tickClock() {
   // PHASE 1: Someone is still at risk
   if (nextBoundary && cur <= nextBoundary.end) {
     const diff = (nextBoundary.end + 1) - cur;
-    countdownEl.innerHTML = `Next elimination <span class="countdown-name">${formatNames(nextBoundary.names)}</span> in: ${secToHMS(diff)}`;
+    
+    // Wrap ONLY the individual names in the uppercase span
+    const styledNames = nextBoundary.names.map(name => `<span class="countdown-name">${name}</span>`);
+    
+    countdownEl.innerHTML = `Next elimination ${formatNames(styledNames)} in: ${secToHMS(diff)}`;
     countdownEl.style.display = 'block';
   } 
   // PHASE 2: Final territory passed - The "Lucky Day"
   else {
-    // The last slice in the array contains the player(s) who survived everything
     const winnersToday = slices[slices.length - 1].names;
+    
+    // Wrap ONLY the individual names in the uppercase span
+    const styledWinners = winnersToday.map(name => `<span class="countdown-name">${name}</span>`);
+    
     countdownEl.innerHTML = `
-      Good job <span class="countdown-name">${formatNames(winnersToday)}</span>!<br>
+      Good job ${formatNames(styledWinners)}!<br>
       <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
     `;
     countdownEl.style.display = 'block';
