@@ -609,7 +609,7 @@ function refreshStatusBadges() {
     const el=document.getElementById('st-'+g.name);
     const nameEl = document.getElementById('name-span-'+g.name);
     if(!el || !nameEl) return;
-    if(out.has(g.name)){
+    if(!g.time || out.has(g.name)){
       el.className='badge b-out';el.textContent='OUT';
       nameEl.textContent = g.name + ' 🍣';
     }
