@@ -822,7 +822,6 @@ function renderToday() {
             const isWinner = todayWinnersList.includes(g.name);
             return `
             <div class="row">
-              /* CHANGE IS RIGHT HERE */
               <div class="row-name">${g.name} ${g.time ? st.pill : ''}</div>
               
               ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
