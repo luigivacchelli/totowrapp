@@ -414,7 +414,7 @@ function renderPlayerMain() {
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Wrap: ${estWrap}</div>
+    <div class="hdr-wrap">Wrap ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${dotClass}"></span>
   </div>
 </div>
@@ -466,7 +466,7 @@ function bindPlayerNav() { document.querySelectorAll('.nav-btn').forEach(btn => 
 
 function renderMain() {
   const totalDays=S.days.length+(S.today?1:0), estWrap = S.today?.estWrap || '--:--';
-  return `<div class="hdr"><div class="hdr-day">Day ${totalDays||'—'}/50</div>${get3DLogoHTML()}<div class="hdr-right"><div class="hdr-wrap">Wrap: ${estWrap}</div><span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}"></span></div></div>
+  return `<div class="hdr"><div class="hdr-day">Day ${totalDays||'—'}/50</div>${get3DLogoHTML()}<div class="hdr-right"><div class="hdr-wrap">Wrap ${estWrap}</div><span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}"></span></div></div>
 <nav class="nav"><button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button><button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button><button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button><button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button></nav>
 <div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div><div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div><div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div><div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
 }
