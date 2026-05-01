@@ -1227,22 +1227,36 @@ function bindMain() {
     if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
   });
 }
+    
+let _hasLoadedOnce = false;
 
 if(!IS_ADMIN) render();
+
 onSnapshot(STATE_REF, (snap) => {
   if(_writing) return;
+  
   if(snap.exists()) {
     S = snap.data();
     if (!S.playerRoster) S.playerRoster = S.players || [];
   } else {
     S = { playerRoster: [], scores: {}, days: [], today: null };
   }
-  render();
+
+  // NEW: Forced 5-second delay for the first load only
+  if (!_hasLoadedOnce) {
+    _hasLoadedOnce = true;
+    setTimeout(() => {
+      render();
+    }, 5000); // 5000ms = 5 seconds
+  } else {
+    // Normal instant updates for any data changes after the first load
+    render();
+  }
   
   // Update all dots
   document.querySelectorAll('.js-sync-dot').forEach(dot => {
     dot.classList.add('live');
-    dot.style.background = ''; // Reset manual error color
+    dot.style.background = '';
   });
 }, (err) => {
   console.error("Firestore error:", err);
