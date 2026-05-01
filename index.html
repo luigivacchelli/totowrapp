@@ -285,13 +285,23 @@ function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.get
 function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   const guesses = [];
+  let wrapTime = null;
+  
   for (const line of lines) {
+    // Check for "Wrap - HH:MM" line
+    const wrapMatch = line.match(/^wrap\s*[-\s:]\s*(\d{2}:\d{2})$/i);
+    if (wrapMatch) {
+      wrapTime = wrapMatch[1];
+      continue;
+    }
+    
+    // Normal player guess
     const match = line.match(/^(.+?)(?:\s*[-\s:]\s*)(\d{2}:\d{2})$/);
     if (match) {
       guesses.push({ name: match[1].trim(), time: match[2] });
     }
   }
-  return guesses;
+  return { guesses, wrapTime };
 }
 
 function buildFullGuessList(parsed) {
@@ -476,13 +486,14 @@ function renderPlayer(app) {
 function renderPlayerMain() {
   const dayNum = S.days.length + (S.today ? 1 : 0);
   const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+  const estWrap = S.today?.estWrap || '--:--';
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${dotClass}" id="sync-dot"></span>
+    <div class="hdr-clock">Est. Wrap: ${estWrap}</div>
+    <span class="sync-dot js-sync-dot ${dotClass}"></span>
   </div>
 </div>
 <nav class="nav">
@@ -569,9 +580,13 @@ function renderPlayerToday() {
   const cur = nowSec();
   const out = eliminated(t.guesses, cur);
   const slices = boundaries(t.guesses);
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
   return `
   <div class="card">
-    <div class="big-clock js-clock">--:--:--</div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
+      <div class="big-clock js-clock">--:--:--</div>
+      <span class="sync-dot js-sync-dot ${dotClass}" style="width: 12px; height: 12px;"></span>
+    </div>
     <div class="big-clock-lbl">Live Time</div>
     <div id="next-out-countdown" class="countdown-txt"></div>
   </div>
@@ -608,13 +623,14 @@ function bindPlayerNav() {
 
 function renderMain() {
   const totalDays=S.days.length+(S.today?1:0);
+  const estWrap = S.today?.estWrap || '--:--';
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
   <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" id="sync-dot" title="Live sync"></span>
+    <div class="hdr-clock">Est. Wrap: ${estWrap}</div>
+    <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
   </div>
 </div>
 <nav class="nav">
@@ -657,9 +673,13 @@ function renderToday() {
     </div>`;
   }
 
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
   const clockCard = `
     <div class="card">
-      <div class="big-clock js-clock">--:--:--</div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
+        <div class="big-clock js-clock">--:--:--</div>
+        <span class="sync-dot js-sync-dot ${dotClass}" style="width: 12px; height: 12px;"></span>
+      </div>
       <div class="big-clock-lbl">Live Time</div>
       <div id="next-out-countdown" class="countdown-txt"></div>
     </div>`;
@@ -740,8 +760,9 @@ function renderToday() {
   return `
     <div class="card">
       <div class="card-lbl">Paste Today's Guesses</div>
-      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line)</p>
-      <textarea id="paste-inp" placeholder="Luigi - 18:30
+      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line). Include "Wrap - HH:MM"</p>
+      <textarea id="paste-inp" placeholder="Wrap - 18:30
+Luigi - 18:30
 Daniela - 19:15
 Marco - 17:45"></textarea>
       <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
@@ -831,8 +852,10 @@ function showPreview() {
   const inp = document.getElementById('paste-inp');
   const text = inp?.value || '';
   if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
-  const parsed = parsePaste(text);
-  if (!parsed.length) { toast('No valid guesses found', 'err'); return; }
+  
+  const { guesses: parsed, wrapTime } = parsePaste(text);
+  if (!parsed.length && !wrapTime) { toast('No valid data found', 'err'); return; }
+  
   const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
   const newPlayers = [];
   parsed.forEach(g => {
@@ -845,16 +868,25 @@ function showPreview() {
   const sorted = sortedGuesses(fullList);
   const totalDays = S.days.length + (S.today ? 1 : 0);
   const app = document.getElementById('app');
+  
   app.innerHTML = `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
   <img src="imgs/tonnowrap.png" class="hdr-logo" alt="Logo">
   <div class="hdr-right">
-    <div class="hdr-clock js-clock">--:--:--</div>
-    <span class="sync-dot live" id="sync-dot"></span>
+    <div class="hdr-clock">Estimated Wrap: ${wrapTime || 'Missing'}</div>
+    <span class="sync-dot live js-sync-dot"></span>
   </div>
 </div>
 <div style="padding:16px">
+  <div class="card">
+    <div class="card-lbl">Confirmed Wrap Time</div>
+    ${wrapTime 
+      ? `<p class="accent" style="font-weight:bold; font-size:1.4rem; text-align:center;">🎬 ${wrapTime}</p>` 
+      : `<p class="red" style="font-size:0.8rem; margin-bottom:10px;">⚠️ Wrap time not found in paste. Please set it manually:</p>
+         <input type="time" id="manual-wrap" style="text-align:center; font-size:1.2rem;">`
+    }
+  </div>
   <div class="card">
     <div class="card-lbl">Confirm These Guesses</div>
     <div class="preview-card">
@@ -872,13 +904,23 @@ function showPreview() {
   <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
   <button class="btn btn-s" id="cancel-btn">← Go Back</button>
 </div>`;
+  
   startClock();
+  
   document.getElementById('confirm-btn')?.addEventListener('click', () => {
+    let finalWrap = wrapTime;
+    if (!finalWrap) {
+      finalWrap = document.getElementById('manual-wrap')?.value;
+      if (!finalWrap) { toast('Please set a wrap time', 'err'); return; }
+    }
+    
     newPlayers.forEach(name => {
       S.playerRoster.push({ name: name });
       S.scores[name] = 0;
     });
+    
     S.today.guesses = fullList;
+    S.today.estWrap = finalWrap;
     saveS();
     toast('Day started!', 'ok');
     render();
@@ -947,7 +989,7 @@ function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
   document.getElementById('new-day-btn')?.addEventListener('click', () => {
     if(S.today&&S.today.wrapTime) S.days.push({...S.today});
-    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null};
+    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null};
     saveS(); render();
   });
   document.getElementById('wrap-btn')?.addEventListener('click', () => {
@@ -980,12 +1022,18 @@ onSnapshot(STATE_REF, (snap) => {
     S = { playerRoster: [], scores: {}, days: [], today: null };
   }
   render();
-  const dot = document.getElementById('sync-dot');
-  if(dot) { dot.classList.add('live'); }
+  
+  // Update all dots
+  document.querySelectorAll('.js-sync-dot').forEach(dot => {
+    dot.classList.add('live');
+    dot.style.background = ''; // Reset manual error color
+  });
 }, (err) => {
   console.error("Firestore error:", err);
-  const dot = document.getElementById('sync-dot');
-  if(dot) { dot.classList.remove('live'); dot.style.background = 'var(--red)'; }
+  document.querySelectorAll('.js-sync-dot').forEach(dot => {
+    dot.classList.remove('live');
+    dot.style.background = 'var(--red)';
+  });
 });
 </script>
 </body>
