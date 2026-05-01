@@ -674,7 +674,7 @@ function renderPlayerToday() {
       const isWinner = todayWinnersList.includes(g.name);
       return `
       <div class="row">
-        <div class="row-name">${g.name} ${st.pill}</div>
+        <div class="row-name">${g.name} ${g.time ? st.pill : ''}</div>
         ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
         ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
       </div>`;
@@ -816,18 +816,20 @@ function renderToday() {
         ${streakHtml}
         <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
       </div>
-      <div class="card"><div class="card-lbl">Results</div>
-        ${sg.map(g => {
-          const st = getPreviousStreak(g.name);
-          const isWinner = todayWinnersList.includes(g.name);
-          return `
-          <div class="row">
-            <div class="row-name">${g.name} ${st.pill}</div>
-            ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-            ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
-          </div>`;
-        }).join('')}
-      </div>
+        <div class="card"><div class="card-lbl">Results</div>
+          ${sg.map(g => {
+            const st = getPreviousStreak(g.name);
+            const isWinner = todayWinnersList.includes(g.name);
+            return `
+            <div class="row">
+              /* CHANGE IS RIGHT HERE */
+              <div class="row-name">${g.name} ${g.time ? st.pill : ''}</div>
+              
+              ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+              ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
       <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
     `;
   }
