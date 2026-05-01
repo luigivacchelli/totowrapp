@@ -107,38 +107,37 @@ body::before {
   opacity: 0;
 }
 
-/* FIX FOR FACE 2 & 4 (TUNA): 
-   We allow backface visibility and pre-flip them so they 
-   appear correctly when rotating through the 180-degree mark. */
-.face-2, .face-4 {
+/* THE FIX:
+   Faces 2, 3, and 4 all rotate through "backside" degrees (180, 270, 540, etc.)
+   We must allow backface visibility and flip them so they look correct to the user.
+*/
+.face-2, .face-3, .face-4 {
   backface-visibility: visible;
-  /* scaleX(-1) mirrors the image so it looks 'right' when viewed from the back */
-  transform: scaleX(-1); 
 }
 
 /* --- ANIMATION ASSIGNMENTS --- */
 .face-1 {
-  animation: 
+  animation:
     f1-step0 12.5s linear forwards,
     loop-standard 12s linear 12.5s infinite;
 }
 
 .face-2 {
-  animation: 
+  animation:
     f2-step0 12.5s linear forwards,
     loop-mirrored 12s linear 12.5s infinite;
-  animation-delay: 0s, 15.5s; 
+  animation-delay: 0s, 15.5s;
 }
 
 .face-3 {
-  animation: 
+  animation:
     f3-step0 12.5s linear forwards,
-    loop-standard 12s linear 12.5s infinite;
+    loop-mirrored 12s linear 12.5s infinite; /* Changed to mirrored loop */
   animation-delay: 0s, 18.5s;
 }
 
 .face-4 {
-  animation: 
+  animation:
     f4-step0 12.5s linear forwards,
     loop-mirrored 12s linear 12.5s infinite;
   animation-delay: 0s, 21.5s;
@@ -146,7 +145,7 @@ body::before {
 
 /* --- STEP 0 KEYFRAMES --- */
 @keyframes f1-step0 {
-  0%, 16% { opacity: 1; transform: rotateY(0deg); } 
+  0%, 16% { opacity: 1; transform: rotateY(0deg); }
   28%     { opacity: 1; transform: rotateY(90deg); }
   28.1%, 100% { opacity: 0; }
 }
@@ -154,14 +153,14 @@ body::before {
 @keyframes f2-step0 {
   0%, 28% { opacity: 0; transform: rotateY(90deg) scaleX(-1); }
   28.1%   { opacity: 1; transform: rotateY(90deg) scaleX(-1); }
-  52%     { opacity: 1; transform: rotateY(270deg) scaleX(-1); } 
+  52%     { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
   52.1%, 100% { opacity: 0; }
 }
 
 @keyframes f3-step0 {
-  0%, 52% { opacity: 0; transform: rotateY(270deg); }
-  52.1%   { opacity: 1; transform: rotateY(270deg); }
-  76%     { opacity: 1; transform: rotateY(450deg); }
+  0%, 52% { opacity: 0; transform: rotateY(270deg) scaleX(-1); }
+  52.1%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
+  76%     { opacity: 1; transform: rotateY(450deg) scaleX(-1); }
   76.1%, 100% { opacity: 0; }
 }
 
@@ -178,6 +177,7 @@ body::before {
   25.1%, 100% { opacity: 0; }
 }
 
+/* Note: Most faces now use the mirrored loop to ensure they aren't hidden by the browser */
 @keyframes loop-mirrored {
   0%    { opacity: 1; transform: rotateY(90deg) scaleX(-1); }
   25%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
