@@ -429,6 +429,31 @@ function sortedGuesses(guesses) {
   const missing = guesses.filter(g => !g.time);
   return [...withTime, ...missing];
 }
+    
+function getWinProbability(playerName, allGuesses) {
+  const slices = boundaries(allGuesses);
+  if (slices.length === 0) return { val: 0, color: 'var(--red)' };
+
+  // Total seconds from start of first territory to end of last
+  const totalRange = slices[slices.length - 1].end - slices[0].start;
+  
+  // Find the specific slice for this player
+  const mySlice = slices.find(s => s.names.includes(playerName));
+  if (!mySlice) return { val: 0, color: 'var(--red)' };
+
+  const myRange = mySlice.end - mySlice.start;
+  const percent = (myRange / totalRange) * 100;
+  
+  // Color Logic
+  let color = 'var(--red)'; // < 25%
+  if (percent >= 25 && percent <= 75) color = 'var(--accent)';
+  if (percent > 75) color = 'var(--green)';
+
+  return {
+    text: percent.toFixed(1) + '%', // Decimal number
+    color: color
+  };
+}
 
 function boundaries(guesses) {
   const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
@@ -559,18 +584,16 @@ function tickClock() {
     
     countdownEl.innerHTML = `Next elimination ${formatNames(styledNames)} in: ${secToHMS(diff)}`;
     countdownEl.style.display = 'block';
-  } 
+  } else if (isFinalTerritory) {
   // PHASE 2: Everyone else is out - The "Lucky Day"
-  else {
     const winnersToday = slices[slices.length - 1].names;
-    
-    // Wrap ONLY the individual names in the uppercase span
     const styledWinners = winnersToday.map(name => `<span class="countdown-name">${name}</span>`);
     
     countdownEl.innerHTML = `
-      <div style="line-height: 1.2;">
+      <div style="line-height: 1.1;">
         Good job ${formatNames(styledWinners)}!<br>
         <span style="font-size: 0.75rem; opacity: 1;">Today was your lucky day!</span>
+      </div>
     `;
     countdownEl.style.display = 'block';
   }
@@ -693,12 +716,30 @@ function renderPlayerToday() {
   <div class="card"><div class="card-lbl">Results</div>
     ${sg.map(g => {
       const st = getPreviousStreak(g.name);
-      const isWinner = todayWinnersList.includes(g.name);
+      const isOut = out.has(g.name);
+      const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+      
+      // Calculate the % for this player
+      const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+
       return `
       <div class="row">
-        <div class="row-name">${g.name} ${g.time ? st.pill : ''}</div>
-        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+        <div class="row-name">
+          <span id="name-span-${g.name}">${displayName}</span>
+          ${st.pill}
+        </div>
+        
+        ${g.time ? `
+          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+            ${prob.text}
+          </div>
+          
+          <div class="row-time">${g.time}</div>
+          
+          <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${isOut ? 'OUT' : 'ALIVE'}
+          </div>
+        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
       </div>`;
     }).join('')}
   </div>`;
@@ -732,11 +773,24 @@ function renderPlayerToday() {
       const st = getPreviousStreak(g.name);
       const isOut = out.has(g.name);
       const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+      
+      // Calculate the % for this player
+      const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+
       return `
       <div class="row">
-        <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
+        <div class="row-name">
+          <span id="name-span-${g.name}">${displayName}</span>
+          ${st.pill}
+        </div>
+        
         ${g.time ? `
+          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+            ${prob.text}
+          </div>
+          
           <div class="row-time">${g.time}</div>
+          
           <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
             ${isOut ? 'OUT' : 'ALIVE'}
           </div>
