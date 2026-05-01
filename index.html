@@ -1087,6 +1087,21 @@ function showPreview() {
   const { guesses: parsed, wrapTime } = parsePaste(text);
   if (!parsed.length && !wrapTime) { toast('No valid data found', 'err'); return; }
   
+  const nameCounts = {};
+  parsed.forEach(g => {
+    const n = g.name.toLowerCase();
+    nameCounts[n] = (nameCounts[n] || 0) + 1;
+  });
+  const duplicates = Object.keys(nameCounts).filter(n => nameCounts[n] > 1);
+  
+  const duplicateWarning = duplicates.length > 0 
+    ? `<div class="card" style="border: 1px solid var(--red); background: rgba(214, 86, 86, 0.1); margin-bottom: 12px;">
+         <p class="red" style="font-weight:bold; font-size:0.8rem; text-align:center;">
+           ⚠️ DUPLICATE NAMES DETECTED:<br>${duplicates.join(', ')}
+         </p>
+       </div>`
+    : '';
+
   const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
   const newPlayers = [];
   parsed.forEach(g => {
@@ -1095,6 +1110,7 @@ function showPreview() {
       existingNames.add(g.name.toLowerCase());
     }
   });
+  
   const fullList = buildFullGuessList(parsed);
   const sorted = sortedGuesses(fullList);
   const totalDays = S.days.length + (S.today ? 1 : 0);
@@ -1110,6 +1126,9 @@ function showPreview() {
   </div>
 </div>
 <div style="padding:16px">
+  <!-- 2. INSERT WARNING MESSAGE HERE -->
+  ${duplicateWarning}
+
   <div class="card">
     <div class="card-lbl">Confirmed Wrap Time</div>
     ${wrapTime 
@@ -1121,11 +1140,16 @@ function showPreview() {
   <div class="card">
     <div class="card-lbl">Confirm These Guesses</div>
     <div class="preview-card">
-      ${sorted.map(g => `
-        <div class="row">
-          <div class="row-name">${g.name}</div>
+      ${sorted.map(g => {
+        const isDup = duplicates.includes(g.name.toLowerCase());
+        return `
+        <div class="row" style="${isDup ? 'border-left: 3px solid var(--red); padding-left: 8px;' : ''}">
+          <div class="row-name">
+            ${g.name} ${isDup ? '<span class="red" style="font-size:0.5rem; font-weight:bold;">(DUPLICATE)</span>' : ''}
+          </div>
           ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>
     <p class="mono dim" style="font-size:.7rem;margin-top:10px">
       ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
@@ -1156,7 +1180,13 @@ function showPreview() {
     toast('Day started!', 'ok');
     render();
   });
-  document.getElementById('cancel-btn')?.addEventListener('click', () => { render(); });
+
+  // --- 3. PERSISTENT PASTE ON CANCEL ---
+  document.getElementById('cancel-btn')?.addEventListener('click', () => { 
+    render(); 
+    const textarea = document.getElementById('paste-inp');
+    if (textarea) textarea.value = text; // Restore the saved text
+  });
 }
 
 window.savePlayer = (idx) => {
