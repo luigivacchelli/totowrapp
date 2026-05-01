@@ -601,7 +601,7 @@ function renderPlayerMain() {
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
+    <div class="hdr-wrap">Wrap ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${dotClass}"></span>
   </div>
 </div>
@@ -738,7 +738,7 @@ function renderMain() {
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
+    <div class="hdr-wrap">Wrap ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
   </div>
 </div>
@@ -984,7 +984,7 @@ function showPreview() {
   <div class="hdr-day">Day ${totalDays}/50 Preview</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Est. Wrap: ${wrapTime || 'Missing'}</div>
+    <div class="hdr-wrap">Wrap ${wrapTime || 'Missing'}</div>
     <span class="sync-dot live js-sync-dot"></span>
   </div>
 </div>
