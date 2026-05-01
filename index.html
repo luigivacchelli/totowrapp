@@ -96,7 +96,7 @@ body::before {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  /* Moves at a constant speed */
+  /* Rotate counter-clockwise to pull faces 2, 3, 4 into view in order */
   animation: master-spin 12s linear infinite;
 }
 
@@ -104,31 +104,25 @@ body::before {
   position: absolute;
   width: 100%;
   height: 100%;
-  backface-visibility: hidden;
+  backface-visibility: hidden; /* Vital to hide the 'back' of images */
   object-fit: contain;
   opacity: 0;
 }
 
-/* The logic:
-   As the container spins POSITIVE (0 -> 90 -> 180),
-   the faces must be placed at NEGATIVE intervals
-   so they rotate INTO the front view.
-*/
+/* The + Configuration */
 .face-1 { transform: rotateY(0deg) translateZ(1px); }
-.face-2 { transform: rotateY(-90deg) translateZ(1px); }
-.face-3 { transform: rotateY(-180deg) translateZ(1px); }
-.face-4 { transform: rotateY(-270deg) translateZ(1px); }
+.face-2 { transform: rotateY(90deg) translateZ(1px); }
+.face-3 { transform: rotateY(180deg) translateZ(1px); }
+.face-4 { transform: rotateY(270deg) translateZ(1px); }
 
 @keyframes master-spin {
   0%   { transform: rotateY(0deg); }
-  100% { transform: rotateY(360deg); }
+  100% { transform: rotateY(-360deg); }
 }
 
-/* Visibility Logic:
-   Face 1: 0% to 25% (0 to 90 degrees)
-   Face 2: 25% to 50% (90 to 180 degrees)
-   Face 3: 50% to 75% (180 to 270 degrees)
-   Face 4: 75% to 100% (270 to 360 degrees)
+/* Visibility Relay: 
+   Swaps happen at 25%, 50%, 75% 
+   This is when the container is at -90, -180, -270 degrees
 */
 @keyframes face-1-vis { 0%, 24.9% { opacity: 1; } 25%, 100% { opacity: 0; } }
 @keyframes face-2-vis { 0%, 24.9% { opacity: 0; } 25%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
