@@ -506,7 +506,7 @@ function renderTodaySection() {
       }).join('')}</div>
       <div class="card"><div class="card-lbl">Territory Boundaries</div>${slices.map(s => `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`).join('')}</div>`;
       
-      if (IS_ADMIN) html += `<div class="card"><div class="card-lbl">Wrap Time</div><input type="text" id="wrap-inp" placeholder="18:30:45"><div class="flex-row" style="margin-top:10px"><button class="btn btn-s" id="set-now-btn">Current</button><button class="btn btn-p" id="wrap-btn">Confirm</button></div></div>`;
+      if (IS_ADMIN) html += `<div class="card"><div class="card-lbl">Wrap Time</div><input type="text" id="wrap-inp" placeholder="18:30:45"><div class="flex-row" style="margin-top:10px"><button class="btn btn-s" id="set-now-btn">Current 🎬</button><button class="btn btn-p" id="wrap-btn">Confirm ✔️</button></div></div>`;
       return html;
   }
 
