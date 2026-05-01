@@ -544,11 +544,14 @@ function tickClock() {
   const slices = boundaries(S.today.guesses);
   if (slices.length === 0) return;
 
-  // Find if there is an upcoming elimination
+  // Find the current/upcoming boundary
   const nextBoundary = slices.find(s => s.end >= cur);
+  
+  // THE FIX: Check if this boundary is actually the final territory
+  const isFinalTerritory = (nextBoundary === slices[slices.length - 1]);
 
-  // PHASE 1: Someone is still at risk
-  if (nextBoundary && cur <= nextBoundary.end) {
+  // PHASE 1: Someone is still at risk (and it's not the final winners)
+  if (nextBoundary && cur <= nextBoundary.end && !isFinalTerritory) {
     const diff = (nextBoundary.end + 1) - cur;
     
     // Wrap ONLY the individual names in the uppercase span
@@ -557,7 +560,7 @@ function tickClock() {
     countdownEl.innerHTML = `Next elimination ${formatNames(styledNames)} in: ${secToHMS(diff)}`;
     countdownEl.style.display = 'block';
   } 
-  // PHASE 2: Final territory passed - The "Lucky Day"
+  // PHASE 2: Everyone else is out - The "Lucky Day"
   else {
     const winnersToday = slices[slices.length - 1].names;
     
