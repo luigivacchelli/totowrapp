@@ -424,7 +424,7 @@ function renderPlayerMain() {
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
+    <div class="hdr-wrap">Wrap ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${dotClass}"></span>
   </div>
 </div>
@@ -446,7 +446,7 @@ function renderAdminMain() {
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
+    <div class="hdr-wrap">Wrap ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}"></span>
   </div>
 </div>
@@ -489,7 +489,7 @@ function renderTodaySection() {
     let html = `<div class="winner-banner"><div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div><div class="winner-name" style="font-size: 2.2rem;">${formatNames(todayWinnersList)}</div>${streakHtml}<div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div></div>
     <div class="card"><div class="card-lbl">Results</div>${sg.map(g => {
       const isWinner = todayWinnersList.includes(g.name);
-      return `<div class="row"><div class="row-name">${g.name} <span>${isWinner ? '🏆' : '🍣'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Missing</div>`}${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}</div>`;
+      return `<div class="row"><div class="row-name">${g.name} <span>${isWinner ? '🏆' : '🍣'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}</div>`;
     }).join('')}</div>`;
     
     if (IS_ADMIN) html += `<button class="btn btn-p" id="new-day-btn">Start Next Day →</button>`;
@@ -502,7 +502,7 @@ function renderTodaySection() {
       let html = `<div class="card"><div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;"><div class="big-clock js-clock">--:--:--</div><span class="sync-dot js-sync-dot live" style="width: 12px; height: 12px;"></span></div><div class="big-clock-lbl">Live Time</div><div id="next-out-countdown" class="countdown-txt"></div></div>
       <div class="card"><div class="card-lbl">${statusHeader}</div>${sg.map(g => {
         const isEliminated = out.has(g.name), safeId = g.name.replace(/\s+/g, '-');
-        return `<div class="row"><div class="row-name">${g.name} <span id="emoji-${safeId}">${isEliminated ? '🍣' : '🐟'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div><div class="badge ${isEliminated ? 'b-out' : 'b-alive'}" id="st-${safeId}">${isEliminated ? 'OUT' : 'ALIVE'}</div>` : `<div class="badge b-missing">Missing</div>`}</div>`;
+        return `<div class="row"><div class="row-name">${g.name} <span id="emoji-${safeId}">${isEliminated ? '🍣' : '🐟'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div><div class="badge ${isEliminated ? 'b-out' : 'b-alive'}" id="st-${safeId}">${isEliminated ? 'OUT' : 'ALIVE'}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}</div>`;
       }).join('')}</div>
       <div class="card"><div class="card-lbl">Territory Boundaries</div>${slices.map(s => `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`).join('')}</div>`;
       
