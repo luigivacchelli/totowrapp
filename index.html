@@ -201,8 +201,8 @@ body::before {
 .badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
-.b-win   { background: rgba(106,191,106,.12); color: var(--green); }
-.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52rem; letter-spacing: 0.02em; transform: translateY(1px); }
+.b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
+.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .50rem; font-style: italic; }
@@ -701,6 +701,7 @@ function renderPlayerToday() {
     const sg = sortedGuesses(t.guesses);
     const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
     const todayWinnerStr = formatNames(todayWinnersList);
+    // Grab streak for the first winner for simplicity, or omit if multiple to avoid clutter
     const streakInfo = getPreviousStreak(todayWinnersList[0]);
     const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2)
   ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
@@ -715,27 +716,28 @@ function renderPlayerToday() {
   <div class="card"><div class="card-lbl">Results</div>
     ${sg.map(g => {
       const st = getPreviousStreak(g.name);
-      const todayWinnerNames = t.winners ? t.winners.map(w => w.name) : [t.winner];
-      const isWinner = todayWinnerNames.includes(g.name);
-      const displayName = g.name + (isWinner ? ' 🥇' : ' 🍣');
+      const isOut = out.has(g.name);
+      const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+      
+      // Calculate the % for this player
       const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
 
       return `
       <div class="row">
-      <div class="row-name">
-        <span id="name-span-${g.name}">${displayName}</span>
-        ${g.time ? st.pill : ''}
-      </div>
+        <div class="row-name">
+          <span id="name-span-${g.name}">${displayName}</span>
+          ${st.pill}
+        </div>
         
         ${g.time ? `
-          <div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
+          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
             ${prob.text}
           </div>
           
           <div class="row-time">${g.time}</div>
           
-          <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
-            ${isWinner ? 'WIN' : 'OUT'}
+          <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${isOut ? 'OUT' : 'ALIVE'}
           </div>
         ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
       </div>`;
@@ -755,9 +757,8 @@ function renderPlayerToday() {
 
   const cur = nowSec();
   const out = eliminated(t.guesses, cur);
-  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
   const slices = boundaries(t.guesses);
-
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
   return `
   <div class="card">
     <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
@@ -772,17 +773,19 @@ function renderPlayerToday() {
       const st = getPreviousStreak(g.name);
       const isOut = out.has(g.name);
       const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+      
+      // Calculate the % for this player
       const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
 
       return `
       <div class="row">
-      <div class="row-name">
-        <span id="name-span-${g.name}">${displayName}</span>
-        ${g.time ? st.pill : ''}
-      </div>
+        <div class="row-name">
+          <span id="name-span-${g.name}">${displayName}</span>
+          ${st.pill}
+        </div>
         
         ${g.time ? `
-          <div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
+          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
             ${prob.text}
           </div>
           
@@ -876,15 +879,15 @@ function renderToday() {
 
   if (t.wrapTime) {
     const sg = sortedGuesses(t.guesses);
-    const todayWinnerNames = t.winners ? t.winners.map(w => w.name) : [t.winner];
-    const todayWinnerStr = formatNames(todayWinnerNames);
-    const streakInfo = getPreviousStreak(todayWinnerNames[0]);
-    const streakHtml = (todayWinnerNames.length === 1 && streakInfo.count >= 2)
+    const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
+    const todayWinnerStr = formatNames(todayWinnersList);
+    const streakInfo = getPreviousStreak(todayWinnersList[0]);
+    const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2)
   ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
   : '';
     return `
       <div class="winner-banner">
-        <div class="winner-sub">🎬 Today's Winner${todayWinnerNames.length > 1 ? 's' : ''}</div>
+        <div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div>
         <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
         ${streakHtml}
         <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
@@ -892,25 +895,27 @@ function renderToday() {
         <div class="card"><div class="card-lbl">Results</div>
           ${sg.map(g => {
             const st = getPreviousStreak(g.name);
-            const isWinner = todayWinnerNames.includes(g.name);
-            const displayName = g.name + (isWinner ? ' 🥇' : ' 🍣');
+            const isOut = out.has(g.name);
+            const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
+            
+            // ADD THIS LINE: Calculate the % for this player
             const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
 
             return `
             <div class="row">
-            <div class="row-name">
-              <span id="name-span-${g.name}">${displayName}</span>
-              ${g.time ? st.pill : ''}
-            </div>
+              <div class="row-name">
+                <span id="name-span-${g.name}">${displayName}</span>
+                ${st.pill}
+              </div>
               
               ${g.time ? `
-                <div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
+                <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
                   ${prob.text}
                 </div>
                 
                 <div class="row-time">${g.time}</div>
-                <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
-                  ${isWinner ? 'WIN' : 'OUT'}
+                <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                  ${isOut ? 'OUT' : 'ALIVE'}
                 </div>
               ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
             </div>`;
@@ -932,18 +937,10 @@ function renderToday() {
           const st = getPreviousStreak(g.name);
           const isOut = out.has(g.name);
           const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
-          const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
-          
           return `
           <div class="row">
-          <div class="row-name">
-            <span id="name-span-${g.name}">${displayName}</span>
-            ${g.time ? st.pill : ''}
-          </div>
+            <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
             ${g.time ? `
-              <<div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
-            ${prob.text}
-          </div>
               <div class="row-time">${g.time}</div>
               <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
                 ${isOut ? 'OUT' : 'ALIVE'}
@@ -1251,7 +1248,6 @@ onSnapshot(STATE_REF, (snap) => {
     dot.style.background = 'var(--red)';
   });
 });
-    }
 </script>
 </body>
 </html>
