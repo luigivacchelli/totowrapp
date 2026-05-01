@@ -202,7 +202,7 @@ body::before {
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(106,191,106,.12); color: var(--green); }
-.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
+.b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52rem; letter-spacing: 0.02em; transform: translateY(1px); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .50rem; font-style: italic; }
@@ -722,13 +722,13 @@ function renderPlayerToday() {
 
       return `
       <div class="row">
-        <div class="row-name">
-          <span id="name-span-${g.name}">${displayName}</span>
-          ${st.pill}
-        </div>
+      <div class="row-name">
+        <span id="name-span-${g.name}">${displayName}</span>
+        ${g.time ? st.pill : ''}
+      </div>
         
         ${g.time ? `
-          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+          <div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
             ${prob.text}
           </div>
           
@@ -776,13 +776,13 @@ function renderPlayerToday() {
 
       return `
       <div class="row">
-        <div class="row-name">
-          <span id="name-span-${g.name}">${displayName}</span>
-          ${st.pill}
-        </div>
+      <div class="row-name">
+        <span id="name-span-${g.name}">${displayName}</span>
+        ${g.time ? st.pill : ''}
+      </div>
         
         ${g.time ? `
-          <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+          <div class="badge b-missing" style="color: ${prob.color}; margin-right: 8px; border: 1px solid rgba(184,201,168,0.15);">
             ${prob.text}
           </div>
           
@@ -811,443 +811,185 @@ function bindPlayerNav() {
   });
 }
 
-function renderMain() {
-  const totalDays=S.days.length+(S.today?1:0);
-  const estWrap = S.today?.estWrap || '--:--';
-  return `
-<div class="hdr">
-  <div class="hdr-day">Day ${totalDays||'—'}/50</div>
-  ${get3DLogoHTML()}
-  <div class="hdr-right">
-    <div class="hdr-wrap">Wrap ${estWrap}</div>
-    <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
-  </div>
-</div>
-<nav class="nav">
-  <button class="nav-btn ${_tab==='today'?'on':''}" data-tab="today">Today</button>
-  <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
-  <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
-  <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
-</nav>
-
-<div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
-<div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
-<div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
-<div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
-}
-
-function renderToday() {
-  const t = S.today;
-  const lastDay = S.days && S.days.length > 0 ? S.days[S.days.length - 1] : null;
-  let winnerHtml = '';
-  
-  if (lastDay) {
-    const prevWinnersList = lastDay.winners ? lastDay.winners.map(w => w.name) : [lastDay.winner];
-    const prevWinnerStr = formatNames(prevWinnersList);
-    const isPlural = prevWinnersList.length > 1 ? "WINNERS" : "WINNER";
-    winnerHtml = `<div class="prev-winner-tag">
-        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
-        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
-       </div>`;
-  }
-
-  const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-    <span>Player Status</span>
-    ${winnerHtml}
-  </div>`;
-  
-  if (!t) {
-    return `<div class="card">
-      <div class="card-lbl">Start New Day</div>
-      <button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button>
-    </div>`;
-  }
-
-  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
-  const clockCard = `
-    <div class="card">
-      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
-        <div class="big-clock js-clock">--:--:--</div>
-        <span class="sync-dot js-sync-dot ${dotClass}" style="width: 12px; height: 12px;"></span>
+    function renderMain() {
+      const totalDays = S.days.length + (S.today ? 1 : 0);
+      const estWrap = S.today?.estWrap || '--:--';
+      return `
+    <div class="hdr">
+      <div class="hdr-day">Admin Panel | Day ${totalDays}/50</div>
+      ${get3DLogoHTML()}
+      <div class="hdr-right">
+        <div class="hdr-wrap" style="color:var(--red)">ADMIN MODE</div>
+        <span class="sync-dot js-sync-dot ${S.today ? 'live' : 'off'}"></span>
       </div>
-      <div class="big-clock-lbl">Live Time</div>
-      <div id="next-out-countdown" class="countdown-txt"></div>
-    </div>`;
+    </div>
+    <nav class="nav">
+      <button class="nav-btn ${_tab === 'today' ? 'on' : ''}" data-tab="today">Today</button>
+      <button class="nav-btn ${_tab === 'board' ? 'on' : ''}" data-tab="board">Board</button>
+      <button class="nav-btn ${_tab === 'history' ? 'on' : ''}" data-tab="history">History</button>
+    </nav>
 
-  if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses);
-    const todayWinnerNames = t.winners ? t.winners.map(w => w.name) : [t.winner];
-    const todayWinnerStr = formatNames(todayWinnerNames);
-    const streakInfo = getPreviousStreak(todayWinnerNames[0]);
-    const streakHtml = (todayWinnerNames.length === 1 && streakInfo.count >= 2)
-  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
-  : '';
-    return `
-      <div class="winner-banner">
-        <div class="winner-sub">🎬 Today's Winner${todayWinnerNames.length > 1 ? 's' : ''}</div>
-        <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
-        ${streakHtml}
-        <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
-      </div>
-        <div class="card"><div class="card-lbl">Results</div>
-          ${sg.map(g => {
-            const st = getPreviousStreak(g.name);
-            const isWinner = todayWinnerNames.includes(g.name);
-            const displayName = g.name + (isWinner ? ' 🥇' : ' 🍣');
-            const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
-
-            return `
-            <div class="row">
-              <div class="row-name">
-                <span id="name-span-${g.name}">${displayName}</span>
-                ${st.pill}
-              </div>
-              
-              ${g.time ? `
-                <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
-                  ${prob.text}
-                </div>
-                
-                <div class="row-time">${g.time}</div>
-                <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
-                  ${isWinner ? 'WIN' : 'OUT'}
-                </div>
-              ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-            </div>`;
-          }).join('')}
-        </div>
-      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
-    `;
-  }
-  
-  if (t.guesses && t.guesses.length > 0) {
-    const cur = nowSec();
-    const out = eliminated(t.guesses, cur);
-    const sg = sortedGuesses(t.guesses);
-    const slices = boundaries(t.guesses);
-    return `
-      ${clockCard}
-      <div class="card"><div class="card-lbl">${statusHeader}</div>
-        ${sg.map(g => {
-          const st = getPreviousStreak(g.name);
-          const isOut = out.has(g.name);
-          const displayName = g.name + (isOut ? ' 🍣' : ' 🐟');
-          const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
-          
-          return `
-          <div class="row">
-            <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${st.pill}</div>
-            ${g.time ? `
-              <div style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
-                ${prob.text}
-              </div>
-              <div class="row-time">${g.time}</div>
-              <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
-                ${isOut ? 'OUT' : 'ALIVE'}
-              </div>
-            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-          </div>`;
-        }).join('')}
-      </div>
-      <div class="card"><div class="card-lbl">Territory Boundaries</div>
-        ${slices.map(s => {
-          return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
-        }).join('')}
-      </div>
+    <div class="sec ${_tab === 'today' ? 'on' : ''}">
       <div class="card">
-        <div class="card-lbl">Enter Official Wrap Time</div>
-        <div class="inp-wrap">
-          <label class="inp-lbl">Wrap Time (HH:MM:SS)</label>
-          <input type="text" id="wrap-inp" placeholder="18:30:45" maxlength="8" 
-            pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" 
-            style="font-family:'DM Mono',monospace;">
-        </div>
+        <div class="card-lbl">1. Paste Daily Batch</div>
+        <textarea id="paste-area" placeholder="Paste:
+    Pippo 12:30
+    Pluto 12:45
+    Wrap - 13:00"></textarea>
+        <button class="btn btn-p" id="btn-parse" style="margin-top:10px">Parse & Sync</button>
+      </div>
+
+      <div class="card">
+        <div class="card-lbl">2. Close Today's Wrap</div>
         <div class="flex-row">
-          <button class="btn btn-s" id="set-now-btn" style="flex:1;">⏰ Set Current Time</button>
-          <button class="btn btn-p" id="wrap-btn" style="flex:1;">Confirm Wrap ✓</button>
+          <input type="time" id="final-wrap-time" value="${nowHMS().slice(0,5)}">
+          <button class="btn btn-p btn-sm" id="btn-winner">Calculate & End Day</button>
         </div>
       </div>
-    `;
-  }
-  return `
-    <div class="card">
-      <div class="card-lbl">Paste Today's Guesses</div>
-      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line). Include "Wrap - HH:MM"</p>
-      <textarea id="paste-inp" placeholder="ES:
-Luigi - 18:30
-Daniela - 19:15
-Marco - 17:45
-Wrap - 18:30"></textarea>
-      <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
-    </div>
-  `;
-}
 
-function renderBoard() {
-  const pl = getSortedPlayerRoster();
-  if(!pl.length) return '<div class="empty">No players yet</div>';
-  return `<div class="card"><div class="card-lbl">Standings</div>
-${pl.map((p,i)=>{
-  const st = getPreviousStreak(p.name);
-  return `<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} ${st.pill}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`
-}).join('')}
-</div>`;
-}
-
-function renderHistory() {
-  let all = [...S.days];
-  if (S.today && S.today.wrapTime) all.push(S.today);
-  if (!all.length) return '<div class="empty">No completed days yet</div>';
-
-  return [...all].reverse().map((d, i) => {
-    const num = all.length - i;
-    const sg = sortedGuesses(d.guesses);
-    const histNames = d.winners ? d.winners.map(w => w.name) : [d.winner];
-    const histWinnerStr = formatNames(histNames);
-    const winnerBet = d.guesses.find(g => histNames.includes(g.name))?.time || '--:--';
-    
-    return `
-    <div class="card hist-row" onclick="this.classList.toggle('open')">
-      <div class="hist-summary">
-        <div class="hist-main-info">
-          <span class="hist-day-tag">Day ${num}</span>
-          <span class="accent" style="font-weight:bold">${histWinnerStr}</span>
-          <span class="mono dim" style="font-size:0.75rem">(${winnerBet})</span>
-        </div>
-        <div class="hist-meta">
-          <span class="accent mono">${d.wrapTime}</span>
-          <span class="dim mono" style="font-size:0.7rem; min-width:35px">+${d.points}pt</span>
-          <span class="hist-arrow">▶</span>
-        </div>
-      </div>
-      <div class="hist-details" onclick="event.stopPropagation()">
-        <div class="card-lbl" style="margin:12px 0 8px 0; border-bottom:1px solid rgba(238,199,99,0.1); padding-bottom:4px;">Day Details</div>
-        ${sg.map(g => `
-          <div class="row">
-            <div class="row-name">${g.name}</div>
-            <div class="row-time">${g.time || '--:--'}</div>
-            <div class="badge ${histNames.includes(g.name) ? 'b-win' : 'b-out'}">
-              ${histNames.includes(g.name) ? `+${d.points}pt` : '—'}
+      <div class="card">
+        <div class="card-lbl">3. Global Roster</div>
+        <div id="roster-list">
+          ${S.playerRoster.map(p => `
+            <div class="row">
+              <span>${p.name}</span>
+              <button class="btn btn-d btn-sm js-del-player" data-name="${p.name}">DEL</button>
             </div>
-          </div>`).join('')}
-        <div class="day-footer" style="text-align:right; font-size:0.6rem; opacity:0.5; margin-top:10px;">${d.date}</div>
+          `).join('')}
+        </div>
+        <div class="flex-row" style="margin-top:12px">
+          <input type="text" id="new-player-name" placeholder="New Name">
+          <button class="btn btn-s btn-sm" id="btn-add-player">ADD</button>
+        </div>
       </div>
-    </div>`;
-  }).join('');
-}
-
-function renderSettings() {
-  const pl = getSortedPlayerRoster();
-  return `<div class="card"><div class="card-lbl">Player Roster — Editable</div>
-${pl.map((p, idx)=> {
-  const realIdx = S.playerRoster.findIndex(orig => orig.name === p.name);
-  return `
-  <div class="row" style="flex-wrap:wrap;align-items:flex-start;padding:12px 0;">
-    <div style="flex:1;min-width:120px;">
-      <input type="text" value="${p.name}" id="name-${realIdx}"
-        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;">
+      
+      <button class="btn btn-d" id="btn-reset-all" style="margin-top:20px; opacity:0.5">RESET ALL DATA</button>
     </div>
-    <div style="width:100px;margin-left:8px;">
-      <input type="number" value="${S.scores[p.name]||0}" id="pts-${realIdx}"
-        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;text-align:right;">
-    </div>
-    <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${realIdx})">Save</button>
-    <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${realIdx})">×</button>
-  </div>`}).join('')}
-</div>
-<div class="card"><div class="card-lbl">Danger Zone</div>
-<p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
-<button class="btn btn-d" id="reset-btn">Reset Entire Game</button>
-</div>`;
-}
 
-function showPreview() {
-  const inp = document.getElementById('paste-inp');
-  const text = inp?.value || '';
-  if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
-  
-  const { guesses: parsed, wrapTime } = parsePaste(text);
-  if (!parsed.length && !wrapTime) { toast('No valid data found', 'err'); return; }
-  
-  const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
-  const newPlayers = [];
-  parsed.forEach(g => {
-    if (!existingNames.has(g.name.toLowerCase())) {
-      newPlayers.push(g.name);
-      existingNames.add(g.name.toLowerCase());
+    <div class="sec ${_tab === 'board' ? 'on' : ''}">${renderBoard()}</div>
+    <div class="sec ${_tab === 'history' ? 'on' : ''}">${renderHistory()}</div>
+    `;
     }
-  });
-  const fullList = buildFullGuessList(parsed);
-  const sorted = sortedGuesses(fullList);
-  const totalDays = S.days.length + (S.today ? 1 : 0);
-  const app = document.getElementById('app');
-  
-  app.innerHTML = `
-<div class="hdr">
-  <div class="hdr-day">Day ${totalDays}/50 Preview</div>
-  ${get3DLogoHTML()}
-  <div class="hdr-right">
-    <div class="hdr-wrap">Wrap ${wrapTime || 'Missing'}</div>
-    <span class="sync-dot live js-sync-dot"></span>
-  </div>
-</div>
-<div style="padding:16px">
-  <div class="card">
-    <div class="card-lbl">Confirmed Wrap Time</div>
-    ${wrapTime 
-      ? `<p class="accent" style="font-weight:bold; font-size:1.4rem; text-align:center;">🎬 ${wrapTime}</p>` 
-      : `<p class="red" style="font-size:0.8rem; margin-bottom:10px;">⚠️ Wrap time not found in paste. Please set it manually:</p>
-         <input type="time" id="manual-wrap" style="text-align:center; font-size:1.2rem;">`
-    }
-  </div>
-  <div class="card">
-    <div class="card-lbl">Confirm These Guesses</div>
-    <div class="preview-card">
-      ${sorted.map(g => `
-        <div class="row">
-          <div class="row-name">${g.name}</div>
-          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
-        </div>`).join('')}
-    </div>
-    <p class="mono dim" style="font-size:.7rem;margin-top:10px">
-      ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
-      ${newPlayers.length > 0 ? `<br><span style="color:var(--green)">+ ${newPlayers.length} new player(s) will be added to the roster</span>` : ''}
-    </p>
-  </div>
-  <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
-  <button class="btn btn-s" id="cancel-btn">← Go Back</button>
-</div>`;
-  
-  startClock();
-  
-  document.getElementById('confirm-btn')?.addEventListener('click', () => {
-    let finalWrap = wrapTime;
-    if (!finalWrap) {
-      finalWrap = document.getElementById('manual-wrap')?.value;
-      if (!finalWrap) { toast('Please set a wrap time', 'err'); return; }
-    }
-    
-    newPlayers.forEach(name => {
-      S.playerRoster.push({ name: name });
-      S.scores[name] = 0;
-    });
-    
-    S.today.guesses = fullList;
-    S.today.estWrap = finalWrap;
-    saveS();
-    toast('Day started!', 'ok');
-    render();
-  });
-  document.getElementById('cancel-btn')?.addEventListener('click', () => { render(); });
-}
 
-window.savePlayer = (idx) => {
-  const nameInput = document.getElementById(`name-${idx}`);
-  const ptsInput = document.getElementById(`pts-${idx}`);
-  if (!nameInput || !ptsInput) return;
-  const oldName = S.playerRoster[idx].name;
-  const newName = nameInput.value.trim();
-  const newPoints = parseInt(ptsInput.value) || 0;
-  if (!newName) { toast('Name cannot be empty', 'err'); return; }
-  const duplicate = S.playerRoster.find((p, i) => i !== idx && p.name.toLowerCase() === newName.toLowerCase());
-  if (duplicate) { toast('Player name already exists', 'err'); return; }
-  if (oldName !== newName) {
-    S.playerRoster[idx].name = newName;
-    S.scores[newName] = S.scores[oldName] || 0;
-    delete S.scores[oldName];
-    S.days.forEach(day => {
-      day.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
-      if (day.winner === oldName) day.winner = newName;
-      if (day.winners) {
-        day.winners.forEach(w => { if (w.name === oldName) w.name = newName; });
+    function renderBoard() {
+      const sorted = getSortedPlayerRoster();
+      return `
+        <div class="card">
+          <div class="card-lbl">Leaderboard</div>
+          ${sorted.map((p, i) => `
+            <div class="row">
+              <div class="lb-rank ${i === 0 ? 'first' : ''}">${i + 1}</div>
+              <div class="row-name">${p.name} ${i === 0 ? '👑' : ''}</div>
+              <div class="row-pts">${S.scores[p.name] || 0}</div>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+
+    function renderHistory() {
+      if (!S.days || S.days.length === 0) return '<div class="empty">No history yet</div>';
+      return S.days.slice().reverse().map((day, idx) => {
+        const dayNum = S.days.length - idx;
+        const winners = day.winners ? day.winners.map(w => w.name).join(', ') : day.winner;
+        return `
+          <div class="card hist-row" onclick="this.classList.toggle('open')">
+            <div class="hist-summary">
+              <div class="hist-day-tag">Day ${dayNum}</div>
+              <div class="hist-main-info">
+                 <span class="accent">${winners}</span>
+              </div>
+              <div class="hist-meta">
+                <span class="dim">${day.wrapTime}</span>
+                <span class="hist-arrow">▶</span>
+              </div>
+            </div>
+            <div class="hist-details">
+              ${day.guesses.map(g => `
+                <div class="bnd-row" style="opacity:0.8">
+                  <span>${g.name}</span>
+                  <span class="mono">${g.time || '--:--'}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function bindMain() {
+      document.querySelectorAll('.nav-btn').forEach(b => b.onclick = () => { _tab = b.dataset.tab; render(); });
+      
+      const btnParse = document.getElementById('btn-parse');
+      if(btnParse) btnParse.onclick = async () => {
+        const raw = document.getElementById('paste-area').value;
+        const { guesses, wrapTime } = parsePaste(raw);
+        if(!guesses.length) return toast("No valid guesses found","err");
+        
+        S.today = {
+          guesses: buildFullGuessList(guesses),
+          estWrap: wrapTime || "13:00",
+          wrapTime: null
+        };
+        await saveS();
+        toast("Synced Today's Guesses!", "ok");
+      };
+
+      const btnWinner = document.getElementById('btn-winner');
+      if(btnWinner) btnWinner.onclick = async () => {
+        const time = document.getElementById('final-wrap-time').value;
+        if(!S.today) return;
+        
+        const res = calcWinner(S.today.guesses, time);
+        S.today.winner = res.winner;
+        S.today.winners = res.winners;
+        S.today.points = res.points;
+        S.today.wrapTime = time;
+        
+        // Update scores
+        res.winners.forEach(w => {
+          S.scores[w.name] = (S.scores[w.name] || 0) + res.points;
+        });
+        
+        S.days.push(JSON.parse(JSON.stringify(S.today)));
+        S.today = null;
+        await saveS();
+        toast("Day Closed!", "ok");
+      };
+
+      const btnAdd = document.getElementById('btn-add-player');
+      if(btnAdd) btnAdd.onclick = async () => {
+        const name = document.getElementById('new-player-name').value.trim();
+        if(!name) return;
+        if(S.playerRoster.find(p => p.name === name)) return toast("Already exists","err");
+        S.playerRoster.push({ name });
+        await saveS();
+        render();
+      };
+
+      document.querySelectorAll('.js-del-player').forEach(b => {
+        b.onclick = async () => {
+          if(!confirm(`Delete ${b.dataset.name}?`)) return;
+          S.playerRoster = S.playerRoster.filter(p => p.name !== b.dataset.name);
+          await saveS();
+          render();
+        };
+      });
+
+      const btnReset = document.getElementById('btn-reset-all');
+      if(btnReset) btnReset.onclick = async () => {
+        if(!confirm("WIPE EVERYTHING?")) return;
+        S = { playerRoster:[], scores:{}, days:[], today:null };
+        await saveS();
+        location.reload();
+      };
+    }
+
+    // Global Listener for Database
+    onSnapshot(STATE_REF, (snap) => {
+      if (snap.exists() && !_writing) {
+        S = snap.data();
+        render();
       }
     });
-    if (S.today && S.today.guesses) {
-      S.today.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
-      if (S.today.winner === oldName) S.today.winner = newName;
-      if (S.today.winners) {
-        S.today.winners.forEach(w => { if (w.name === oldName) w.name = newName; });
-      }
-    }
-  }
-  S.scores[newName] = newPoints;
-  saveS();
-  toast('Player updated!', 'ok');
-  render();
-};
-
-window.deletePlayer = (idx) => {
-  const player = S.playerRoster[idx];
-  if (!confirm(`Delete ${player.name}?`)) return;
-  const name = player.name;
-  S.playerRoster.splice(idx, 1);
-  delete S.scores[name];
-  S.days.forEach(day => { day.guesses = day.guesses.filter(g => g.name !== name); });
-  if (S.today && S.today.guesses) S.today.guesses = S.today.guesses.filter(g => g.name !== name);
-  saveS();
-  toast('Player deleted', 'ok');
-  render();
-};
-
-function setCurrentTime() {
-  const now = nowHMS();
-  const inp = document.getElementById('wrap-inp');
-  if (inp) {
-    inp.value = now;
-    toast('Time set to ' + now, 'ok');
-  }
-}
-
-function bindMain() {
-  document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
-  document.getElementById('new-day-btn')?.addEventListener('click', () => {
-    if(S.today&&S.today.wrapTime) S.days.push({...S.today});
-    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null};
-    saveS(); render();
-  });
-  document.getElementById('wrap-btn')?.addEventListener('click', () => {
-    const inp = document.getElementById('wrap-inp');
-    if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
-    const { winner, winners, points } = calcWinner(S.today.guesses, inp.value);
-    S.today.wrapTime = inp.value;
-    S.today.winner = winner;
-    S.today.winners = winners;
-    S.today.points = points;
-    winners.forEach(w => { S.scores[w.name] = (S.scores[w.name] || 0) + points; });
-    saveS();
-    toast(`${formatNames(winners.map(w=>w.name))} win +${points} pt!`, 'ok');
-    render();
-  });
-  document.getElementById('set-now-btn')?.addEventListener('click', setCurrentTime);
-  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
-  document.getElementById('reset-btn')?.addEventListener('click',()=>{
-    if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
-  });
-}
-
-if(!IS_ADMIN) render();
-onSnapshot(STATE_REF, (snap) => {
-  if(_writing) return;
-  if(snap.exists()) {
-    S = snap.data();
-    if (!S.playerRoster) S.playerRoster = S.players || [];
-  } else {
-    S = { playerRoster: [], scores: {}, days: [], today: null };
-  }
-  render();
-  
-  // Update all dots
-  document.querySelectorAll('.js-sync-dot').forEach(dot => {
-    dot.classList.add('live');
-    dot.style.background = ''; // Reset manual error color
-  });
-}, (err) => {
-  console.error("Firestore error:", err);
-  document.querySelectorAll('.js-sync-dot').forEach(dot => {
-    dot.classList.remove('live');
-    dot.style.background = 'var(--red)';
-  });
-});
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
