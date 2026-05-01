@@ -568,8 +568,9 @@ function tickClock() {
     const styledWinners = winnersToday.map(name => `<span class="countdown-name">${name}</span>`);
     
     countdownEl.innerHTML = `
-      Good job ${formatNames(styledWinners)}!<br>
-      <span>Today was your lucky day!</span>
+      <div style="line-height: 1.2;">
+        Good job ${formatNames(styledWinners)}!<br>
+        <span style="font-size: 0.75rem; opacity: 1;">Today was your lucky day!</span>
     `;
     countdownEl.style.display = 'block';
   }
