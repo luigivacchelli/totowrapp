@@ -107,43 +107,81 @@ body::before {
   opacity: 0;
 }
 
-/* --- FACE 1 SPECIAL LOGIC --- */
-/* It has an intro (2s wait + 1.5s move) then joins the 12s loop */
-.face-1 {
-  animation:
-    face1-intro 3.5s linear forwards,
-    rot-relay 12s linear 3.5s infinite;
-}
-
-/* --- FACES 2, 3, 4 LOGIC --- */
-/* They start their 12s loop after the intro (3.5s delay) */
-.face-2 { animation: rot-relay 12s linear 3.5s infinite; animation-delay: 5s; } /* 3.5 + 1.5 */
-.face-3 { animation: rot-relay 12s linear 3.5s infinite; animation-delay: 8s; } /* 3.5 + 4.5 */
-.face-4 { animation: rot-relay 12s linear 3.5s infinite; animation-delay: 11s; } /* 3.5 + 7.5 */
-
-/* FACE 1 INTRO: Wait 2s, rotate 90deg in 1.5s */
-@keyframes face1-intro {
-  0%, 57% { opacity: 1; transform: rotateY(0deg); } /* 2s/3.5s = ~57% */
-  99%     { opacity: 1; transform: rotateY(90deg); }
-  100%    { opacity: 0; transform: rotateY(90deg); }
-}
-
-/* THE MASTER RELAY (180 degree turns) */
-@keyframes rot-relay {
-  /* Start edge-on (-90), rotate through flat (0) to other edge (90) */
-  0%    { opacity: 1; transform: rotateY(-90deg); }
-  12.5% { opacity: 1; transform: rotateY(0deg); }
-  25%   { opacity: 1; transform: rotateY(90deg); }
-  /* Vanish for the rest of the 12s loop */
-  25.1%, 100% { opacity: 0; transform: rotateY(90deg); }
-}
-
-/* FACES 2 & 4 MIRROR FIX:
-   Since they rotate 180deg, they naturally show their back.
-   We flip the image container for these specifically so the 'back' is the correct side.
+/* --- STEP 0 & LOOP TIMING --- 
+   Step 0 Duration: 12.5s (2s wait + 1.5s + 3s + 3s + 3s)
+   Loop Duration: 12s (3s per face)
 */
-.face-2, .face-4 {
-  backface-visibility: visible; /* We want to see the 'back' which we will flip */
+
+.face-1 {
+  animation: 
+    f1-step0 12.5s linear forwards,
+    loop-standard 12s linear 12.5s infinite;
+}
+
+.face-2 {
+  animation: 
+    f2-step0 12.5s linear forwards,
+    loop-mirrored 12s linear 12.5s infinite;
+  animation-delay: 0s, 15.5s; /* Loop starts 3s after f1 loop */
+}
+
+.face-3 {
+  animation: 
+    f3-step0 12.5s linear forwards,
+    loop-standard 12s linear 12.5s infinite;
+  animation-delay: 0s, 18.5s; /* Loop starts 6s after f1 loop */
+}
+
+.face-4 {
+  animation: 
+    f4-step0 12.5s linear forwards,
+    loop-mirrored 12s linear 12.5s infinite;
+  animation-delay: 0s, 21.5s; /* Loop starts 9s after f1 loop */
+}
+
+/* --- STEP 0 KEYFRAMES --- */
+@keyframes f1-step0 {
+  0%, 16% { opacity: 1; transform: rotateY(0deg); } /* 2s wait */
+  28%     { opacity: 1; transform: rotateY(90deg); } /* 1.5s move */
+  28.1%, 100% { opacity: 0; }
+}
+
+@keyframes f2-step0 {
+  0%, 28% { opacity: 0; transform: rotateY(90deg); }
+  28.1%   { opacity: 1; transform: rotateY(90deg); }
+  52%     { opacity: 1; transform: rotateY(270deg); } /* 3s move */
+  52.1%, 100% { opacity: 0; }
+}
+
+@keyframes f3-step0 {
+  0%, 52% { opacity: 0; transform: rotateY(270deg); }
+  52.1%   { opacity: 1; transform: rotateY(270deg); }
+  76%     { opacity: 1; transform: rotateY(450deg); } /* 3s move */
+  76.1%, 100% { opacity: 0; }
+}
+
+@keyframes f4-step0 {
+  0%, 76% { opacity: 0; transform: rotateY(450deg); }
+  76.1%   { opacity: 1; transform: rotateY(450deg); }
+  100%    { opacity: 1; transform: rotateY(630deg); } /* 3s move */
+}
+
+/* --- LOOP KEYFRAMES --- */
+/* Standard for Faces 1 & 3: -90 to 90 */
+@keyframes loop-standard {
+  0%    { opacity: 1; transform: rotateY(-90deg); }
+  25%   { opacity: 1; transform: rotateY(90deg); }
+  25.1%, 100% { opacity: 0; }
+}
+
+/* Mirrored for Faces 2 & 4: 
+   Starts at 90 (which is the 'back' relative to 270) 
+   and rotates 180deg to look correct. 
+*/
+@keyframes loop-mirrored {
+  0%    { opacity: 1; transform: rotateY(90deg); }
+  25%   { opacity: 1; transform: rotateY(270deg); }
+  25.1%, 100% { opacity: 0; }
 }
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
