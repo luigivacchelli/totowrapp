@@ -1,3 +1,5 @@
+This is my new fully working amazing code!
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +42,7 @@ html, body { height: 100%; }
 
 body {
   background-color: var(--bg);
+  /* background-image: url('imgs/bgblu.png'); */
   background-size: repeat;
   background-attachment: fixed;
   background-position: center;
@@ -63,6 +66,7 @@ body::before {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  /* filter: blur(3px); */
   z-index: -1;
   pointer-events: none;
 }
@@ -82,8 +86,8 @@ body::before {
 
 /* 3D LOGO STYLES */
 .logo-3d-container {
-  height: 48px;
-  width: 88px;
+  height: 30px;
+  width: 60px;
   perspective: 1000px;
   margin: 0 10px;
   flex-shrink: 0;
@@ -105,22 +109,82 @@ body::before {
   opacity: 0;
 }
 
+/* FIX FOR FACE 2 & 4 (TUNA):
+   We allow backface visibility and pre-flip them so they
+   appear correctly when rotating through the 180-degree mark. */
 .face-2, .face-3 , .face-4 {
   backface-visibility: visible;
-  transform: scaleX(-1); 
+  /* scaleX(-1) mirrors the image so it looks 'right' when viewed from the back */
+  transform: scaleX(-1);
 }
 
-.face-1 { animation: f1-step0 12.5s linear forwards, loop-standard 12s linear 12.5s infinite; }
-.face-2 { animation: f2-step0 12.5s linear forwards, loop-mirrored 12s linear 12.5s infinite; animation-delay: 0s, 15.5s; }
-.face-3 { animation: f3-step0 12.5s linear forwards, loop-mirrored 12s linear 12.5s infinite; animation-delay: 0s, 18.5s; }
-.face-4 { animation: f4-step0 12.5s linear forwards, loop-mirrored 12s linear 12.5s infinite; animation-delay: 0s, 21.5s; }
+/* --- ANIMATION ASSIGNMENTS --- */
+.face-1 {
+  animation:
+    f1-step0 12.5s linear forwards,
+    loop-standard 12s linear 12.5s infinite;
+}
 
-@keyframes f1-step0 { 0%, 16% { opacity: 1; transform: rotateY(0deg); } 28% { opacity: 1; transform: rotateY(90deg); } 28.1%, 100% { opacity: 0; } }
-@keyframes f2-step0 { 0%, 28% { opacity: 0; transform: rotateY(90deg) scaleX(-1); } 28.1% { opacity: 1; transform: rotateY(90deg) scaleX(-1); } 52% { opacity: 1; transform: rotateY(270deg) scaleX(-1); } 52.1%, 100% { opacity: 0; } }
-@keyframes f3-step0 { 0%, 52% { opacity: 0; transform: rotateY(270deg) scaleX(-1); } 52.1% { opacity: 1; transform: rotateY(270deg) scaleX(-1); } 76% { opacity: 1; transform: rotateY(450deg) scaleX(-1); } 76.1%, 100% { opacity: 0; } }
-@keyframes f4-step0 { 0%, 76% { opacity: 0; transform: rotateY(450deg) scaleX(-1); } 76.1% { opacity: 1; transform: rotateY(450deg) scaleX(-1); } 100% { opacity: 1; transform: rotateY(630deg) scaleX(-1); } }
-@keyframes loop-standard { 0% { opacity: 1; transform: rotateY(-90deg); } 25% { opacity: 1; transform: rotateY(90deg); } 25.1%, 100% { opacity: 0; } }
-@keyframes loop-mirrored { 0% { opacity: 1; transform: rotateY(90deg) scaleX(-1); } 25% { opacity: 1; transform: rotateY(270deg) scaleX(-1); } 25.1%, 100% { opacity: 0; } }
+.face-2 {
+  animation:
+    f2-step0 12.5s linear forwards,
+    loop-mirrored 12s linear 12.5s infinite;
+  animation-delay: 0s, 15.5s;
+}
+
+.face-3 {
+  animation:
+    f3-step0 12.5s linear forwards,
+    loop-mirrored 12s linear 12.5s infinite;
+  animation-delay: 0s, 18.5s;
+}
+
+.face-4 {
+  animation:
+    f4-step0 12.5s linear forwards,
+    loop-mirrored 12s linear 12.5s infinite;
+  animation-delay: 0s, 21.5s;
+}
+
+/* --- STEP 0 KEYFRAMES --- */
+@keyframes f1-step0 {
+  0%, 16% { opacity: 1; transform: rotateY(0deg); }
+  28%     { opacity: 1; transform: rotateY(90deg); }
+  28.1%, 100% { opacity: 0; }
+}
+
+@keyframes f2-step0 {
+  0%, 28% { opacity: 0; transform: rotateY(90deg) scaleX(-1); }
+  28.1%   { opacity: 1; transform: rotateY(90deg) scaleX(-1); }
+  52%     { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
+  52.1%, 100% { opacity: 0; }
+}
+
+@keyframes f3-step0 {
+  0%, 52% { opacity: 0; transform: rotateY(270deg) scaleX(-1); }
+  52.1%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
+  76%     { opacity: 1; transform: rotateY(450deg) scaleX(-1); }
+  76.1%, 100% { opacity: 0; }
+}
+
+@keyframes f4-step0 {
+  0%, 76% { opacity: 0; transform: rotateY(450deg) scaleX(-1); }
+  76.1%   { opacity: 1; transform: rotateY(450deg) scaleX(-1); }
+  100%    { opacity: 1; transform: rotateY(630deg) scaleX(-1); }
+}
+
+/* --- LOOP KEYFRAMES --- */
+@keyframes loop-standard {
+  0%    { opacity: 1; transform: rotateY(-90deg); }
+  25%   { opacity: 1; transform: rotateY(90deg); }
+  25.1%, 100% { opacity: 0; }
+}
+
+@keyframes loop-mirrored {
+  0%    { opacity: 1; transform: rotateY(90deg) scaleX(-1); }
+  25%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
+  25.1%, 100% { opacity: 0; }
+}
 
 .hdr-wrap { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.90rem; color: var(--accent); letter-spacing: .02em; white-space: nowrap; }
 .nav { position: sticky; top: 50px; z-index: 199; background: var(--bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); border-bottom: 1px solid var(--border); display: flex; }
@@ -141,7 +205,8 @@ body::before {
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(240,180,40,.18); color: var(--accent); }
 .b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
-.status-emoji { font-size: 0.9rem; margin-left: 5px; vertical-align: middle; }
+.b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
+.b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
 .b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .55rem; font-style: italic; }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
@@ -162,18 +227,50 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .btn-sm { width: auto; padding: 8px 14px; font-size: .65rem; }
 .big-clock { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 3.8rem; letter-spacing: .04em; color: var(--accent); text-align: center; line-height: 1; }
 .big-clock-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); text-align: center; margin-top: 4px; }
-.countdown-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: 0.85rem; color: #ff8a8a; text-align: center; margin-top: 8px; letter-spacing: 0.03em; font-weight: bold; padding: 0 10px; }
-.countdown-name { text-transform: uppercase; }
-.prev-winner-tag { flex: 1; margin-left: 10px; overflow: hidden; white-space: nowrap; display: flex; }
-.prev-winner-tag span { display: inline-block; padding-right: 25px; animation: marquee 6s linear infinite; color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 0.6rem; flex-shrink: 0; }
-.prev-winner-tag span:only-child { animation: none; }
-@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+.countdown-txt {
+  font-family: 'Alte Haas Grotesk', sans-serif;
+  font-size: 0.85rem;
+  color: #ff8a8a;
+  text-align: center;
+  margin-top: 8px;
+  letter-spacing: 0.03em;
+  font-weight: bold;
+  padding: 0 10px;
+}
+.countdown-name {
+  text-transform: uppercase;
+    }
+.prev-winner-tag {
+  flex: 1;
+  margin-left: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+}
+.prev-winner-tag span {
+  display: inline-block;
+  padding-right: 25px; /* Gap between loops */
+  animation: marquee 6s linear infinite;
+  color: var(--accent);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+.prev-winner-tag span:only-child {
+  animation: none;
+}
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
 .winner-banner { background: linear-gradient(135deg, rgba(240,180,40,.12), rgba(240,180,40,.03)); border: 1px solid rgba(240,180,40,.5); border-radius: var(--radius); padding: 20px 16px; text-align: center; margin-bottom: 12px; }
 .winner-sub { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 .winner-name { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 2.8rem; color: var(--accent); letter-spacing: .04em; line-height: 1; }
 .winner-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .7rem; color: var(--dim); margin-top: 4px; }
 .lb-rank { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.8rem; min-width: 32px; color: var(--dim); }
 .lb-rank.first { color: var(--accent); }
+.day-chip { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; color: var(--dim); margin-bottom: 8px; }
 .day-footer { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .67rem; color: var(--dim); margin-top: 8px; }
 .bnd-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--accent) }
 .bnd-row:last-child { border-bottom: none; }
@@ -192,6 +289,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .loading-screen img { max-width: 200px; }
 .loading-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
 
+/* History Accordion Styles */
 .hist-row { cursor: pointer; padding: 0 !important; overflow: hidden; }
 .hist-summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; }
 .hist-day-tag { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 0.7rem; color: var(--dim); text-transform: uppercase; margin-right: 10px; }
@@ -216,8 +314,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 <div id="toast"></div>
 
 <script type="module">
-/* --- COMPLETE FINALIZED CODE --- */
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
@@ -235,21 +331,33 @@ const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const STATE_REF = doc(db, "totowrap", "state");
 
-let S = { playerRoster: [], scores: {}, days: [], today: null };
+let S = {
+  playerRoster: [],
+  scores: {},
+  days: [],
+  today: null
+};
+
 const IS_ADMIN = /[?&]admin/.test(location.search) || location.href.includes('?admin');
 let _tab = 'today';
 let _clockInterval = null;
 let _toastTO = null;
 let _writing = false;
 
-// Helpers
+// Helper function for the 3D Logo HTML
 function get3DLogoHTML() {
-  return `<div class="logo-3d-container"><div class="logo-3d-inner">
-    <img src="imgs/tonnowrap.png" class="face face-1"><img src="imgs/tuna.png" class="face face-2">
-    <img src="imgs/totowrap.png"  class="face face-3"><img src="imgs/tuna.png" class="face face-4">
-  </div></div>`;
+  return `
+  <div class="logo-3d-container">
+    <div class="logo-3d-inner">
+      <img src="imgs/tonnowrap.png" class="face face-1">
+      <img src="imgs/tuna.png"      class="face face-2">
+      <img src="imgs/totowrap.png"  class="face face-3">
+      <img src="imgs/tuna.png"      class="face face-4">
+    </div>
+  </div>`;
 }
 
+// Helper to beautifully format an array of names using commas and "and"
 function formatNames(names) {
   if (!names || names.length === 0) return '';
   if (names.length === 1) return names[0];
@@ -268,11 +376,16 @@ function getSortedPlayerRoster() {
 
 async function saveS() {
   _writing = true;
-  try { await setDoc(STATE_REF, S); } catch(e) { console.error("Save error:", e); toast("Sync error", "err"); }
+  try {
+    await setDoc(STATE_REF, S);
+  } catch(e) {
+    console.error("Save error:", e);
+    toast("Sync error — check connection", "err");
+  }
   setTimeout(() => { _writing = false; }, 500);
 }
 
-function toSec(t) { if(!t) return 0; const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
+function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
 function pad(n) { return String(n).padStart(2,'0'); }
 function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
@@ -282,11 +395,20 @@ function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
   const guesses = [];
   let wrapTime = null;
+  
   for (const line of lines) {
+    // Check for "Wrap - HH:MM" line
     const wrapMatch = line.match(/^wrap\s*[-\s:]\s*(\d{2}:\d{2})$/i);
-    if (wrapMatch) { wrapTime = wrapMatch[1]; continue; }
+    if (wrapMatch) {
+      wrapTime = wrapMatch[1];
+      continue;
+    }
+    
+    // Normal player guess
     const match = line.match(/^(.+?)(?:\s*[-\s:]\s*)(\d{2}:\d{2})$/);
-    if (match) guesses.push({ name: match[1].trim(), time: match[2] });
+    if (match) {
+      guesses.push({ name: match[1].trim(), time: match[2] });
+    }
   }
   return { guesses, wrapTime };
 }
@@ -295,7 +417,11 @@ function buildFullGuessList(parsed) {
   const result = [];
   const submitted = new Set(parsed.map(g => g.name));
   parsed.forEach(g => result.push(g));
-  S.playerRoster.forEach(p => { if (!submitted.has(p.name)) result.push({ name: p.name, time: null }); });
+  S.playerRoster.forEach(p => {
+    if (!submitted.has(p.name)) {
+      result.push({ name: p.name, time: null });
+    }
+  });
   return result;
 }
 
@@ -309,35 +435,71 @@ function sortedGuesses(guesses) {
 function boundaries(guesses) {
   const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
   if (valid.length === 0) return [];
+
   const groups = [];
   valid.forEach(g => {
     const sec = toSec(g.time);
     const existing = groups.find(grp => grp.sec === sec);
-    if (existing) existing.names.push(g.name); else groups.push({ names: [g.name], sec: sec });
+    if (existing) {
+      existing.names.push(g.name);
+    } else {
+      groups.push({ names: [g.name], sec: sec });
+    }
   });
+
   const slices = [];
   for (let i = 0; i < groups.length; i++) {
-    let startSec = 0, endSec = 86399;
-    if (i > 0) startSec = midSec(groups[i-1].sec, groups[i].sec);
-    if (i < groups.length - 1) endSec = midSec(groups[i].sec, groups[i+1].sec) - 1;
-    slices.push({ names: groups[i].names, start: startSec, end: endSec, startStr: secToHMS(startSec), endStr: secToHMS(endSec) });
+    let startSec = 0;
+    let endSec = 86399;
+
+    if (i > 0) {
+      const prevMid = midSec(groups[i-1].sec, groups[i].sec);
+      startSec = prevMid;
+    }
+
+    if (i < groups.length - 1) {
+      const nextMid = midSec(groups[i].sec, groups[i+1].sec);
+      endSec = nextMid - 1;
+    }
+
+    slices.push({
+      names: groups[i].names,
+      start: startSec,
+      end: endSec,
+      startStr: secToHMS(startSec),
+      endStr: secToHMS(endSec)
+    });
   }
   return slices;
 }
 
 function eliminated(guesses, curSec) {
-  const slices = boundaries(guesses), out = new Set();
-  slices.forEach(slice => { if (curSec > slice.end) slice.names.forEach(name => out.add(name)); });
+  const slices = boundaries(guesses);
+  const out = new Set();
+  slices.forEach(slice => {
+    if (curSec > slice.end) {
+      slice.names.forEach(name => out.add(name));
+    }
+  });
   return out;
 }
 
 function calcWinner(guesses, wrapHMSInput) {
-  const wrapSec = toSec(wrapHMSInput), slices = boundaries(guesses);
+  const wrapSec = toSec(wrapHMSInput);
+  const slices = boundaries(guesses);
+  
   const winningSlice = slices.find(s => wrapSec >= s.start && wrapSec <= s.end);
-  if (!winningSlice) return { winner: "Error", winners: [], points: 0 };
-  const winnerName = winningSlice.names[0], winners = winningSlice.names.map(name => ({ name }));
+  
+  if (!winningSlice) {
+    return { winner: "Error", winners: [], points: 0 };
+  }
+
+  const winnerName = winningSlice.names[0];
+  const winners = winningSlice.names.map(name => ({ name }));
+  
   const firstWinnerGuess = guesses.find(g => g.name === winnerName).time;
   const points = (wrapHMSInput.slice(0,5) === firstWinnerGuess) ? 3 : 1;
+
   return { winner: winnerName, winners, points };
 }
     
@@ -345,10 +507,20 @@ function getPreviousStreak(playerName) {
   if (!S.days || S.days.length === 0) return { count: 0, pill: "" };
   let count = 0;
   for (let i = S.days.length - 1; i >= 0; i--) {
+    // Check if the player is among the winners for that day
     const dayWinners = S.days[i].winners ? S.days[i].winners.map(w => w.name) : [S.days[i].winner];
-    if (dayWinners.includes(playerName)) count++; else break;
+    if (dayWinners.includes(playerName)) {
+      count++;
+    } else {
+      break;
+    }
   }
-  if (count >= 2) return { count: count, pill: `<div class="badge b-streak">${count} Days Streak</div>` };
+  if (count >= 2) {
+    return {
+      count: count,
+      pill: `<div class="badge b-streak">${count} Days Streak</div>`
+    };
+  }
   return { count: 0, pill: "" };
 }
 
@@ -359,21 +531,30 @@ function startClock() {
 }
 
 function tickClock() {
-  const t = nowHMS(), cur = nowSec();
+  const t = nowHMS();
+  const cur = nowSec();
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
+  
   const countdownEl = document.getElementById('next-out-countdown');
   if (countdownEl && S.today && S.today.guesses && S.today.guesses.length > 0 && !S.today.wrapTime) {
-    const slices = boundaries(S.today.guesses), nextBoundary = slices.find(s => s.end >= cur);
+    const slices = boundaries(S.today.guesses);
+    const nextBoundary = slices.find(s => s.end >= cur);
+
     if (nextBoundary && cur <= nextBoundary.end) {
       const diff = (nextBoundary.end + 1) - cur;
       countdownEl.innerHTML = `Next elimination <span class="countdown-name">${formatNames(nextBoundary.names)}</span> in: ${secToHMS(diff)}`;
       countdownEl.style.display = 'block';
     } else {
       const currentLeader = formatNames(slices[slices.length - 1].names);
-      countdownEl.innerHTML = `Good job <span class="countdown-name">${currentLeader}</span>!<br><span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>`;
+      countdownEl.innerHTML = `
+        Good job <span class="countdown-name">${currentLeader}</span>!<br>
+        <span style="font-size: 0.75rem; opacity: 0.9;">Today was your lucky day!</span>
+      `;
       countdownEl.style.display = 'block';
     }
-  } else if (countdownEl) countdownEl.style.display = 'none';
+  } else if (countdownEl) {
+    countdownEl.style.display = 'none';
+  }
   refreshStatusBadges();
 }
 
@@ -381,38 +562,34 @@ function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
   const cur=nowSec(), out=eliminated(S.today.guesses,cur);
   S.today.guesses.forEach(g=>{
-    const safeId = g.name.replace(/\s+/g, '-');
-    const el=document.getElementById('st-'+safeId); 
-    const emojiEl=document.getElementById('emoji-'+safeId);
-    if(!el) return;
-    if(out.has(g.name)){
-      el.className='badge b-out'; el.textContent='OUT';
-      if(emojiEl) emojiEl.textContent = '🍣';
-    } else {
-      el.className='badge b-alive'; el.textContent='ALIVE';
-      if(emojiEl) emojiEl.textContent = '🐟';
-    }
+    const el=document.getElementById('st-'+g.name); if(!el) return;
+    if(out.has(g.name)){el.className='badge b-out';el.textContent='OUT';}
+    else{el.className='badge b-alive';el.textContent='ALIVE';}
   });
 }
 
 function toast(msg,type='') {
   const el=document.getElementById('toast');
   el.textContent=msg; el.className=`show ${type}`;
-  clearTimeout(_toastTO); _toastTO=setTimeout(()=>el.className='', 3000);
+  clearTimeout(_toastTO);
+  _toastTO=setTimeout(()=>el.className='',3000);
 }
 
 function render() {
   const app=document.getElementById('app');
-  if(IS_ADMIN) { 
-    app.innerHTML=renderAdminMain(); 
-    startClock(); 
-    bindNav(); 
-    bindAdminActions(); 
-  } else { 
-    app.innerHTML=renderPlayerMain(); 
-    startClock(); 
-    bindNav(); 
+  if(IS_ADMIN) {
+    app.innerHTML=renderMain();
+    startClock();
+    bindMain();
+  } else {
+    renderPlayer(app);
   }
+}
+
+function renderPlayer(app) {
+  app.innerHTML=renderPlayerMain();
+  startClock();
+  bindPlayerNav();
 }
 
 function renderPlayerMain() {
@@ -424,7 +601,7 @@ function renderPlayerMain() {
   <div class="hdr-day">Day ${dayNum || '—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Wrap ${estWrap}</div>
+    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
     <span class="sync-dot js-sync-dot ${dotClass}"></span>
   </div>
 </div>
@@ -433,21 +610,136 @@ function renderPlayerMain() {
   <button class="nav-btn ${_tab==='board'?'on':''}" data-tab="board">Board</button>
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
 </nav>
-<div class="sec ${_tab==='today'?'on':''}">${renderTodaySection()}</div>
+
+<div class="sec ${_tab==='today'?'on':''}">${renderPlayerToday()}</div>
 <div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
-<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>`;
+<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
+`;
 }
 
-function renderAdminMain() {
-  const totalDays = S.days.length + (S.today ? 1 : 0);
+function renderPlayerToday() {
+  const t = S.today;
+  const lastDay = S.days && S.days.length > 0 ? S.days[S.days.length - 1] : null;
+  let winnerHtml = '';
+  
+  if (lastDay) {
+    const prevWinnersList = lastDay.winners ? lastDay.winners.map(w => w.name) : [lastDay.winner];
+    const prevWinnerStr = formatNames(prevWinnersList);
+    const isPlural = prevWinnersList.length > 1 ? "WINNERS" : "WINNER";
+    winnerHtml = `<div class="prev-winner-tag">
+        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
+        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
+       </div>`;
+  }
+
+  const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <span>Player Status</span>
+    ${winnerHtml}
+  </div>`;
+  
+  if (!t) {
+    return `
+      <div class="card"><div class="card-lbl">${statusHeader}</div>
+        <div class="empty" style="padding:20px 0;">No active game today</div>
+      </div>
+      ${lastDay ? `<p class="mono dim center">Last wrap: <span class="accent">${lastDay.wrapTime}</span></p>` : ''}
+    `;
+  }
+  
+  if (t.wrapTime) {
+    const sg = sortedGuesses(t.guesses);
+    const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
+    const todayWinnerStr = formatNames(todayWinnersList);
+    // Grab streak for the first winner for simplicity, or omit if multiple to avoid clutter
+    const streakInfo = getPreviousStreak(todayWinnersList[0]);
+    const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2)
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
+  : '';
+    return `
+  <div class="winner-banner">
+    <div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div>
+    <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
+    ${streakHtml}
+    <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+  </div>
+  <div class="card"><div class="card-lbl">Results</div>
+    ${sg.map(g => {
+      const st = getPreviousStreak(g.name);
+      const isWinner = todayWinnersList.includes(g.name);
+      return `
+      <div class="row">
+        <div class="row-name">${g.name} ${st.pill}</div>
+        ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+  }
+
+  const sg = sortedGuesses(t.guesses || []);
+  const hasValidGuesses = sg.some(g => g.time);
+  if (!hasValidGuesses) {
+    return `
+  <div class="card">
+    <div class="card-lbl">Collecting Guesses</div>
+    <p class="mono dim center">Waiting for admin to submit today's guesses…</p>
+  </div>`;
+  }
+
+  const cur = nowSec();
+  const out = eliminated(t.guesses, cur);
+  const slices = boundaries(t.guesses);
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+  return `
+  <div class="card">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
+      <div class="big-clock js-clock">--:--:--</div>
+      <span class="sync-dot js-sync-dot ${dotClass}" style="width: 12px; height: 12px;"></span>
+    </div>
+    <div class="big-clock-lbl">Live Time</div>
+    <div id="next-out-countdown" class="countdown-txt"></div>
+  </div>
+  <div class="card"><div class="card-lbl">${statusHeader}</div>
+    ${sg.map(g => {
+      const st = getPreviousStreak(g.name);
+      return `
+      <div class="row">
+        <div class="row-name">${g.name} ${st.pill}</div>
+        ${g.time ? `
+          <div class="row-time">${g.time}</div>
+          <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+            ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+          </div>
+        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="card"><div class="card-lbl">Territory Boundaries</div>
+    ${slices.map(s => {
+      return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
+    }).join('')}
+  </div>`;
+}
+
+function bindPlayerNav() {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _tab = btn.dataset.tab;
+      render();
+    });
+  });
+}
+
+function renderMain() {
+  const totalDays=S.days.length+(S.today?1:0);
   const estWrap = S.today?.estWrap || '--:--';
   return `
 <div class="hdr">
   <div class="hdr-day">Day ${totalDays||'—'}/50</div>
   ${get3DLogoHTML()}
   <div class="hdr-right">
-    <div class="hdr-wrap">Wrap ${estWrap}</div>
-    <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}"></span>
+    <div class="hdr-wrap">Est. Wrap: ${estWrap}</div>
+    <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
   </div>
 </div>
 <nav class="nav">
@@ -456,135 +748,402 @@ function renderAdminMain() {
   <button class="nav-btn ${_tab==='history'?'on':''}" data-tab="history">History</button>
   <button class="nav-btn ${_tab==='settings'?'on':''}" data-tab="settings">⚙</button>
 </nav>
-<div class="sec ${_tab==='today'?'on':''}">${renderTodaySection()}</div>
-<div class="sec ${_tab==='board'?'on':''}">${renderBoard()}</div>
-<div class="sec ${_tab==='history'?'on':''}">${renderHistory()}</div>
-<div class="sec ${_tab==='settings'?'on':''}">${renderSettings()}</div>`;
+
+<div class="sec ${_tab==='today'?'on':''}" id="tab-today">${renderToday()}</div>
+<div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
+<div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
+<div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
 }
 
-function renderTodaySection() {
-  const t = S.today, lastDay = S.days && S.days.length > 0 ? S.days[S.days.length - 1] : null;
-  
-  // MARQUEE LOGIC
+function renderToday() {
+  const t = S.today;
+  const lastDay = S.days && S.days.length > 0 ? S.days[S.days.length - 1] : null;
   let winnerHtml = '';
+  
   if (lastDay) {
     const prevWinnersList = lastDay.winners ? lastDay.winners.map(w => w.name) : [lastDay.winner];
     const prevWinnerStr = formatNames(prevWinnersList);
-    const label = prevWinnersList.length > 1 ? "YESTERDAY'S WINNERS" : "YESTERDAY'S WINNER";
-    winnerHtml = `<div class="prev-winner-tag"><span>${label}: ${prevWinnerStr} 🥇 </span><span>${label}: ${prevWinnerStr} 🥇 </span></div>`;
+    const isPlural = prevWinnersList.length > 1 ? "WINNERS" : "WINNER";
+    winnerHtml = `<div class="prev-winner-tag">
+        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
+        <span>YESTERDAY’S ${isPlural}: ${prevWinnerStr} 🥇 </span>
+       </div>`;
   }
-  const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><span>Player Status</span>${winnerHtml}</div>`;
 
+  const statusHeader = `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <span>Player Status</span>
+    ${winnerHtml}
+  </div>`;
+  
   if (!t) {
-      if (IS_ADMIN) return `<div class="card"><div class="card-lbl">Start New Day</div><button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button></div>`;
-      return `<div class="card"><div class="card-lbl">${statusHeader}</div><div class="empty" style="padding:20px 0;">No active game today</div></div>${lastDay ? `<p class="mono dim center">Last wrap: <span class="accent">${lastDay.wrapTime}</span></p>` : ''}`;
+    return `<div class="card">
+      <div class="card-lbl">Start New Day</div>
+      <button class="btn btn-p" id="new-day-btn">🎬 Start Today's Game</button>
+    </div>`;
   }
 
-  // WRAPPED RESULTS
+  const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
+  const clockCard = `
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;">
+        <div class="big-clock js-clock">--:--:--</div>
+        <span class="sync-dot js-sync-dot ${dotClass}" style="width: 12px; height: 12px;"></span>
+      </div>
+      <div class="big-clock-lbl">Live Time</div>
+      <div id="next-out-countdown" class="countdown-txt"></div>
+    </div>`;
+
   if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses), todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
+    const sg = sortedGuesses(t.guesses);
+    const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
+    const todayWinnerStr = formatNames(todayWinnersList);
     const streakInfo = getPreviousStreak(todayWinnersList[0]);
-    const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2) ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>` : '';
-    
-    let html = `<div class="winner-banner"><div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div><div class="winner-name" style="font-size: 2.2rem;">${formatNames(todayWinnersList)}</div>${streakHtml}<div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div></div>
-    <div class="card"><div class="card-lbl">Results</div>${sg.map(g => {
-      const isWinner = todayWinnersList.includes(g.name);
-      return `<div class="row"><div class="row-name">${g.name} <span>${isWinner ? '🏆' : '🍣'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}</div>`;
-    }).join('')}</div>`;
-    
-    if (IS_ADMIN) html += `<button class="btn btn-p" id="new-day-btn">Start Next Day →</button>`;
-    return html;
+    const streakHtml = (todayWinnersList.length === 1 && streakInfo.count >= 2)
+  ? `<div style="font-size:0.65rem; color:var(--accent); margin-top:4px; letter-spacing:0.1em; text-transform:uppercase;">${streakInfo.count} Days Streak</div>`
+  : '';
+    return `
+      <div class="winner-banner">
+        <div class="winner-sub">🎬 Today's Winner${todayWinnersList.length > 1 ? 's' : ''}</div>
+        <div class="winner-name" style="font-size: 2.2rem;">${todayWinnerStr}</div>
+        ${streakHtml}
+        <div class="winner-pts">+${t.points} pt · Wrap at ${t.wrapTime}</div>
+      </div>
+      <div class="card"><div class="card-lbl">Results</div>
+        ${sg.map(g => {
+          const st = getPreviousStreak(g.name);
+          const isWinner = todayWinnersList.includes(g.name);
+          return `
+          <div class="row">
+            <div class="row-name">${g.name} ${st.pill}</div>
+            ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            ${isWinner ? `<div class="badge b-win">+${t.points}pt</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+      <button class="btn btn-p" id="new-day-btn">Start Next Day →</button>
+    `;
   }
-
-  // ACTIVE GAME (Guesses exist)
+  
   if (t.guesses && t.guesses.length > 0) {
-      const cur = nowSec(), out = eliminated(t.guesses, cur), sg = sortedGuesses(t.guesses), slices = boundaries(t.guesses);
-      let html = `<div class="card"><div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-left: 20px;"><div class="big-clock js-clock">--:--:--</div><span class="sync-dot js-sync-dot live" style="width: 12px; height: 12px;"></span></div><div class="big-clock-lbl">Live Time</div><div id="next-out-countdown" class="countdown-txt"></div></div>
-      <div class="card"><div class="card-lbl">${statusHeader}</div>${sg.map(g => {
-        const isEliminated = out.has(g.name), safeId = g.name.replace(/\s+/g, '-');
-        return `<div class="row"><div class="row-name">${g.name} <span id="emoji-${safeId}">${isEliminated ? '🍣' : '🐟'}</span> ${getPreviousStreak(g.name).pill}</div>${g.time ? `<div class="row-time">${g.time}</div><div class="badge ${isEliminated ? 'b-out' : 'b-alive'}" id="st-${safeId}">${isEliminated ? 'OUT' : 'ALIVE'}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}</div>`;
-      }).join('')}</div>
-      <div class="card"><div class="card-lbl">Territory Boundaries</div>${slices.map(s => `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`).join('')}</div>`;
-      
-      if (IS_ADMIN) html += `<div class="card"><div class="card-lbl">Wrap Time</div><input type="text" id="wrap-inp" placeholder="18:30:45"><div class="flex-row" style="margin-top:10px"><button class="btn btn-s" id="set-now-btn">Current 🎬</button><button class="btn btn-p" id="wrap-btn">Confirm ✔️</button></div></div>`;
-      return html;
+    const cur = nowSec();
+    const out = eliminated(t.guesses, cur);
+    const sg = sortedGuesses(t.guesses);
+    const slices = boundaries(t.guesses);
+    return `
+      ${clockCard}
+      <div class="card"><div class="card-lbl">${statusHeader}</div>
+        ${sg.map(g => {
+          const st = getPreviousStreak(g.name);
+          return `
+          <div class="row">
+            <div class="row-name">${g.name} ${st.pill}</div>
+            ${g.time ? `
+              <div class="row-time">${g.time}</div>
+              <div class="badge ${out.has(g.name) ? 'b-out' : 'b-alive'}" id="st-${g.name}">
+                ${out.has(g.name) ? 'OUT' : 'ALIVE'}
+              </div>
+            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card"><div class="card-lbl">Territory Boundaries</div>
+        ${slices.map(s => {
+          return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
+        }).join('')}
+      </div>
+      <div class="card">
+        <div class="card-lbl">Enter Official Wrap Time</div>
+        <div class="inp-wrap">
+          <label class="inp-lbl">Wrap Time (HH:MM:SS)</label>
+          <input type="text" id="wrap-inp" placeholder="18:30:45" maxlength="8" 
+            pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}" 
+            style="font-family:'DM Mono',monospace;">
+        </div>
+        <div class="flex-row">
+          <button class="btn btn-s" id="set-now-btn" style="flex:1;">⏰ Set Current Time</button>
+          <button class="btn btn-p" id="wrap-btn" style="flex:1;">Confirm Wrap ✓</button>
+        </div>
+      </div>
+    `;
   }
-
-  // EMPTY GAME (Admin needs to paste)
-  if (IS_ADMIN) return `<div class="card"><div class="card-lbl">Paste Guesses</div><textarea id="paste-inp" placeholder="Name - HH:MM\nWrap - HH:MM"></textarea><button class="btn btn-p" id="parse-btn" style="margin-top:10px">Preview</button></div>`;
-  return `<div class="card"><div class="card-lbl">Status</div><div class="empty">Waiting for guesses...</div></div>`;
+  return `
+    <div class="card">
+      <div class="card-lbl">Paste Today's Guesses</div>
+      <p class="mono dim" style="font-size:.7rem;margin-bottom:10px">Format: Name - HH:MM (one per line). Include "Wrap - HH:MM"</p>
+      <textarea id="paste-inp" placeholder="ES:
+Luigi - 18:30
+Daniela - 19:15
+Marco - 17:45
+Wrap - 18:30"></textarea>
+      <button class="btn btn-p mt12" id="parse-btn">Preview Guesses →</button>
+    </div>
+  `;
 }
 
 function renderBoard() {
   const pl = getSortedPlayerRoster();
-  return `<div class="card"><div class="card-lbl">Standings</div>${pl.map((p,i)=>`<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} <span>${i===0?'👑':''}</span> ${getPreviousStreak(p.name).pill}</div><div class="row-pts accent">${S.scores[p.name]||0} pts</div></div>`).join('')}</div>`;
+  if(!pl.length) return '<div class="empty">No players yet</div>';
+  return `<div class="card"><div class="card-lbl">Standings</div>
+${pl.map((p,i)=>{
+  const st = getPreviousStreak(p.name);
+  return `<div class="row"><div class="lb-rank ${i===0?'first':''}">${i+1}</div><div class="row-name">${p.name} ${st.pill}</div><div class="row-pts accent">${S.scores[p.name]||0} <span class="mono dim" style="font-size:.65rem">pts</span></div></div>`
+}).join('')}
+</div>`;
 }
 
 function renderHistory() {
-  let all = [...S.days]; if (S.today && S.today.wrapTime) all.push(S.today);
-  if (!all.length) return '<div class="empty">No history</div>';
+  let all = [...S.days];
+  if (S.today && S.today.wrapTime) all.push(S.today);
+  if (!all.length) return '<div class="empty">No completed days yet</div>';
+
   return [...all].reverse().map((d, i) => {
-    const names = d.winners ? d.winners.map(w => w.name) : [d.winner];
-    return `<div class="card hist-row" onclick="this.classList.toggle('open')"><div class="hist-summary"><div class="hist-main-info"><span class="hist-day-tag">Day ${all.length-i}</span><span class="accent">${formatNames(names)}</span></div><div class="hist-meta"><span class="accent mono">${d.wrapTime}</span><span class="hist-arrow">▶</span></div></div><div class="hist-details" onclick="event.stopPropagation()">${sortedGuesses(d.guesses).map(g => {
-        const isWinner = names.includes(g.name);
-        return `<div class="row"><div class="row-name">${g.name} <span>${isWinner ? '🏆' : '🍣'}</span> ${getPreviousStreak(g.name).pill}</div><div class="row-time">${g.time || '--:--'}</div><div class="badge ${isWinner?'b-win':'b-out'}">${isWinner?`+${d.points}pt`:''}</div></div>`;
-    }).join('')}</div></div>`;
+    const num = all.length - i;
+    const sg = sortedGuesses(d.guesses);
+    const histNames = d.winners ? d.winners.map(w => w.name) : [d.winner];
+    const histWinnerStr = formatNames(histNames);
+    const winnerBet = d.guesses.find(g => histNames.includes(g.name))?.time || '--:--';
+    
+    return `
+    <div class="card hist-row" onclick="this.classList.toggle('open')">
+      <div class="hist-summary">
+        <div class="hist-main-info">
+          <span class="hist-day-tag">Day ${num}</span>
+          <span class="accent" style="font-weight:bold">${histWinnerStr}</span>
+          <span class="mono dim" style="font-size:0.75rem">(${winnerBet})</span>
+        </div>
+        <div class="hist-meta">
+          <span class="accent mono">${d.wrapTime}</span>
+          <span class="dim mono" style="font-size:0.7rem; min-width:35px">+${d.points}pt</span>
+          <span class="hist-arrow">▶</span>
+        </div>
+      </div>
+      <div class="hist-details" onclick="event.stopPropagation()">
+        <div class="card-lbl" style="margin:12px 0 8px 0; border-bottom:1px solid rgba(238,199,99,0.1); padding-bottom:4px;">Day Details</div>
+        ${sg.map(g => `
+          <div class="row">
+            <div class="row-name">${g.name}</div>
+            <div class="row-time">${g.time || '--:--'}</div>
+            <div class="badge ${histNames.includes(g.name) ? 'b-win' : 'b-out'}">
+              ${histNames.includes(g.name) ? `+${d.points}pt` : '—'}
+            </div>
+          </div>`).join('')}
+        <div class="day-footer" style="text-align:right; font-size:0.6rem; opacity:0.5; margin-top:10px;">${d.date}</div>
+      </div>
+    </div>`;
   }).join('');
 }
 
 function renderSettings() {
   const pl = getSortedPlayerRoster();
-  return `<div class="card"><div class="card-lbl">Roster</div>${pl.map((p, idx)=> {
-    const rIdx = S.playerRoster.findIndex(o => o.name === p.name);
-    return `<div class="row"><input type="text" value="${p.name}" id="name-${rIdx}" style="flex:1"><input type="number" value="${S.scores[p.name]||0}" id="pts-${rIdx}" style="width:60px;margin:0 5px"><button class="btn btn-s btn-sm" onclick="savePlayer(${rIdx})">Save</button><button class="btn btn-d btn-sm" onclick="deletePlayer(${rIdx})">×</button></div>`}).join('')}</div><div class="card"><button class="btn btn-d" id="reset-btn">Reset All</button></div>`;
-}
-
-function bindNav() { 
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => { 
-      _tab = btn.dataset.tab; 
-      render(); 
-    }); 
-  }); 
-}
-
-function bindAdminActions() {
-  document.getElementById('new-day-btn')?.addEventListener('click', () => { if(S.today?.wrapTime) S.days.push({...S.today}); S.today={date:new Date().toLocaleDateString(),guesses:[],wrapTime:null}; saveS(); render(); });
-  document.getElementById('wrap-btn')?.addEventListener('click', () => { const v = document.getElementById('wrap-inp').value; if(!v) return; const {winners,points}=calcWinner(S.today.guesses,v); S.today.wrapTime=v; S.today.winners=winners; S.today.points=points; winners.forEach(w=>S.scores[w.name]=(S.scores[w.name]||0)+points); saveS(); render(); });
-  document.getElementById('set-now-btn')?.addEventListener('click', () => { const i = document.getElementById('wrap-inp'); if(i) i.value=nowHMS(); });
-  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
-  document.getElementById('reset-btn')?.addEventListener('click', () => { if(confirm('Reset?')) { S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); } });
+  return `<div class="card"><div class="card-lbl">Player Roster — Editable</div>
+${pl.map((p, idx)=> {
+  const realIdx = S.playerRoster.findIndex(orig => orig.name === p.name);
+  return `
+  <div class="row" style="flex-wrap:wrap;align-items:flex-start;padding:12px 0;">
+    <div style="flex:1;min-width:120px;">
+      <input type="text" value="${p.name}" id="name-${realIdx}"
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;">
+    </div>
+    <div style="width:100px;margin-left:8px;">
+      <input type="number" value="${S.scores[p.name]||0}" id="pts-${realIdx}"
+        style="width:100%;padding:6px 10px;font-size:.9rem;background:var(--bg4);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'Alte Haas Grotesk',sans-serif;text-align:right;">
+    </div>
+    <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${realIdx})">Save</button>
+    <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${realIdx})">×</button>
+  </div>`}).join('')}
+</div>
+<div class="card"><div class="card-lbl">Danger Zone</div>
+<p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
+<button class="btn btn-d" id="reset-btn">Reset Entire Game</button>
+</div>`;
 }
 
 function showPreview() {
-  const text = document.getElementById('paste-inp')?.value || '';
-  const { guesses, wrapTime } = parsePaste(text);
-  if (!guesses.length && !wrapTime) return toast('No data', 'err');
-  const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase())), newPlayers = [];
-  guesses.forEach(g => { if (!existingNames.has(g.name.toLowerCase())) newPlayers.push(g.name); });
-  const full = buildFullGuessList(guesses);
-  document.getElementById('app').innerHTML = `<div class="hdr"><div class="hdr-day">Preview</div>${get3DLogoHTML()}</div><div style="padding:16px"><div class="card"><div class="card-lbl">Wrap Time: ${wrapTime || 'Missing'}</div></div><div class="card"><div class="preview-card">${sortedGuesses(full).map(g => `<div class="row"><div class="row-name">${g.name}</div><div class="row-time">${g.time||'--:--'}</div></div>`).join('')}</div></div><button class="btn btn-p" id="confirm-btn">Confirm</button><button class="btn btn-s" id="cancel-btn">Back</button></div>`;
-  document.getElementById('confirm-btn').onclick = () => {
-    newPlayers.forEach(n => { S.playerRoster.push({name:n}); S.scores[n]=0; });
-    S.today.guesses = full; S.today.estWrap = wrapTime; saveS(); render();
-  };
-  document.getElementById('cancel-btn').onclick = () => render();
+  const inp = document.getElementById('paste-inp');
+  const text = inp?.value || '';
+  if (!text.trim()) { toast('Paste guesses first', 'err'); return; }
+  
+  const { guesses: parsed, wrapTime } = parsePaste(text);
+  if (!parsed.length && !wrapTime) { toast('No valid data found', 'err'); return; }
+  
+  const existingNames = new Set(S.playerRoster.map(p => p.name.toLowerCase()));
+  const newPlayers = [];
+  parsed.forEach(g => {
+    if (!existingNames.has(g.name.toLowerCase())) {
+      newPlayers.push(g.name);
+      existingNames.add(g.name.toLowerCase());
+    }
+  });
+  const fullList = buildFullGuessList(parsed);
+  const sorted = sortedGuesses(fullList);
+  const totalDays = S.days.length + (S.today ? 1 : 0);
+  const app = document.getElementById('app');
+  
+  app.innerHTML = `
+<div class="hdr">
+  <div class="hdr-day">Day ${totalDays}/50 Preview</div>
+  ${get3DLogoHTML()}
+  <div class="hdr-right">
+    <div class="hdr-wrap">Est. Wrap: ${wrapTime || 'Missing'}</div>
+    <span class="sync-dot live js-sync-dot"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="card">
+    <div class="card-lbl">Confirmed Wrap Time</div>
+    ${wrapTime 
+      ? `<p class="accent" style="font-weight:bold; font-size:1.4rem; text-align:center;">🎬 ${wrapTime}</p>` 
+      : `<p class="red" style="font-size:0.8rem; margin-bottom:10px;">⚠️ Wrap time not found in paste. Please set it manually:</p>
+         <input type="time" id="manual-wrap" style="text-align:center; font-size:1.2rem;">`
+    }
+  </div>
+  <div class="card">
+    <div class="card-lbl">Confirm These Guesses</div>
+    <div class="preview-card">
+      ${sorted.map(g => `
+        <div class="row">
+          <div class="row-name">${g.name}</div>
+          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        </div>`).join('')}
+    </div>
+    <p class="mono dim" style="font-size:.7rem;margin-top:10px">
+      ${parsed.length} players submitted · ${fullList.length - parsed.length} missing
+      ${newPlayers.length > 0 ? `<br><span style="color:var(--green)">+ ${newPlayers.length} new player(s) will be added to the roster</span>` : ''}
+    </p>
+  </div>
+  <button class="btn btn-p" id="confirm-btn">✓ Looks Good — Start Day</button>
+  <button class="btn btn-s" id="cancel-btn">← Go Back</button>
+</div>`;
+  
+  startClock();
+  
+  document.getElementById('confirm-btn')?.addEventListener('click', () => {
+    let finalWrap = wrapTime;
+    if (!finalWrap) {
+      finalWrap = document.getElementById('manual-wrap')?.value;
+      if (!finalWrap) { toast('Please set a wrap time', 'err'); return; }
+    }
+    
+    newPlayers.forEach(name => {
+      S.playerRoster.push({ name: name });
+      S.scores[name] = 0;
+    });
+    
+    S.today.guesses = fullList;
+    S.today.estWrap = finalWrap;
+    saveS();
+    toast('Day started!', 'ok');
+    render();
+  });
+  document.getElementById('cancel-btn')?.addEventListener('click', () => { render(); });
 }
 
 window.savePlayer = (idx) => {
-  const n = document.getElementById(`name-${idx}`).value.trim(), p = parseInt(document.getElementById(`pts-${idx}`).value) || 0;
-  if (!n) return;
-  const old = S.playerRoster[idx].name;
-  if (old !== n) { S.playerRoster[idx].name = n; S.scores[n] = S.scores[old]; delete S.scores[old]; }
-  S.scores[n] = p; saveS(); render();
+  const nameInput = document.getElementById(`name-${idx}`);
+  const ptsInput = document.getElementById(`pts-${idx}`);
+  if (!nameInput || !ptsInput) return;
+  const oldName = S.playerRoster[idx].name;
+  const newName = nameInput.value.trim();
+  const newPoints = parseInt(ptsInput.value) || 0;
+  if (!newName) { toast('Name cannot be empty', 'err'); return; }
+  const duplicate = S.playerRoster.find((p, i) => i !== idx && p.name.toLowerCase() === newName.toLowerCase());
+  if (duplicate) { toast('Player name already exists', 'err'); return; }
+  if (oldName !== newName) {
+    S.playerRoster[idx].name = newName;
+    S.scores[newName] = S.scores[oldName] || 0;
+    delete S.scores[oldName];
+    S.days.forEach(day => {
+      day.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
+      if (day.winner === oldName) day.winner = newName;
+      if (day.winners) {
+        day.winners.forEach(w => { if (w.name === oldName) w.name = newName; });
+      }
+    });
+    if (S.today && S.today.guesses) {
+      S.today.guesses.forEach(g => { if (g.name === oldName) g.name = newName; });
+      if (S.today.winner === oldName) S.today.winner = newName;
+      if (S.today.winners) {
+        S.today.winners.forEach(w => { if (w.name === oldName) w.name = newName; });
+      }
+    }
+  }
+  S.scores[newName] = newPoints;
+  saveS();
+  toast('Player updated!', 'ok');
+  render();
 };
 
-window.deletePlayer = (idx) => { if(confirm('Delete?')) { S.playerRoster.splice(idx,1); saveS(); render(); } };
+window.deletePlayer = (idx) => {
+  const player = S.playerRoster[idx];
+  if (!confirm(`Delete ${player.name}?`)) return;
+  const name = player.name;
+  S.playerRoster.splice(idx, 1);
+  delete S.scores[name];
+  S.days.forEach(day => { day.guesses = day.guesses.filter(g => g.name !== name); });
+  if (S.today && S.today.guesses) S.today.guesses = S.today.guesses.filter(g => g.name !== name);
+  saveS();
+  toast('Player deleted', 'ok');
+  render();
+};
 
+function setCurrentTime() {
+  const now = nowHMS();
+  const inp = document.getElementById('wrap-inp');
+  if (inp) {
+    inp.value = now;
+    toast('Time set to ' + now, 'ok');
+  }
+}
+
+function bindMain() {
+  document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
+  document.getElementById('new-day-btn')?.addEventListener('click', () => {
+    if(S.today&&S.today.wrapTime) S.days.push({...S.today});
+    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null};
+    saveS(); render();
+  });
+  document.getElementById('wrap-btn')?.addEventListener('click', () => {
+    const inp = document.getElementById('wrap-inp');
+    if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
+    const { winner, winners, points } = calcWinner(S.today.guesses, inp.value);
+    S.today.wrapTime = inp.value;
+    S.today.winner = winner;
+    S.today.winners = winners;
+    S.today.points = points;
+    winners.forEach(w => { S.scores[w.name] = (S.scores[w.name] || 0) + points; });
+    saveS();
+    toast(`${formatNames(winners.map(w=>w.name))} win +${points} pt!`, 'ok');
+    render();
+  });
+  document.getElementById('set-now-btn')?.addEventListener('click', setCurrentTime);
+  document.getElementById('parse-btn')?.addEventListener('click', showPreview);
+  document.getElementById('reset-btn')?.addEventListener('click',()=>{
+    if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
+  });
+}
+
+if(!IS_ADMIN) render();
 onSnapshot(STATE_REF, (snap) => {
   if(_writing) return;
-  if(snap.exists()) S = snap.data();
+  if(snap.exists()) {
+    S = snap.data();
+    if (!S.playerRoster) S.playerRoster = S.players || [];
+  } else {
+    S = { playerRoster: [], scores: {}, days: [], today: null };
+  }
   render();
+  
+  // Update all dots
+  document.querySelectorAll('.js-sync-dot').forEach(dot => {
+    dot.classList.add('live');
+    dot.style.background = ''; // Reset manual error color
+  });
+}, (err) => {
+  console.error("Firestore error:", err);
+  document.querySelectorAll('.js-sync-dot').forEach(dot => {
+    dot.classList.remove('live');
+    dot.style.background = 'var(--red)';
+  });
 });
 </script>
 </body>
