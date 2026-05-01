@@ -6,8 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>TotoWrap</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#263759">
 <link rel="apple-touch-icon" href="imgs/tunacan.png">
 <meta name="apple-mobile-web-app-title" content="TotoWrap">
 <style>
@@ -740,7 +738,7 @@ function renderPlayerToday() {
           <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
             ${isWinner ? 'WIN' : 'OUT'}
           </div>
-        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
       </div>`;
     }).join('')}
   </div>`;
@@ -794,7 +792,7 @@ function renderPlayerToday() {
           <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
             ${isOut ? 'OUT' : 'ALIVE'}
           </div>
-        ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+        ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
       </div>`;
     }).join('')}
   </div>
@@ -915,7 +913,7 @@ function renderToday() {
                 <div class="badge ${isWinner ? 'b-win' : 'b-out'}">
                   ${isWinner ? 'WIN' : 'OUT'}
                 </div>
-              ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+              ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
             </div>`;
           }).join('')}
         </div>
@@ -948,7 +946,7 @@ function renderToday() {
               <div class="badge ${isOut ? 'b-out' : 'b-alive'}" id="st-${g.name}">
                 ${isOut ? 'OUT' : 'ALIVE'}
               </div>
-            ` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+            ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
           </div>`;
         }).join('')}
       </div>
@@ -1109,7 +1107,7 @@ function showPreview() {
       ${sorted.map(g => `
         <div class="row">
           <div class="row-name">${g.name}</div>
-          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">Oggi questo tonno non ha scommesso</div>`}
+          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
         </div>`).join('')}
     </div>
     <p class="mono dim" style="font-size:.7rem;margin-top:10px">
@@ -1227,36 +1225,22 @@ function bindMain() {
     if(confirm('Reset all data?')){ S={playerRoster:[],scores:{},days:[],today:null}; saveS(); render(); }
   });
 }
-    
-let _hasLoadedOnce = false;
 
 if(!IS_ADMIN) render();
-
 onSnapshot(STATE_REF, (snap) => {
   if(_writing) return;
-  
   if(snap.exists()) {
     S = snap.data();
     if (!S.playerRoster) S.playerRoster = S.players || [];
   } else {
     S = { playerRoster: [], scores: {}, days: [], today: null };
   }
-
-  // NEW: Forced 5-second delay for the first load only
-  if (!_hasLoadedOnce) {
-    _hasLoadedOnce = true;
-    setTimeout(() => {
-      render();
-    }, 5000); // 5000ms = 5 seconds
-  } else {
-    // Normal instant updates for any data changes after the first load
-    render();
-  }
+  render();
   
   // Update all dots
   document.querySelectorAll('.js-sync-dot').forEach(dot => {
     dot.classList.add('live');
-    dot.style.background = '';
+    dot.style.background = ''; // Reset manual error color
   });
 }, (err) => {
   console.error("Firestore error:", err);
