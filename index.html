@@ -444,7 +444,7 @@ function sortedGuesses(guesses) {
     const bTime = b.adjustedSec !== undefined ? b.adjustedSec : toSec(b.time);
     
     // If times are different, sort by time (ascending)
-    if (secA !== secB) return aTime - bTime;
+    if (aTime !== bTime) return aTime - bTime;
     
     // If times are the same, sort alphabetically
     return a.name.localeCompare(b.name);
@@ -595,7 +595,7 @@ function startClock() {
 
 function tickClock() {
   const t = nowHMS();
-  const cur = nowSec();
+  let cur = nowSec();
   
   // Update all clocks on the page
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
@@ -605,8 +605,6 @@ if (!countdownEl || !S.today || !S.today.guesses || S.today.wrapTime) {
   if (countdownEl) countdownEl.style.display = 'none';
   return;
 }
-
-let cur = nowSec();
 
 // Adjust current time if we've crossed midnight
 if (S.today.startTimeSec && cur < S.today.startTimeSec) {
@@ -661,6 +659,8 @@ if (nextBoundary && cur <= nextBoundary.sec && !isFinalTerritory) {
   `;
   countdownEl.style.display = 'block';
 }
+}
+
 
 function refreshStatusBadges() {
   if (!S.today || !S.today.guesses.length || S.today.wrapTime) return;
