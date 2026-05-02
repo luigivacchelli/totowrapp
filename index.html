@@ -377,8 +377,8 @@ async function saveS() {
 function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
 function pad(n) { return String(n).padStart(2,'0'); }
-/* function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); } */
-function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+/* function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
+function nowHMS() { const d=new Date(); return */ `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
 function adjSec(hms, startHms) {
   if (!startHms) return toSec(hms);
@@ -434,8 +434,8 @@ function midSec(a,b) { return Math.floor((a+b)/2); }
 function sortedGuesses(guesses) {
   // 1. Filter and sort players who DID bet
   const withTime = guesses.filter(g => g.time).sort((a, b) => {
-    const secA = adjSec(a.time, startAnchor);
-    const secB = adjSec(b.time, startAnchor);
+    const secA = adjSec(a.time, S.today?.startTime || "00:00:00");
+    const secB = adjSec(b.time, S.today?.startTime || "00:00:00");
     
     // If times are different, sort by time (ascending)
     if (secA !== secB) return secA - secB;
@@ -479,7 +479,7 @@ function getWinProbability(playerName, allGuesses) {
 }
 
 function boundaries(guesses) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => adjSec(a.time, startAnchor) - adjSec(b.time, startAnchor));
+  const valid = guesses.filter(g => g.time).sort((a,b) => adjSec(a.time, S.today?.startTime || "00:00:00") - adjSec(b.time, S.today?.startTime || "00:00:00"));
   if (valid.length === 0) return [];
 
   const groups = [];
@@ -581,7 +581,7 @@ function tickClock() {
   const curAdj = adjSec(hms, S.today?.startTime);
   
   // Update all clocks on the page
-  document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
+  document.querySelectorAll('.js-clock').forEach(el => el.textContent = hms);
   
   const countdownEl = document.getElementById('next-out-countdown');
   if (!countdownEl || !S.today || !S.today.guesses || S.today.wrapTime) {
