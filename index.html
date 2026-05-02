@@ -459,32 +459,46 @@ function sortedGuesses(guesses) {
   return [...withTime, ...missing];
 }
 
-function boundaries(guesses) {
-  const validGuesses = guesses.filter(g => g.time);
-  const s = validGuesses.sort((a,b) => {
-    const aTime = a.adjustedSec !== undefined ? a.adjustedSec : toSec(a.time);
-    const bTime = b.adjustedSec !== undefined ? b.adjustedSec : toSec(b.time);
-    return aTime - bTime;
-  });
-  
-  if (s.length < 2) return [];
+    function boundaries(guesses) {
+      const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+      if (valid.length === 0) return [];
 
-  return s.slice(0,-1).map((g,i) => {
-    const t1 = s[i].adjustedSec !== undefined ? s[i].adjustedSec : toSec(s[i].time);
-    const t2 = s[i+1].adjustedSec !== undefined ? s[i+1].adjustedSec : toSec(s[i+1].time);
-    
-    // Precise midpoint calculation
-    const mid = Math.floor((t1 + t2) / 2);
-    
-    return { 
-      names: [s[i].name, s[i+1].name], 
-      sec: mid,
-      startStr: s[i].time,            
-      endStr: s[i+1].time,              
-      str: secToHMS(mid % 86400) // Now outputs HH:MM:SS
-    };
-  });
-}
+      const groups = [];
+      valid.forEach(g => {
+        const sec = toSec(g.time);
+        const existing = groups.find(grp => grp.sec === sec);
+        if (existing) {
+          existing.names.push(g.name);
+        } else {
+          groups.push({ names: [g.name], sec: sec });
+        }
+      });
+
+      const slices = [];
+      for (let i = 0; i < groups.length; i++) {
+        let startSec = 0;
+        let endSec = 86399;
+
+        if (i > 0) {
+          const prevMid = midSec(groups[i-1].sec, groups[i].sec);
+          startSec = prevMid;
+        }
+
+        if (i < groups.length - 1) {
+          const nextMid = midSec(groups[i].sec, groups[i+1].sec);
+          endSec = nextMid - 1;
+        }
+
+        slices.push({
+          names: groups[i].names,
+          start: startSec,
+          end: endSec,
+          startStr: secToHMS(startSec),
+          endStr: secToHMS(endSec)
+        });
+      }
+      return slices;
+    }
 
 function eliminated(guesses, curSec) {
   // Adjust current time if we've crossed midnight since game start
