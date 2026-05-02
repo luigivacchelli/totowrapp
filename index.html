@@ -377,8 +377,8 @@ async function saveS() {
 function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
 function pad(n) { return String(n).padStart(2,'0'); }
-/* function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
-function nowHMS() { const d=new Date(); return */ `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+/* function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); } */
+function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
 function adjSec(hms, startHms) {
   if (!startHms) return toSec(hms);
