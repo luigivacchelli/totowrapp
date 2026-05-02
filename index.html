@@ -459,30 +459,7 @@ function sortedGuesses(guesses) {
   return [...withTime, ...missing];
 }
     
-function getWinProbability(playerName, allGuesses) {
-  const slices = boundaries(allGuesses);
-  if (slices.length === 0) return { val: 0, color: 'var(--red)' };
-
-  // Total seconds from start of first territory to end of last
-  const totalRange = slices[slices.length - 1].end - slices[0].start;
-  
-  // Find the specific slice for this player
-  const mySlice = slices.find(s => s.names.includes(playerName));
-  if (!mySlice) return { val: 0, color: 'var(--red)' };
-
-  const myRange = mySlice.end - mySlice.start;
-  const percent = (myRange / totalRange) * 100;
-  
-  // Color Logic
-  let color = 'var(--red)'; // < 25%
-  if (percent >= 25 && percent <= 75) color = 'var(--accent)';
-  if (percent > 75) color = 'var(--green)';
-
-  return {
-    text: percent.toFixed(1) + '%', // Decimal number
-    color: color
-  };
-}
+names: [s[i].name, s[i+1].name],
 
 function boundaries(guesses) {
   const validGuesses = guesses.filter(g => g.time);
@@ -498,9 +475,8 @@ function boundaries(guesses) {
     const mid = midSec(t1, t2);
     
     return { 
-      nameA: s[i].name, 
-      nameB: s[i+1].name, 
-      sec: mid, 
+      names: [s[i].name, s[i+1].name],
+      sec: mid,
       str: secToHMS(mid % 86400) // Display in 24h format
     };
   });
