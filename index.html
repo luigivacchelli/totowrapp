@@ -377,8 +377,16 @@ async function saveS() {
 function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
 function pad(n) { return String(n).padStart(2,'0'); }
-function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
-function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+/* function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
+function nowHMS() { const d=new Date(); return */ `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+
+function adjSec(hms, startHms) {
+  if (!startHms) return toSec(hms);
+  const s = toSec(hms);
+  const start = toSec(startHms);
+  // If the time is numerically "before" start, it's the next day
+  return (s < start) ? s + 86400 : s;
+}
 
 function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
@@ -426,8 +434,8 @@ function midSec(a,b) { return Math.floor((a+b)/2); }
 function sortedGuesses(guesses) {
   // 1. Filter and sort players who DID bet
   const withTime = guesses.filter(g => g.time).sort((a, b) => {
-    const secA = toSec(a.time);
-    const secB = toSec(b.time);
+    const secA = adjSec(a.time, startAnchor);
+    const secB = adjSec(b.time, startAnchor);
     
     // If times are different, sort by time (ascending)
     if (secA !== secB) return secA - secB;
@@ -471,12 +479,12 @@ function getWinProbability(playerName, allGuesses) {
 }
 
 function boundaries(guesses) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+  const valid = guesses.filter(g => g.time).sort((a,b) => adjSec(a.time, startAnchor) - adjSec(b.time, startAnchor));
   if (valid.length === 0) return [];
 
   const groups = [];
   valid.forEach(g => {
-    const sec = toSec(g.time);
+    const sec = adjSec(g.time, S.today.startTime);
     const existing = groups.find(grp => grp.sec === sec);
     if (existing) {
       existing.names.push(g.name);
@@ -523,7 +531,7 @@ function eliminated(guesses, curSec) {
 }
 
 function calcWinner(guesses, wrapHMSInput) {
-  const wrapSec = toSec(wrapHMSInput);
+  const wrapSec = adjSec(wrapHMSInput, S.today.startTime);
   const slices = boundaries(guesses);
   
   const winningSlice = slices.find(s => wrapSec >= s.start && wrapSec <= s.end);
@@ -569,8 +577,8 @@ function startClock() {
 }
 
 function tickClock() {
-  const t = nowHMS();
-  const cur = nowSec();
+  const hms = nowHMS();
+  const curAdj = adjSec(hms, S.today?.startTime);
   
   // Update all clocks on the page
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
@@ -585,14 +593,14 @@ function tickClock() {
   if (slices.length === 0) return;
 
   // Find the current/upcoming boundary
-  const nextBoundary = slices.find(s => s.end >= cur);
+  const nextBoundary = slices.find(s => s.end >= curAdj);
   
   // THE FIX: Check if this boundary is actually the final territory
   const isFinalTerritory = (nextBoundary === slices[slices.length - 1]);
 
   // PHASE 1: Someone is still at risk (and it's not the final winners)
-  if (nextBoundary && cur <= nextBoundary.end && !isFinalTerritory) {
-    const diff = (nextBoundary.end + 1) - cur;
+  if (nextBoundary && curAdj <= nextBoundary.end && !isFinalTerritory) {
+    const diff = (nextBoundary.end + 1) - curAdj;
     
     // Wrap ONLY the individual names in the uppercase span
     const styledNames = nextBoundary.names.map(name => `<span class="countdown-name">${name}</span>`);
@@ -618,7 +626,7 @@ function tickClock() {
 
 function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
-  const cur=nowSec(), out=eliminated(S.today.guesses,cur);
+  const cur = adjSec(nowHMS(), S.today.startTime), out=eliminated(S.today.guesses,cur);
   S.today.guesses.forEach(g=>{
     const el=document.getElementById('st-'+g.name);
     const nameEl = document.getElementById('name-span-'+g.name);
@@ -768,7 +776,7 @@ function renderPlayerToday() {
   </div>`;
   }
 
-  const cur = nowSec();
+  const cur = adjSec(nowHMS(), S.today.startTime);
   const out = eliminated(t.guesses, cur);
   const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
   const slices = boundaries(t.guesses);
@@ -936,7 +944,7 @@ function renderToday() {
   }
   
   if (t.guesses && t.guesses.length > 0) {
-    const cur = nowSec();
+    const cur = adjSec(nowHMS(), S.today.startTime);
     const out = eliminated(t.guesses, cur);
     const sg = sortedGuesses(t.guesses);
     const slices = boundaries(t.guesses);
@@ -1189,6 +1197,7 @@ function showPreview() {
     
     S.today.guesses = fullList;
     S.today.estWrap = finalWrap;
+    S.today.startTime = nowHMS();
     saveS();
     toast('Day started!', 'ok');
     render();
