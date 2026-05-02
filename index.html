@@ -284,9 +284,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .dim { color: var(--dim); } .mono { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .75rem; }
 .empty { text-align: center; padding: 44px 20px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--dim); letter-spacing: .1em; }
 .center { text-align: center; } .accent { color: var(--accent); } .red { color: var(--red); }
-.loading-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
-.loading-screen img { max-width: 200px; }
-.loading-txt { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); }
 
 /* History Accordion Styles */
 .hist-row { cursor: pointer; padding: 0 !important; overflow: hidden; }
@@ -302,13 +299,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 </head>
 <body>
 <div id="app">
-  <div class="loading-screen">
-    <img src="imgs/tunacan.png" alt="TotoWrap">
-    <div class="loading-txt" style="text-align:center;line-height:2.2">
-      <span style="color:var(--accent);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase">Wait for the admin to start today's game</span><br>
-      <span style="color:var(--accent);font-style:italic;font-size:.7rem;opacity:.8">"At my signal, unleash hell"</span>
-    </div>
-  </div>
 </div>
 <div id="toast"></div>
 
