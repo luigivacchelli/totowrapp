@@ -458,8 +458,6 @@ function sortedGuesses(guesses) {
   // Combine them: those with bets on top, missing at the bottom
   return [...withTime, ...missing];
 }
-    
-names: [s[i].name, s[i+1].name],
 
 function boundaries(guesses) {
   const validGuesses = guesses.filter(g => g.time);
@@ -469,15 +467,19 @@ function boundaries(guesses) {
     return aTime - bTime;
   });
   
+  if (s.length < 2) return [];
+
   return s.slice(0,-1).map((g,i) => {
     const t1 = s[i].adjustedSec !== undefined ? s[i].adjustedSec : toSec(s[i].time);
     const t2 = s[i+1].adjustedSec !== undefined ? s[i+1].adjustedSec : toSec(s[i+1].time);
     const mid = midSec(t1, t2);
     
     return { 
-      names: [s[i].name, s[i+1].name],
+      names: [s[i].name, s[i+1].name], // Fixes the "undefined" in table
       sec: mid,
-      str: secToHMS(mid % 86400) // Display in 24h format
+      startStr: s[i].time,            // Required for your HTML
+      endStr: s[i+1].time,              // Required for your HTML
+      str: secToHMS(mid % 86400) 
     };
   });
 }
@@ -884,6 +886,38 @@ function renderMain() {
 <div class="sec ${_tab==='board'?'on':''}" id="tab-board">${renderBoard()}</div>
 <div class="sec ${_tab==='history'?'on':''}" id="tab-history">${renderHistory()}</div>
 <div class="sec ${_tab==='settings'?'on':''}" id="tab-settings">${renderSettings()}</div>`;
+}
+    
+function getWinProbability(playerName, allGuesses) {
+  const valid = allGuesses.filter(g => g.time);
+  if (valid.length < 2) return { text: '100%', color: 'var(--green)' };
+
+  const slices = boundaries(allGuesses);
+  const sorted = [...valid].sort((a,b) => (a.adjustedSec || toSec(a.time)) - (b.adjustedSec || toSec(b.time)));
+  
+  // Define the total time range currently active
+  let start = sorted[0].adjustedSec || toSec(sorted[0].time);
+  let end = sorted[sorted.length - 1].adjustedSec || toSec(sorted[sorted.length - 1].time);
+  let totalRange = end - start;
+  
+  if (totalRange <= 0) return { text: '0%', color: 'var(--red)' };
+
+  const idx = sorted.findIndex(g => g.name === playerName);
+  if (idx === -1) return { text: '0%', color: 'var(--red)' };
+
+  const pStart = (idx === 0) ? start : slices[idx - 1].sec;
+  const pEnd = (idx === sorted.length - 1) ? end : slices[idx].sec;
+  
+  const percent = Math.max(0, ((pEnd - pStart) / totalRange) * 100);
+  
+  let color = 'var(--red)';
+  if (percent >= 25) color = 'var(--accent)';
+  if (percent > 70) color = 'var(--green)';
+
+  return {
+    text: Math.round(percent) + '%',
+    color: color
+  };
 }
 
 function renderToday() {
