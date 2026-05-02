@@ -1096,6 +1096,7 @@ function showPreview() {
   if (!parsed.length && !wrapTime && (!formatErrors || !formatErrors.length)) {
       toast('No valid data found', 'err');
       return;
+  }
   
   const errorWarning = formatErrors.length > 0
     ? `<div class="card" style="border: 1px solid var(--red); background: rgba(214, 86, 86, 0.1); margin-bottom: 12px;">
