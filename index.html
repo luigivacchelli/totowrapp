@@ -568,6 +568,7 @@ function getPreviousStreak(playerName) {
 function startClock() {
   if(_clockInterval) clearInterval(_clockInterval);
   _clockInterval = setInterval(tickClock, 1000);
+  tickClock();
 }
 
 function tickClock() {
