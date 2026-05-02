@@ -472,14 +472,16 @@ function boundaries(guesses) {
   return s.slice(0,-1).map((g,i) => {
     const t1 = s[i].adjustedSec !== undefined ? s[i].adjustedSec : toSec(s[i].time);
     const t2 = s[i+1].adjustedSec !== undefined ? s[i+1].adjustedSec : toSec(s[i+1].time);
-    const mid = midSec(t1, t2);
+    
+    // Precise midpoint calculation
+    const mid = Math.floor((t1 + t2) / 2);
     
     return { 
-      names: [s[i].name, s[i+1].name], // Fixes the "undefined" in table
+      names: [s[i].name, s[i+1].name], 
       sec: mid,
-      startStr: s[i].time,            // Required for your HTML
-      endStr: s[i+1].time,              // Required for your HTML
-      str: secToHMS(mid % 86400) 
+      startStr: s[i].time,            
+      endStr: s[i+1].time,              
+      str: secToHMS(mid % 86400) // Now outputs HH:MM:SS
     };
   });
 }
@@ -510,10 +512,10 @@ function eliminated(guesses, curSec) {
   return out;
 }
 
-function calcWinner(guesses, wrapHHMM) {
-  let wrapSec = toSec(wrapHHMM);
+function calcWinner(guesses, wrapHHMMSS) {
+  let wrapSec = toSec(wrapHHMMSS);
   
-  // Adjust wrap time if it's next day
+  // Adjust wrap time if it's next day (past midnight)
   if (S.today && S.today.startTimeSec && wrapSec < S.today.startTimeSec) {
     wrapSec += 86400;
   }
@@ -527,15 +529,19 @@ function calcWinner(guesses, wrapHHMM) {
   
   const b = boundaries(guesses);
   let wi = 0;
-  b.forEach((bd,i) => { 
+  
+  // Precise boundary check: 
+  // If wrap is at 18:30:00 and boundary is 18:30:00, index shifts to the next player.
+  b.forEach((bd, i) => { 
     if (wrapSec >= bd.sec) wi = i + 1; 
   });
   
   const winner = s[wi];
   const winnerTime = winner.adjustedSec !== undefined ? winner.adjustedSec : toSec(winner.time);
+  
+  // 3 points for a "Bullseye" (exact second match)
   const points = (wrapSec === winnerTime) ? 3 : 1;
   
-  // Find all players with same adjusted time (ties)
   const winners = s.filter(g => {
     const gTime = g.adjustedSec !== undefined ? g.adjustedSec : toSec(g.time);
     return gTime === winnerTime;
