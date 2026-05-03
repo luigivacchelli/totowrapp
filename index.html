@@ -110,7 +110,7 @@ body::before {
 /* FIX FOR FACE 2 & 4 (TUNA):
    We allow backface visibility and pre-flip them so they
    appear correctly when rotating through the 180-degree mark. */
-.face-2, .face-3 , .face-4 {
+.face-2, .face-4 {
   backface-visibility: visible;
   /* scaleX(-1) mirrors the image so it looks 'right' when viewed from the back */
   transform: scaleX(-1);
@@ -133,7 +133,7 @@ body::before {
 .face-3 {
   animation:
     f3-step0 12.5s linear forwards,
-    loop-mirrored 12s linear 12.5s infinite;
+    loop-standard 12s linear 12.5s infinite;
   animation-delay: 0s, 18.5s;
 }
 
@@ -159,9 +159,9 @@ body::before {
 }
 
 @keyframes f3-step0 {
-  0%, 52% { opacity: 0; transform: rotateY(270deg) scaleX(-1); }
-  52.1%   { opacity: 1; transform: rotateY(270deg) scaleX(-1); }
-  76%     { opacity: 1; transform: rotateY(450deg) scaleX(-1); }
+  0%, 52% { opacity: 0; transform: rotateY(270deg); }
+  52.1%   { opacity: 1; transform: rotateY(270deg); }
+  76%     { opacity: 1; transform: rotateY(450deg); }
   76.1%, 100% { opacity: 0; }
 }
 
