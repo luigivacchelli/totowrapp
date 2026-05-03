@@ -921,7 +921,6 @@ function renderMain() {
   ${get3DLogoHTML()}
   <div class="hdr-right">
     <div class="hdr-wrap">Wrap ${estWrap}</div>
-    <button class="btn btn-s btn-sm" id="admin-logout-btn" title="${currentUser?.email || 'Admin'}">Sign out</button>
     <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
   </div>
 </div>
@@ -1157,6 +1156,10 @@ ${pl.map((p, idx)=> {
     <button class="btn btn-s btn-sm" style="margin-left:8px;margin-top:0;" onclick="savePlayer(${realIdx})">Save</button>
     <button class="btn btn-d btn-sm" style="margin-left:4px;margin-top:0;" onclick="deletePlayer(${realIdx})">×</button>
   </div>`}).join('')}
+</div>
+<div class="card"><div class="card-lbl">Admin Account</div>
+<p class="mono dim mt8" style="margin-bottom:12px">${currentUser?.email || 'Signed in'}</p>
+<button class="btn btn-s" id="admin-logout-btn">Sign out</button>
 </div>
 <div class="card"><div class="card-lbl">Danger Zone</div>
 <p class="mono dim mt8" style="margin-bottom:12px">This will erase all data permanently for everyone.</p>
