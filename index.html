@@ -209,7 +209,7 @@ body::before {
 .b-prob { background: rgba(184,201,168,.3); color: var(--dim); }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-input[type=text], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
+input[type=text], input[type=password], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
 textarea { resize: vertical; min-height: 140px; font-size: .85rem; line-height: 1.6; }
 input:focus, textarea:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--dim); }
@@ -305,7 +305,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDChGuB5CtWRD0u8j-GFzDOvqsGXdkDNFI",
@@ -320,7 +320,6 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
-const authProvider = new GoogleAuthProvider();
 const STATE_REF = doc(db, "totowrap", "state");
 
 let S = {
@@ -704,21 +703,38 @@ function renderAdminLogin() {
 <div style="padding:16px">
   <div class="card">
     <div class="card-lbl">Admin Sign In</div>
-    <p class="mono dim center" style="font-size:.72rem;margin:8px 0 14px">Sign in with an authorized Google account to edit the game.</p>
-    <button class="btn btn-p" id="admin-login-btn">Sign in with Google</button>
+    <p class="mono dim center" style="font-size:.72rem;margin:8px 0 14px">Sign in with an authorized admin account to edit the game.</p>
+    <div class="inp-wrap">
+      <label class="inp-lbl">Email</label>
+      <input type="text" id="admin-email" autocomplete="email" placeholder="admin@example.com">
+    </div>
+    <div class="inp-wrap">
+      <label class="inp-lbl">Password</label>
+      <input type="password" id="admin-password" autocomplete="current-password" placeholder="Password">
+    </div>
+    <button class="btn btn-p" id="admin-login-btn">Sign in</button>
   </div>
 </div>`;
 }
 
 function bindAdminLogin() {
   document.getElementById('admin-login-btn')?.addEventListener('click', async () => {
+    const email = document.getElementById('admin-email')?.value.trim();
+    const password = document.getElementById('admin-password')?.value;
+    if (!email || !password) {
+      toast('Enter email and password', 'err');
+      return;
+    }
     try {
-      await signInWithPopup(auth, authProvider);
+      await signInWithEmailAndPassword(auth, email, password);
       toast('Signed in', 'ok');
     } catch(e) {
       console.error("Sign-in error:", e);
       toast(e.code || 'Sign-in failed', 'err');
     }
+  });
+  document.getElementById('admin-password')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('admin-login-btn')?.click();
   });
 }
 
