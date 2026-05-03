@@ -305,6 +305,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDChGuB5CtWRD0u8j-GFzDOvqsGXdkDNFI",
@@ -318,6 +319,8 @@ const firebaseConfig = {
 
 const fbApp = initializeApp(firebaseConfig);
 const db    = getFirestore(fbApp);
+const auth  = getAuth(fbApp);
+const authProvider = new GoogleAuthProvider();
 const STATE_REF = doc(db, "totowrap", "state");
 
 let S = {
@@ -332,6 +335,8 @@ let _tab = 'today';
 let _clockInterval = null;
 let _toastTO = null;
 let _writing = false;
+let currentUser = null;
+let authReady = false;
 
 // Helper function for the 3D Logo HTML
 function get3DLogoHTML() {
@@ -364,12 +369,17 @@ function getSortedPlayerRoster() {
 }
 
 async function saveS() {
+  if (IS_ADMIN && !currentUser) {
+    toast("Sign in as admin to save changes", "err");
+    render();
+    return;
+  }
   _writing = true;
   try {
     await setDoc(STATE_REF, S);
   } catch(e) {
     console.error("Save error:", e);
-    toast("Sync error — check connection", "err");
+    toast(e.code === "permission-denied" ? "Admin account is not allowed to write" : "Sync error — check connection", "err");
   }
   setTimeout(() => { _writing = false; }, 500);
 }
@@ -661,12 +671,55 @@ function toast(msg,type='') {
 function render() {
   const app=document.getElementById('app');
   if(IS_ADMIN) {
+    if (!authReady) {
+      app.innerHTML=renderAdminLoading();
+      return;
+    }
+    if (!currentUser) {
+      app.innerHTML=renderAdminLogin();
+      bindAdminLogin();
+      return;
+    }
     app.innerHTML=renderMain();
     startClock();
     bindMain();
   } else {
     renderPlayer(app);
   }
+}
+
+function renderAdminLoading() {
+  return `<div class="empty">Checking admin session…</div>`;
+}
+
+function renderAdminLogin() {
+  return `
+<div class="hdr">
+  <div class="hdr-day">Admin</div>
+  ${get3DLogoHTML()}
+  <div class="hdr-right">
+    <span class="sync-dot js-sync-dot live"></span>
+  </div>
+</div>
+<div style="padding:16px">
+  <div class="card">
+    <div class="card-lbl">Admin Sign In</div>
+    <p class="mono dim center" style="font-size:.72rem;margin:8px 0 14px">Sign in with an authorized Google account to edit the game.</p>
+    <button class="btn btn-p" id="admin-login-btn">Sign in with Google</button>
+  </div>
+</div>`;
+}
+
+function bindAdminLogin() {
+  document.getElementById('admin-login-btn')?.addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, authProvider);
+      toast('Signed in', 'ok');
+    } catch(e) {
+      console.error("Sign-in error:", e);
+      toast('Sign-in failed', 'err');
+    }
+  });
 }
 
 function renderPlayer(app) {
@@ -852,6 +905,7 @@ function renderMain() {
   ${get3DLogoHTML()}
   <div class="hdr-right">
     <div class="hdr-wrap">Wrap ${estWrap}</div>
+    <button class="btn btn-s btn-sm" id="admin-logout-btn" title="${currentUser?.email || 'Admin'}">Sign out</button>
     <span class="sync-dot js-sync-dot ${S.today&&S.today.wrapTime?'off':'live'}" title="Live sync"></span>
   </div>
 </div>
@@ -1279,6 +1333,15 @@ function setCurrentTime() {
 }
 
 function bindMain() {
+  document.getElementById('admin-logout-btn')?.addEventListener('click', async () => {
+    try {
+      await signOut(auth);
+      toast('Signed out', 'ok');
+    } catch(e) {
+      console.error("Sign-out error:", e);
+      toast('Sign-out failed', 'err');
+    }
+  });
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
   document.getElementById('new-day-btn')?.addEventListener('click', () => {
     if(S.today&&S.today.wrapTime) S.days.push({...S.today});
@@ -1305,7 +1368,12 @@ function bindMain() {
   });
 }
 
-if(!IS_ADMIN) render();
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  authReady = true;
+  render();
+});
+
 onSnapshot(STATE_REF, (snap) => {
   if(_writing) return;
   if(snap.exists()) {
