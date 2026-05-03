@@ -717,7 +717,7 @@ function bindAdminLogin() {
       toast('Signed in', 'ok');
     } catch(e) {
       console.error("Sign-in error:", e);
-      toast('Sign-in failed', 'err');
+      toast(e.code || 'Sign-in failed', 'err');
     }
   });
 }
