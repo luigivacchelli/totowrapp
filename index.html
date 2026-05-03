@@ -209,7 +209,7 @@ body::before {
 .b-prob { background: rgba(184,201,168,.3); color: var(--dim); }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-input[type=text], input[type=password], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
+input[type=text], input[type=password], input[type=date], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
 textarea { resize: vertical; min-height: 140px; font-size: .85rem; line-height: 1.6; }
 input:focus, textarea:focus { border-color: var(--accent); }
 input::placeholder, textarea::placeholder { color: var(--dim); }
@@ -391,18 +391,53 @@ function secToClock(s) { return secToHMS(((s % DAY_SEC) + DAY_SEC) % DAY_SEC); }
 function pad(n) { return String(n).padStart(2,'0'); }
 function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
 function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+function localDateISO(d=new Date()) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function dateFromISO(iso) {
+  if (!iso) return null;
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function addDaysISO(iso, days) {
+  const d = dateFromISO(iso);
+  if (!d) return iso;
+  d.setDate(d.getDate() + days);
+  return localDateISO(d);
+}
+function dateDiffDays(fromISO, toISO) {
+  const from = dateFromISO(fromISO);
+  const to = dateFromISO(toISO);
+  if (!from || !to) return 0;
+  return Math.round((to - from) / (DAY_SEC * 1000));
+}
+function displayDate(iso) {
+  const d = dateFromISO(iso);
+  return d ? d.toLocaleDateString('en-GB') : '';
+}
+function displayToISO(dateStr) {
+  const m = String(dateStr || '').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  return m ? `${m[3]}-${pad(m[2])}-${pad(m[1])}` : localDateISO();
+}
 function approvalSec(day=S.today) { return day?.approvedAt ? toSec(day.approvedAt) : null; }
-function normalizeGameSec(time, day=S.today) {
+function approvalDateISO(day=S.today) { return day?.approvedDate || displayToISO(day?.date); }
+function inferBetDate(time, day=S.today) {
+  const baseDate = approvalDateISO(day);
+  const start = approvalSec(day);
+  if (!time || start === null) return baseDate;
+  return toSec(time) <= start ? addDaysISO(baseDate, 1) : baseDate;
+}
+function normalizeGameSec(time, day=S.today, explicitDate=null) {
   const sec = typeof time === 'number' ? time : toSec(time);
   const start = approvalSec(day);
   if (start === null) return sec;
+  if (explicitDate) return dateDiffDays(approvalDateISO(day), explicitDate) * DAY_SEC + sec;
   return sec <= start ? sec + DAY_SEC : sec;
 }
+function guessGameSec(g, day=S.today) { return normalizeGameSec(g.time, day, g.date || null); }
 function gameNowSec(day=S.today) {
   const sec = nowSec();
   const start = approvalSec(day);
   if (start === null) return sec;
-  return sec <= start ? sec + DAY_SEC : sec;
+  return normalizeGameSec(sec, day, localDateISO());
 }
 
 function parsePaste(text) {
@@ -451,8 +486,8 @@ function midSec(a,b) { return Math.floor((a+b)/2); }
 function sortedGuesses(guesses, day=S.today) {
   // 1. Filter and sort players who DID bet
   const withTime = guesses.filter(g => g.time).sort((a, b) => {
-    const secA = normalizeGameSec(a.time, day);
-    const secB = normalizeGameSec(b.time, day);
+    const secA = guessGameSec(a, day);
+    const secB = guessGameSec(b, day);
     
     // If times are different, sort by time (ascending)
     if (secA !== secB) return secA - secB;
@@ -497,12 +532,13 @@ function getWinProbability(playerName, allGuesses, day=S.today) {
 
 function boundaries(guesses, day=S.today) {
   const start = approvalSec(day);
-  const valid = guesses.filter(g => g.time).sort((a,b) => normalizeGameSec(a.time, day) - normalizeGameSec(b.time, day));
+  const baseDate = approvalDateISO(day);
+  const valid = guesses.filter(g => g.time).sort((a,b) => guessGameSec(a, day) - guessGameSec(b, day));
   if (valid.length === 0) return [];
 
   const groups = [];
   valid.forEach(g => {
-    const sec = normalizeGameSec(g.time, day);
+    const sec = guessGameSec(g, day);
     const existing = groups.find(grp => grp.sec === sec);
     if (existing) {
       existing.names.push(g.name);
@@ -531,7 +567,10 @@ function boundaries(guesses, day=S.today) {
       start: startSec,
       end: endSec,
       startStr: secToClock(startSec),
-      endStr: secToClock(endSec)
+      endStr: secToClock(endSec),
+      startDate: addDaysISO(baseDate, Math.floor(startSec / DAY_SEC)),
+      endDate: addDaysISO(baseDate, Math.floor(endSec / DAY_SEC)),
+      startsNextDay: startSec >= DAY_SEC
     });
   }
   return slices;
@@ -565,6 +604,11 @@ function calcWinner(guesses, wrapHMSInput, day=S.today) {
   const points = (wrapHMSInput.slice(0,5) === firstWinnerGuess) ? 3 : 1;
 
   return { winner: winnerName, winners, points };
+}
+
+function boundaryRange(s) {
+  const start = s.startsNextDay ? `${displayDate(s.startDate)} ${s.startStr}` : s.startStr;
+  return `${start} → ${s.endStr}`;
 }
     
 function getPreviousStreak(playerName) {
@@ -898,7 +942,7 @@ function renderPlayerToday() {
   </div>
   <div class="card"><div class="card-lbl">Territory Boundaries</div>
     ${slices.map(s => {
-      return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
+      return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${boundaryRange(s)}</span></div>`;
     }).join('')}
   </div>`;
 }
@@ -1053,7 +1097,7 @@ function renderToday() {
       </div>
       <div class="card"><div class="card-lbl">Territory Boundaries</div>
         ${slices.map(s => {
-          return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${s.startStr} → ${s.endStr}</span></div>`;
+          return `<div class="bnd-row"><span>${formatNames(s.names)}</span><span class="bnd-range">${boundaryRange(s)}</span></div>`;
         }).join('')}
       </div>
       <div class="card">
@@ -1214,8 +1258,14 @@ function showPreview() {
     }
   });
   
-  const fullList = buildFullGuessList(parsed);
-  const previewDay = { approvedAt: nowHMS() };
+  const previewApprovedAt = nowHMS();
+  const previewApprovedDate = localDateISO();
+  const previewDay = { approvedAt: previewApprovedAt, approvedDate: previewApprovedDate };
+  const fullList = buildFullGuessList(parsed).map((g, idx) => ({
+    ...g,
+    date: g.time ? inferBetDate(g.time, previewDay) : null,
+    _previewIdx: idx
+  }));
   const sorted = sortedGuesses(fullList, previewDay);
   const totalDays = S.days.length + (S.today ? 1 : 0);
   const app = document.getElementById('app');
@@ -1251,7 +1301,10 @@ function showPreview() {
           <div class="row-name">
             ${g.name} ${isDup ? '<span class="red" style="font-size:0.5rem; font-weight:bold;">(DUPLICATE)</span>' : ''}
           </div>
-          ${g.time ? `<div class="row-time">${g.time}</div>` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
+          ${g.time ? `
+            <div class="row-time">${g.time}</div>
+            <input type="date" id="bet-date-${g._previewIdx}" value="${g.date}" style="max-width:150px;margin-left:10px;font-size:.75rem;padding:7px 8px;">
+          ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
         </div>`;
       }).join('')}
     </div>
@@ -1278,7 +1331,13 @@ function showPreview() {
       S.scores[name] = 0;
     });
     
-    S.today.approvedAt = nowHMS();
+    fullList.forEach(g => {
+      if (g.time) g.date = document.getElementById(`bet-date-${g._previewIdx}`)?.value || g.date;
+      delete g._previewIdx;
+    });
+    
+    S.today.approvedAt = previewApprovedAt;
+    S.today.approvedDate = previewApprovedDate;
     S.today.guesses = fullList;
     S.today.estWrap = finalWrap;
     saveS();
@@ -1364,7 +1423,7 @@ function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
   document.getElementById('new-day-btn')?.addEventListener('click', () => {
     if(S.today&&S.today.wrapTime) S.days.push({...S.today});
-    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null,approvedAt:null};
+    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null,approvedAt:null,approvedDate:null};
     saveS(); render();
   });
   document.getElementById('wrap-btn')?.addEventListener('click', () => {
