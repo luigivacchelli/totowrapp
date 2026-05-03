@@ -374,11 +374,27 @@ async function saveS() {
   setTimeout(() => { _writing = false; }, 500);
 }
 
+const DAY_SEC = 86400;
+
 function toSec(t) { const p = t.split(':').map(Number); return p[0]*3600 + p[1]*60 + (p[2]||0); }
 function secToHMS(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return `${pad(h)}:${pad(m)}:${pad(sec)}`; }
+function secToClock(s) { return secToHMS(((s % DAY_SEC) + DAY_SEC) % DAY_SEC); }
 function pad(n) { return String(n).padStart(2,'0'); }
 function nowSec() { const d=new Date(); return d.getHours()*3600+d.getMinutes()*60+d.getSeconds(); }
 function nowHMS() { const d=new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+function approvalSec(day=S.today) { return day?.approvedAt ? toSec(day.approvedAt) : null; }
+function normalizeGameSec(time, day=S.today) {
+  const sec = typeof time === 'number' ? time : toSec(time);
+  const start = approvalSec(day);
+  if (start === null) return sec;
+  return sec <= start ? sec + DAY_SEC : sec;
+}
+function gameNowSec(day=S.today) {
+  const sec = nowSec();
+  const start = approvalSec(day);
+  if (start === null) return sec;
+  return sec <= start ? sec + DAY_SEC : sec;
+}
 
 function parsePaste(text) {
   const lines = text.trim().split('\n').filter(l => l.trim());
@@ -423,11 +439,11 @@ function buildFullGuessList(parsed) {
 }
 
 function midSec(a,b) { return Math.floor((a+b)/2); }
-function sortedGuesses(guesses) {
+function sortedGuesses(guesses, day=S.today) {
   // 1. Filter and sort players who DID bet
   const withTime = guesses.filter(g => g.time).sort((a, b) => {
-    const secA = toSec(a.time);
-    const secB = toSec(b.time);
+    const secA = normalizeGameSec(a.time, day);
+    const secB = normalizeGameSec(b.time, day);
     
     // If times are different, sort by time (ascending)
     if (secA !== secB) return secA - secB;
@@ -445,8 +461,8 @@ function sortedGuesses(guesses) {
   return [...withTime, ...missing];
 }
     
-function getWinProbability(playerName, allGuesses) {
-  const slices = boundaries(allGuesses);
+function getWinProbability(playerName, allGuesses, day=S.today) {
+  const slices = boundaries(allGuesses, day);
   if (slices.length === 0) return { val: 0, color: 'var(--red)' };
 
   // Total seconds from start of first territory to end of last
@@ -470,13 +486,14 @@ function getWinProbability(playerName, allGuesses) {
   };
 }
 
-function boundaries(guesses) {
-  const valid = guesses.filter(g => g.time).sort((a,b) => toSec(a.time) - toSec(b.time));
+function boundaries(guesses, day=S.today) {
+  const start = approvalSec(day);
+  const valid = guesses.filter(g => g.time).sort((a,b) => normalizeGameSec(a.time, day) - normalizeGameSec(b.time, day));
   if (valid.length === 0) return [];
 
   const groups = [];
   valid.forEach(g => {
-    const sec = toSec(g.time);
+    const sec = normalizeGameSec(g.time, day);
     const existing = groups.find(grp => grp.sec === sec);
     if (existing) {
       existing.names.push(g.name);
@@ -487,8 +504,8 @@ function boundaries(guesses) {
 
   const slices = [];
   for (let i = 0; i < groups.length; i++) {
-    let startSec = 0;
-    let endSec = 86399;
+    let startSec = start === null ? 0 : start + 1;
+    let endSec = start === null ? DAY_SEC - 1 : start + DAY_SEC;
 
     if (i > 0) {
       const prevMid = midSec(groups[i-1].sec, groups[i].sec);
@@ -504,15 +521,15 @@ function boundaries(guesses) {
       names: groups[i].names,
       start: startSec,
       end: endSec,
-      startStr: secToHMS(startSec),
-      endStr: secToHMS(endSec)
+      startStr: secToClock(startSec),
+      endStr: secToClock(endSec)
     });
   }
   return slices;
 }
 
-function eliminated(guesses, curSec) {
-  const slices = boundaries(guesses);
+function eliminated(guesses, curSec, day=S.today) {
+  const slices = boundaries(guesses, day);
   const out = new Set();
   slices.forEach(slice => {
     if (curSec > slice.end) {
@@ -522,9 +539,9 @@ function eliminated(guesses, curSec) {
   return out;
 }
 
-function calcWinner(guesses, wrapHMSInput) {
-  const wrapSec = toSec(wrapHMSInput);
-  const slices = boundaries(guesses);
+function calcWinner(guesses, wrapHMSInput, day=S.today) {
+  const wrapSec = normalizeGameSec(wrapHMSInput, day);
+  const slices = boundaries(guesses, day);
   
   const winningSlice = slices.find(s => wrapSec >= s.start && wrapSec <= s.end);
   
@@ -570,7 +587,7 @@ function startClock() {
 
 function tickClock() {
   const t = nowHMS();
-  const cur = nowSec();
+  const cur = gameNowSec();
   
   // Update all clocks on the page
   document.querySelectorAll('.js-clock').forEach(el => el.textContent = t);
@@ -581,7 +598,7 @@ function tickClock() {
     return;
   }
 
-  const slices = boundaries(S.today.guesses);
+  const slices = boundaries(S.today.guesses, S.today);
   if (slices.length === 0) return;
 
   // Find the current/upcoming boundary
@@ -618,7 +635,7 @@ function tickClock() {
 
 function refreshStatusBadges() {
   if(!S.today||!S.today.guesses.length||S.today.wrapTime) return;
-  const cur=nowSec(), out=eliminated(S.today.guesses,cur);
+  const cur=gameNowSec(), out=eliminated(S.today.guesses,cur,S.today);
   S.today.guesses.forEach(g=>{
     const el=document.getElementById('st-'+g.name);
     const nameEl = document.getElementById('name-span-'+g.name);
@@ -713,7 +730,7 @@ function renderPlayerToday() {
   }
   
   if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses);
+    const sg = sortedGuesses(t.guesses, t);
     const todayWinnersList = t.winners ? t.winners.map(w => w.name) : [t.winner];
     const todayWinnerStr = formatNames(todayWinnersList);
     const streakInfo = getPreviousStreak(todayWinnersList[0]);
@@ -733,7 +750,7 @@ function renderPlayerToday() {
       const todayWinnerNames = t.winners ? t.winners.map(w => w.name) : [t.winner];
       const isWinner = todayWinnerNames.includes(g.name);
       const displayName = g.name + (isWinner ? ' 🥇' : ' 🍣');
-      const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+      const prob = g.time ? getWinProbability(g.name, t.guesses, t) : null;
 
       return `
       <div class="row">
@@ -758,7 +775,7 @@ function renderPlayerToday() {
   </div>`;
   }
 
-  const sg = sortedGuesses(t.guesses || []);
+  const sg = sortedGuesses(t.guesses || [], t);
   const hasValidGuesses = sg.some(g => g.time);
   if (!hasValidGuesses) {
     return `
@@ -768,10 +785,10 @@ function renderPlayerToday() {
   </div>`;
   }
 
-  const cur = nowSec();
-  const out = eliminated(t.guesses, cur);
+  const cur = gameNowSec(t);
+  const out = eliminated(t.guesses, cur, t);
   const dotClass = (S.today && S.today.wrapTime) ? 'off' : 'live';
-  const slices = boundaries(t.guesses);
+  const slices = boundaries(t.guesses, t);
 
   return `
   <div class="card">
@@ -787,7 +804,7 @@ function renderPlayerToday() {
       const st = getPreviousStreak(g.name);
       const isOut = out.has(g.name);
       const displayName = g.name + ((isOut || !g.time) ? ' 🍣' : ' 🐟');
-      const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+      const prob = g.time ? getWinProbability(g.name, t.guesses, t) : null;
 
       return `
       <div class="row">
@@ -890,7 +907,7 @@ function renderToday() {
     </div>`;
 
   if (t.wrapTime) {
-    const sg = sortedGuesses(t.guesses);
+    const sg = sortedGuesses(t.guesses, t);
     const todayWinnerNames = t.winners ? t.winners.map(w => w.name) : [t.winner];
     const todayWinnerStr = formatNames(todayWinnerNames);
     const streakInfo = getPreviousStreak(todayWinnerNames[0]);
@@ -909,7 +926,7 @@ function renderToday() {
             const st = getPreviousStreak(g.name);
             const isWinner = todayWinnerNames.includes(g.name);
             const displayName = g.name + (isWinner ? ' 🥇' : ' 🍣');
-            const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+            const prob = g.time ? getWinProbability(g.name, t.guesses, t) : null;
 
             return `
             <div class="row">
@@ -936,10 +953,10 @@ function renderToday() {
   }
   
   if (t.guesses && t.guesses.length > 0) {
-    const cur = nowSec();
-    const out = eliminated(t.guesses, cur);
-    const sg = sortedGuesses(t.guesses);
-    const slices = boundaries(t.guesses);
+    const cur = gameNowSec(t);
+    const out = eliminated(t.guesses, cur, t);
+    const sg = sortedGuesses(t.guesses, t);
+    const slices = boundaries(t.guesses, t);
     return `
       ${clockCard}
       <div class="card"><div class="card-lbl">${statusHeader}</div>
@@ -947,7 +964,7 @@ function renderToday() {
           const st = getPreviousStreak(g.name);
           const isOut = out.has(g.name);
           const displayName = g.name + ((isOut || !g.time) ? ' 🍣' : ' 🐟');
-          const prob = g.time ? getWinProbability(g.name, t.guesses) : null;
+          const prob = g.time ? getWinProbability(g.name, t.guesses, t) : null;
           
           return `
           <div class="row">
@@ -1017,7 +1034,7 @@ function renderHistory() {
 
   return [...all].reverse().map((d, i) => {
     const num = all.length - i;
-    const sg = sortedGuesses(d.guesses);
+    const sg = sortedGuesses(d.guesses, d);
     const histNames = d.winners ? d.winners.map(w => w.name) : [d.winner];
     const histWinnerStr = formatNames(histNames);
     const winnerBet = d.guesses.find(g => histNames.includes(g.name))?.time || '--:--';
@@ -1125,7 +1142,8 @@ function showPreview() {
   });
   
   const fullList = buildFullGuessList(parsed);
-  const sorted = sortedGuesses(fullList);
+  const previewDay = { approvedAt: nowHMS() };
+  const sorted = sortedGuesses(fullList, previewDay);
   const totalDays = S.days.length + (S.today ? 1 : 0);
   const app = document.getElementById('app');
   
@@ -1187,6 +1205,7 @@ function showPreview() {
       S.scores[name] = 0;
     });
     
+    S.today.approvedAt = nowHMS();
     S.today.guesses = fullList;
     S.today.estWrap = finalWrap;
     saveS();
@@ -1263,13 +1282,13 @@ function bindMain() {
   document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{_tab=btn.dataset.tab;render();}));
   document.getElementById('new-day-btn')?.addEventListener('click', () => {
     if(S.today&&S.today.wrapTime) S.days.push({...S.today});
-    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null};
+    S.today={date:new Date().toLocaleDateString('en-GB'),guesses:[],wrapTime:null,winner:null,points:null,estWrap:null,approvedAt:null};
     saveS(); render();
   });
   document.getElementById('wrap-btn')?.addEventListener('click', () => {
     const inp = document.getElementById('wrap-inp');
     if (!inp?.value) { toast('Enter wrap time', 'err'); return; }
-    const { winner, winners, points } = calcWinner(S.today.guesses, inp.value);
+    const { winner, winners, points } = calcWinner(S.today.guesses, inp.value, S.today);
     S.today.wrapTime = inp.value;
     S.today.winner = winner;
     S.today.winners = winners;
