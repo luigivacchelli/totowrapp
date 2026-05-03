@@ -190,23 +190,28 @@ body::before {
 .nav-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
 .sec { padding: 16px; display: none; }
 .sec.on { display: block; }
-.preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
-.card { background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); }
+.preview-card { background: rgba(67,84,54,.6); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; max-height: 360px; overflow-y: auto; }
+.card { background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); }
 .card-lbl { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 12px; }
-.row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); min-height: 46px; }
 .row:last-child { border-bottom: none; }
-.row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); flex: 1; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-.row-time { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); }
+.row-name { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; color: var(--accent); flex: 1; min-width: 0; font-weight: 500; display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
+.row-time { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .88rem; color: var(--accent); min-width: 58px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .row-pts { font-family: 'Alte Haas Grotesk', sans-serif; font-weight: bold; font-size: 1.25rem; min-width: 28px; text-align: right; }
-.badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
+.badge { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 20px; white-space: nowrap; font-weight: bold; }
 .b-alive { background: rgba(106,191,106,.12); color: var(--green); }
 .b-out   { background: rgba(217,85,85,.12); color: var(--red); }
 .b-win   { background: rgba(106,191,106,.12); color: var(--green); }
 .b-streak { background: linear-gradient(135deg, #f0b428 0%, #ffd04d 100%); color: #000; box-shadow: 0 0 8px rgba(240, 180, 40, 0.4); border: none; padding: 3px 7px 1px; border-radius: 20px; font-weight: bold; font-size: 0.52; letter-spacing: 0.02em; transform: translateY(1px); }
 .b-ok    { background: rgba(106,191,106,.12); color: var(--green); }
 .b-pend  { background: rgba(120,120,120,.12); color: var(--dim); }
-.b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .50rem; font-style: italic; }
-.b-prob { background: rgba(184,201,168,.3); color: var(--dim); }
+.b-missing { background: rgba(184,201,168,.1); color: var(--dim); font-size: .56rem; font-style: italic; }
+.b-prob { background: rgba(184,201,168,.3); color: var(--dim); min-width: 52px; text-align: right; font-size: .72rem; font-weight: bold; font-variant-numeric: tabular-nums; }
+.preview-head, .preview-row { display: grid; grid-template-columns: minmax(0, 1fr) 72px 152px; align-items: center; column-gap: 16px; }
+.preview-head { padding: 0 0 8px; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.preview-row { min-height: 50px; }
+.preview-row .row-name { display: block; }
+.bet-date-input { max-width: 152px; font-size: .78rem; padding: 7px 8px; font-variant-numeric: tabular-nums; }
 .inp-wrap { margin-bottom: 12px; }
 .inp-lbl { display: block; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 input[type=text], input[type=password], input[type=date], input[type=time], textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; color: var(--text); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
@@ -271,9 +276,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .lb-rank.first { color: var(--accent); }
 .day-chip { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .6rem; color: var(--dim); margin-bottom: 8px; }
 .day-footer { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .67rem; color: var(--dim); margin-top: 8px; }
-.bnd-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--accent) }
+.bnd-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--border); font-family: 'Alte Haas Grotesk', sans-serif; font-size: .76rem; line-height: 1.35; color: var(--accent) }
 .bnd-row:last-child { border-bottom: none; }
-.bnd-range { color: var(--dim); font-size: .65rem; }
+.bnd-row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.bnd-range { color: var(--dim); font-size: .68rem; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bnd-date { display: inline-block; color: var(--dim); margin-right: 22px; }
 #toast { position: fixed; bottom: 125px; left: 50%; transform: translateX(-50%) translateY(12px); background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 9px 18px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; white-space: nowrap; max-width: 90vw; opacity: 0; transition: opacity .25s, transform .25s; z-index: 9000; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.ok  { border-color: var(--accent); color: var(--accent); }
@@ -284,6 +291,16 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .dim { color: var(--dim); } .mono { font-family: 'Alte Haas Grotesk', sans-serif; font-size: .75rem; }
 .empty { text-align: center; padding: 44px 20px; font-family: 'Alte Haas Grotesk', sans-serif; font-size: .72rem; color: var(--dim); letter-spacing: .1em; }
 .center { text-align: center; } .accent { color: var(--accent); } .red { color: var(--red); }
+@media (max-width: 520px) {
+  .card { padding: 15px 14px; }
+  .row { gap: 8px; }
+  .preview-head { display: none; }
+  .preview-row { grid-template-columns: minmax(0, 1fr) 64px; row-gap: 8px; column-gap: 10px; }
+  .preview-row .bet-date-input { grid-column: 1 / -1; justify-self: stretch; max-width: none; }
+  .bnd-row { grid-template-columns: 1fr; gap: 4px; }
+  .bnd-range { text-align: left; white-space: normal; }
+  .bnd-date { margin-right: 14px; }
+}
 
 /* History Accordion Styles */
 .hist-row { cursor: pointer; padding: 0 !important; overflow: hidden; }
@@ -607,7 +624,7 @@ function calcWinner(guesses, wrapHMSInput, day=S.today) {
 }
 
 function boundaryRange(s) {
-  const start = s.startsNextDay ? `${displayDate(s.startDate)}&nbsp;&nbsp;&nbsp;&nbsp;${s.startStr}` : s.startStr;
+  const start = s.startsNextDay ? `<span class="bnd-date">${displayDate(s.startDate)}</span>${s.startStr}` : s.startStr;
   return `${start} → ${s.endStr}`;
 }
     
@@ -873,7 +890,7 @@ function renderPlayerToday() {
         </div>
         
         ${g.time ? `
-          <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+          <div class="badge b-prob" style="color: ${prob.color};">
             ${prob.text}
           </div>
           
@@ -927,7 +944,7 @@ function renderPlayerToday() {
         </div>
         
         ${g.time ? `
-         <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+         <div class="badge b-prob" style="color: ${prob.color};">
             ${prob.text}
           </div>
           
@@ -1049,7 +1066,7 @@ function renderToday() {
               </div>
               
               ${g.time ? `
-                <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+                <div class="badge b-prob" style="color: ${prob.color};">
                   ${prob.text}
                 </div>
                 
@@ -1084,7 +1101,7 @@ function renderToday() {
             <div class="row-name"><span id="name-span-${g.name}">${displayName}</span> ${g.time ? st.pill : ''}
             </div>
             ${g.time ? `
-              <div class="badge b-prob" style="color: ${prob.color}; font-size: 0.75rem; margin-right: 12px; font-weight: bold; min-width: 45px; text-align: right;">
+              <div class="badge b-prob" style="color: ${prob.color};">
                 ${prob.text}
               </div>
               <div class="row-time">${g.time}</div>
@@ -1294,16 +1311,17 @@ function showPreview() {
   <div class="card">
     <div class="card-lbl">Confirm These Guesses</div>
     <div class="preview-card">
+      <div class="preview-head"><span>Player</span><span>Bet</span><span>Date</span></div>
       ${sorted.map(g => {
         const isDup = duplicates.includes(g.name.toLowerCase());
         return `
-        <div class="row" style="${isDup ? 'border-left: 3px solid var(--red); padding-left: 8px;' : ''}">
+        <div class="row preview-row" style="${isDup ? 'border-left: 3px solid var(--red); padding-left: 8px;' : ''}">
           <div class="row-name">
             ${g.name} ${isDup ? '<span class="red" style="font-size:0.5rem; font-weight:bold;">(DUPLICATE)</span>' : ''}
           </div>
           ${g.time ? `
             <div class="row-time">${g.time}</div>
-            <input type="date" id="bet-date-${g._previewIdx}" value="${g.date}" style="max-width:150px;margin-left:10px;font-size:.75rem;padding:7px 8px;">
+            <input type="date" class="bet-date-input" id="bet-date-${g._previewIdx}" value="${g.date}">
           ` : `<div class="badge b-missing">This tuna forgot to bet today</div>`}
         </div>`;
       }).join('')}
