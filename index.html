@@ -607,7 +607,7 @@ function calcWinner(guesses, wrapHMSInput, day=S.today) {
 }
 
 function boundaryRange(s) {
-  const start = s.startsNextDay ? `${displayDate(s.startDate)} ${s.startStr}` : s.startStr;
+  const start = s.startsNextDay ? `${displayDate(s.startDate)}&nbsp;&nbsp;&nbsp;&nbsp;${s.startStr}` : s.startStr;
   return `${start} → ${s.endStr}`;
 }
     
