@@ -117,31 +117,52 @@ body::before {
 }
 
 /* --- ANIMATION ASSIGNMENTS --- */
-.face-1 {
+.logo-step0 .face-1 {
   animation:
     f1-step0 12.5s linear forwards,
     loop-standard 12s linear 12.5s infinite;
+  animation-delay: var(--logo-delay), calc(12.5s + var(--logo-delay));
 }
 
-.face-2 {
+.logo-step0 .face-2 {
   animation:
     f2-step0 12.5s linear forwards,
     loop-mirrored 12s linear 12.5s infinite;
-  animation-delay: 0s, 15.5s;
+  animation-delay: var(--logo-delay), calc(15.5s + var(--logo-delay));
 }
 
-.face-3 {
+.logo-step0 .face-3 {
   animation:
     f3-step0 12.5s linear forwards,
     loop-standard 12s linear 12.5s infinite;
-  animation-delay: 0s, 18.5s;
+  animation-delay: var(--logo-delay), calc(18.5s + var(--logo-delay));
 }
 
-.face-4 {
+.logo-step0 .face-4 {
   animation:
     f4-step0 12.5s linear forwards,
     loop-mirrored 12s linear 12.5s infinite;
-  animation-delay: 0s, 21.5s;
+  animation-delay: var(--logo-delay), calc(21.5s + var(--logo-delay));
+}
+
+.logo-loop .face-1 {
+  animation: loop-standard 12s linear infinite;
+  animation-delay: calc(var(--logo-delay) + 12.5s);
+}
+
+.logo-loop .face-2 {
+  animation: loop-mirrored 12s linear infinite;
+  animation-delay: calc(var(--logo-delay) + 15.5s);
+}
+
+.logo-loop .face-3 {
+  animation: loop-standard 12s linear infinite;
+  animation-delay: calc(var(--logo-delay) + 18.5s);
+}
+
+.logo-loop .face-4 {
+  animation: loop-mirrored 12s linear infinite;
+  animation-delay: calc(var(--logo-delay) + 21.5s);
 }
 
 /* --- STEP 0 KEYFRAMES --- */
@@ -353,11 +374,15 @@ let _toastTO = null;
 let _writing = false;
 let currentUser = null;
 let authReady = false;
+const LOGO_STEP_SEC = 12.5;
+const _logoStartedAt = performance.now();
 
 // Helper function for the 3D Logo HTML
 function get3DLogoHTML() {
+  const elapsed = (performance.now() - _logoStartedAt) / 1000;
+  const mode = elapsed < LOGO_STEP_SEC ? 'logo-step0' : 'logo-loop';
   return `
-  <div class="logo-3d-container">
+  <div class="logo-3d-container ${mode}" style="--logo-delay:-${elapsed.toFixed(3)}s">
     <div class="logo-3d-inner">
       <img src="imgs/tonnowrap.png" class="face face-1">
       <img src="imgs/tuna.png"      class="face face-2">
